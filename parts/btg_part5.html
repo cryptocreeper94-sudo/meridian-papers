@@ -1,0 +1,152 @@
+<h2><span class="section-num">11</span> Related Work</h2>
+
+<h3>11.1 Solar Power Satellite and Space&#8209;Based Solar Power</h3>
+<p>The SPS concept, first formalized by Peter Glaser in 1968 [80] and developed into the NASA/DOE 1979 reference design [81], proposed harvesting solar energy in geostationary orbit and beaming it to Earth via 2.45&nbsp;GHz. End&#8209;to&#8209;end efficiency was approximately 7&ndash;13%. This paper&#8217;s Tier&nbsp;1 architecture is the terrestrial analog &mdash; retaining the technically validated elements (2.45&nbsp;GHz, pilot&#8209;tone, rectenna, Fresnel analysis) while eliminating orbital manufacturing requirements.</p>
+<p>Recent programs &mdash; JAXA&#8217;s SSPS [82], ESA&#8217;s SOLARIS [83], and Caltech&#8217;s SSPP demonstration [84] &mdash; have advanced the hardware technology base, particularly solid&#8209;state transmitter efficiency and lightweight deployable receivers.</p>
+
+<h3>11.2 Terrestrial Microwave Power Transmission Demonstrations</h3>
+<p>Milestones include Brown&#8217;s 1964 microwave&#8209;powered helicopter [85]; the 1975 Goldstone demonstration of 30&nbsp;kW at 54% DC&#8209;to&#8209;DC efficiency over 1.6&nbsp;km [86]; the 2008 LaserMotive 1&nbsp;km optical demonstration [87]; PowerLight Technologies&#8217; 400&nbsp;W at 300m [88]; and Emrod&#8217;s multi&#8209;km trials [89]. None operate at the power levels or distances proposed for Tier&nbsp;1, but they establish physical feasibility.</p>
+
+<h3>11.3 Fusion Energy and Deterministic Control</h3>
+<p>Commercial fusion development has accelerated since 2020 (Commonwealth Fusion Systems, TAE Technologies, Helion Energy, General Fusion, ITER). The deterministic control problem is the subject of the companion Canon&sup2; series and is not surveyed in detail here.</p>
+
+<h3>11.4 Grid Resilience and Wireless Energy</h3>
+<p>Grid vulnerability to geomagnetic disturbance [90, 91], economic outage costs [92], and substation security [93] collectively motivate the resilience argument. The wireless architecture is the architectural response to the vulnerabilities they document.</p>
+
+<h2><span class="section-num">12</span> Limitations and Honest Boundaries</h2>
+<p><strong>The efficiency penalty is real and large.</strong> At current technology levels, the wireless architecture delivers approximately 15% of fusion thermal energy to the device vs. ~30% for the wired grid. This 2&times; penalty cannot be fully eliminated by technology improvement. The decision to build wireless requires explicit justification in each deployment context.</p>
+<p><strong>No demonstration at scale exists.</strong> The largest terrestrial demonstrations deliver hundreds of watts over hundreds of meters. Tier&nbsp;1 proposes megawatts over kilometers &mdash; four orders of magnitude in power and one in distance. Intermediate&#8209;scale demonstrations (100&nbsp;kW over 1&nbsp;km; 1&nbsp;MW over 3&nbsp;km) are necessary for validation.</p>
+<p><strong>Fusion energy is not yet commercially available.</strong> The architecture is designed for the world in which fusion is commercial &mdash; it cannot be built today. This paper is a specification for that world.</p>
+<p><strong>The regulatory pathway is long and uncertain.</strong> The FCC, FAA, and state commissions all have jurisdiction. No existing framework directly addresses this. Developing the framework through experimental licensing and rulemakings will take a decade or more.</p>
+<p><strong>Pilot&#8209;tone spoofing (T13) is a non&#8209;trivial threat.</strong> The retrodirective mechanism prevents software attacks but is vulnerable to physical pilot&#8209;tone capture and replication. Physical security of the T1&#8209;RX pilot transmitter is the primary physical security requirement. The threat is categorized in Guardian Security T13 but does not yet have a complete formal defense specification.</p>
+
+<h2><span class="section-num">13</span> Conclusion</h2>
+<p>The argument of this paper is simple, even if the engineering is not: a world with fusion energy and a complete wireless routing architecture for energy delivery does not need transmission towers, high&#8209;voltage cables, or substations. The energy can travel through air, addressed and routed, from plasma to device.</p>
+<p>The argument has two parts. The first is that the physics permits it. Fresnel&#8209;regime microwave power beaming at 2.45&nbsp;GHz, with 10&ndash;20m apertures, achieves 80&ndash;87% collection efficiency at district distances. Retrodirective pilot&#8209;tone locking provides a physically robust safety mechanism that cannot be bypassed by software attacks. The physics is not speculative.</p>
+<p>The second is that the architecture connects. The Tier&nbsp;1 beam layer interfaces cleanly with the Tier&nbsp;2 Meridian mesh at the DC bus. The fusion control system provides a deterministically governed generation source. The Trust Layer, Lume&#8209;X, and Guardian Security operate across all three layers.</p>
+<p>The efficiency penalty is real. The regulatory path is long. The fusion source is not yet commercially available. These are honest limitations stated without minimization.</p>
+<p>The target is worth building toward. A global energy system in which energy is routed wirelessly from distributed fusion hubs to the districts they serve, then through a self&#8209;healing building mesh to every device &mdash; without a single transmission tower or high&#8209;voltage cable &mdash; is a genuinely better infrastructure architecture. It is more resilient, more flexible, more equitable in deployment, and more compatible with the autonomous physical world that the rest of the Meridian series describes.</p>
+<p><strong>The routed world does not stop at the building boundary.</strong></p>
+
+<div class="page-break"></div>
+
+<h2>Appendix A &mdash; Fresnel Number Analysis for Representative Configurations</h2>
+<p><strong>At 2.45&nbsp;GHz (&lambda; = 0.122m):</strong></p>
+<table>
+  <tr><th>Apertures</th><th>500m</th><th>1km</th><th>5km</th><th>10km</th><th>20km</th></tr>
+  <tr><td>D<sub>t</sub>=D<sub>r</sub>=5m</td><td>0.82 (87%)</td><td>0.41 (78%)</td><td>0.082 (53%)</td><td>0.041 (40%)</td><td>&mdash;</td></tr>
+  <tr><td>D<sub>t</sub>=D<sub>r</sub>=10m</td><td>3.28 (98%)</td><td>1.64 (95%)</td><td>0.328 (72%)</td><td>0.164 (65%)</td><td>&mdash;</td></tr>
+  <tr><td>D<sub>t</sub>=D<sub>r</sub>=20m</td><td>&mdash;</td><td>6.56 (99%)</td><td>1.31 (93%)</td><td>0.655 (83%)</td><td>0.328 (72%)</td></tr>
+  <tr><td>D<sub>t</sub>=D<sub>r</sub>=50m</td><td>&mdash;</td><td>&mdash;</td><td>8.20 (99%)</td><td>4.10 (99%)</td><td>2.05 (96%)</td></tr>
+</table>
+<p><strong>At 5.8&nbsp;GHz (&lambda; = 0.052m):</strong></p>
+<table>
+  <tr><th>Apertures</th><th>500m</th><th>1km</th><th>5km</th><th>10km</th></tr>
+  <tr><td>D<sub>t</sub>=D<sub>r</sub>=5m</td><td>1.92 (95%)</td><td>0.96 (88%)</td><td>0.192 (67%)</td><td>&mdash;</td></tr>
+  <tr><td>D<sub>t</sub>=D<sub>r</sub>=10m</td><td>&mdash;</td><td>3.85 (98%)</td><td>0.769 (86%)</td><td>0.385 (77%)</td></tr>
+  <tr><td>D<sub>t</sub>=D<sub>r</sub>=20m</td><td>&mdash;</td><td>&mdash;</td><td>3.08 (98%)</td><td>1.54 (94%)</td></tr>
+</table>
+<p>Efficiency values are approximate, based on Gaussian&#8209;tapered aperture illumination.</p>
+
+<h2>Appendix B &mdash; Retrodirective Pilot&#8209;Tone Safety Protocol</h2>
+<pre>T1-RX pilot tone: f_pilot = f_beam + &Delta;f (&Delta;f = 1 MHz for 2.45 GHz beam)
+Pilot power: 1W ERP from phase-reference element at T1-RX center
+Pilot source power: independent battery (&ge;30 day capacity) or dedicated solar panel
+Pilot receive threshold at T1-TX: -60 dBm (20 dB margin above noise)
+
+T1-TX hardware safety gate:
+  POWER_AMPLIFIER_ENABLE = pilot_received AND (pilot_power &gt; threshold)
+    AND intruder_clear AND regulatory_mode_active
+  Loss of pilot &rarr; PA_ENABLE = FALSE within 1 hardware clock cycle
+  Time from pilot loss to beam off: &le; 100 &mu;s (hardware gate, no software path)
+
+Pilot spoofing defense:
+  Pilot carrier modulated with 64-bit rolling code via ECDH key exchange
+  T1-TX verifies rolling code; unkeyed source cannot produce valid code
+  Key rotation: every 24 hours via Trust Layer key exchange</pre>
+
+<h2>Appendix C &mdash; Exclusion Zone Power Density Profile</h2>
+<p>10&nbsp;MW beam, 10m aperture, 46&nbsp;dB Taylor taper, d = 5&nbsp;km:</p>
+<table>
+  <tr><th>Lateral Distance</th><th>Power Density</th><th>ICNIRP Limit</th><th>Margin</th></tr>
+  <tr><td>0m (centerline)</td><td>15,000 W/m&sup2;</td><td>n/a (receiver)</td><td>n/a</td></tr>
+  <tr><td>5m</td><td>8,000 W/m&sup2;</td><td>n/a (receiver)</td><td>n/a</td></tr>
+  <tr><td>10m (beam edge)</td><td>0.4 W/m&sup2;</td><td>10 W/m&sup2;</td><td>25&times;</td></tr>
+  <tr><td>20m</td><td>0.04 W/m&sup2;</td><td>10 W/m&sup2;</td><td>250&times;</td></tr>
+  <tr><td>50m</td><td>0.004 W/m&sup2;</td><td>10 W/m&sup2;</td><td>2,500&times;</td></tr>
+</table>
+<p>Public exposure is below ICNIRP limits at the beam edge (10m from centerline). The 35m exclusion zone provides 25&times; ICNIRP margin at its inner boundary.</p>
+
+<h2>Appendix D &mdash; Complete DI Stack Layer Specification</h2>
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Identity</th><th>Routing</th><th>Invariants</th><th>Self&#8209;Maintenance</th></tr>
+  <tr><td>Generation</td><td>Deterministic Fusion</td><td>Trust Layer T1&#8209;TX</td><td>Demand via EI</td><td>INV&#8209;F1&ndash;F4</td><td>Plasma disruption avoidance</td></tr>
+  <tr><td>Long&#8209;haul TX</td><td>T1&#8209;TX phased array</td><td>Trust Layer + pilot</td><td>Pilot&#8209;locked beam</td><td>Pilot&ge;threshold, P&le;P<sub>max</sub></td><td>Auto failover</td></tr>
+  <tr><td>Long&#8209;haul RX</td><td>T1&#8209;RX rectenna</td><td>Trust Layer + pilot TX</td><td>Passive receive</td><td>P<sub>rx</sub>&ge;P<sub>min</sub></td><td>Alert + reroute</td></tr>
+  <tr><td>District mesh</td><td>Meridian Tier&nbsp;2</td><td>MC 64&#8209;bit</td><td>DRMA multi&#8209;hop</td><td>INV&#8209;1&ndash;5</td><td>SHDCL</td></tr>
+  <tr><td>Device</td><td>Leaf node / SSD</td><td>Trust Layer endpoint</td><td>Addressed final&#8209;hop</td><td>Delivery confirmation</td><td>Self&#8209;report</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>References</h2>
+<p><strong>Solar Power Satellite:</strong></p>
+<ol start="80">
+  <li>Glaser, P.E. (1968). &#8220;Power from the Sun: Its Future.&#8221; <em>Science,</em> 162(3856), 857&ndash;861.</li>
+  <li>NASA/DOE. (1979). <em>Reference System Report: Solar Power Satellite.</em> DOE/ER&#8209;0023.</li>
+  <li>JAXA. (2015). <em>Space Solar Power Systems (SSPS) Technical Report.</em></li>
+  <li>European Space Agency. (2022). <em>SOLARIS Initiative: Space&#8209;Based Solar Power Feasibility Study.</em></li>
+  <li>Hajimiri, A., et&nbsp;al. (2023). &#8220;Caltech Space Solar Power Project: On&#8209;Orbit Demonstration.&#8221; <em>Nature,</em> 623, 539&ndash;544.</li>
+</ol>
+<p><strong>Terrestrial Power Beaming:</strong></p>
+<ol start="85">
+  <li>Brown, W.C. (1964). &#8220;The Microwave Powered Helicopter.&#8221; <em>J. Microwave Power,</em> 1(1), 1&ndash;20.</li>
+  <li>Brown, W.C. (1984). &#8220;The History of Power Transmission by Radio Waves.&#8221; <em>IEEE Trans. MTT,</em> 32(9), 1230&ndash;1242.</li>
+  <li>LaserMotive LLC. (2009). <em>Climber Power Beaming Challenge: Technical Report.</em> NASA Centennial Challenge.</li>
+  <li>PowerLight Technologies. (2022). <em>Wireless Power Transmission: 400W at 300m.</em> Technical Report.</li>
+  <li>Emrod Ltd. (2021). <em>Long&#8209;Range Wireless Power Transmission: Field Trial Results.</em></li>
+</ol>
+<p><strong>Grid Resilience:</strong></p>
+<ol start="90">
+  <li>Kappenman, J.G. (2010). &#8220;Geomagnetic Storms and Their Impacts on the U.S. Power Grid.&#8221; Metatech Corp.</li>
+  <li>National Academy of Sciences. (2008). <em>Severe Space Weather Events.</em> The National Academies Press.</li>
+  <li>Lawrence Berkeley National Laboratory. (2020). <em>The Cost of Power Interruptions to U.S. Electricity Consumers.</em></li>
+  <li>Assante, M., &amp; Bochman, A. (2014). &#8220;Physical&#8209;Cyber Attacks on Power Grid Control Systems.&#8221; <em>S&amp;T Journal.</em></li>
+</ol>
+<p><strong>Rectenna Design:</strong></p>
+<ol start="94">
+  <li>Rectenwald, G., &amp; Hartmann, A. (2012). &#8220;High&#8209;Efficiency Rectenna Design.&#8221; <em>IEEE Trans. MTT,</em> 60(7), 2177&ndash;2185.</li>
+  <li>McSpadden, J.O., &amp; Mankins, J.C. (2002). &#8220;Space Solar Power Programs and Microwave WPT Technology.&#8221; <em>IEEE Microwave Magazine,</em> 3(4), 46&ndash;57.</li>
+</ol>
+<p><strong>Lume Ecosystem:</strong></p>
+<ol start="15">
+  <li>Andrews, J. (2026). <em>Lume Language Specification.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a></li>
+  <li>Andrews, J. (2026). <em>Trust Layer Ecosystem.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a></li>
+  <li>Andrews, J. (2026). <em>DAIGS Framework.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;V Verification Suite.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;X Multi&#8209;Agent Cognition.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a></li>
+  <li>Andrews, J. (2026). <em>Deterministic Dissolution.</em> DOI: <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a></li>
+  <li>Andrews, J. (2026). <em>Meridian Architecture.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Meridian as Synthetic Organism.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>The Energy Internet.</em> [DOI to be assigned]</li>
+  <li value="50">Andrews, J. (2026). <em>Deterministic Infrastructure.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Guardian Security.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Unified Energy&#8209;Data Mesh.</em> [DOI to be assigned]</li>
+  <li value="79">Andrews, J. (2026). <em>Meridian Physical Deployment Architecture.</em> [DOI to be assigned]</li>
+</ol>
+
+<div class="footnote" style="page-break-inside: avoid;">
+  <p>This paper discloses only the architectural specification of the two&#8209;tier wireless energy architecture. No proprietary hardware designs, source code, or manufacturing specifications are included.<br>
+  <strong>Patent Pending</strong> &mdash; &#8220;Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing Using Ambient Harvesting, Mesh Coordination, and Directional Transmission.&#8221; DarkWave Studios LLC.<br>
+  <strong>Lume&#8209;X:</strong> Provisionally patented deterministic control runtime.<br>
+  <strong>Guardian Security (Guardian&#8209;E):</strong> Security and safety enforcement layer. Domain: TrustShield.tech<br>
+  &copy; 2026 DarkWave Studios LLC. All rights reserved.<br>
+  Correspondence: Jason Andrews, DarkWave Studios LLC, Nashville, TN. Email: team@dwsc.io<br>
+  ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009-0007-5214-649X</a><br>
+  Website: <a href="https://lume-lang.org">lume-lang.org</a> &middot; <a href="https://trustshield.tech">TrustShield.tech</a> &middot; GitHub: <a href="https://github.com/cryptocreeper94-sudo">github.com/cryptocreeper94-sudo</a><br>
+  This preprint has not undergone peer review. It is submitted for early dissemination and to establish priority of invention.<br>
+  All claims are architectural and theoretical. No experimental validation currently exists for any component of this architecture.</p>
+</div>
+
+</body>
+</html>

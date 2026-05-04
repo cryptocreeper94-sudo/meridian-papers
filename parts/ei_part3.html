@@ -1,0 +1,128 @@
+<h2><span class="section-num">2</span> Background: The Internet as a Model</h2>
+
+<h3>2.1 How the Data Internet Scaled</h3>
+<p>The ARPANET, the precursor to the modern internet, connected four nodes in 1969. It did not scale to global infrastructure because the underlying transmission technology was superior. It scaled because the protocol was correct [27, 28].</p>
+<p>The key design decisions that made scaling possible were:</p>
+<p><strong>Packet switching.</strong> Rather than reserving a dedicated circuit between sender and receiver (as telephone networks did), packet switching breaks data into independently routed packets. Each packet carries its own destination address and is independently routed through whatever path is currently available. Circuits reserve capacity regardless of use; packets use capacity only when data exists to transmit. This efficiency gain is what made the internet economically viable at scale.</p>
+<p><strong>Layered abstraction.</strong> The OSI reference model [29] and TCP/IP stack separated network concerns into independent layers, each with a defined interface to the layers above and below. Physical medium, link&#8209;level framing, network&#8209;level addressing, transport&#8209;level delivery guarantees, and application&#8209;level services are independently specified. A new physical medium (fiber optics, wireless, satellite) can participate in the internet by implementing the link layer interface &mdash; it does not need to know about TCP, DNS, or any application protocol. The abstraction is what makes the internet medium&#8209;independent.</p>
+<p><strong>Decentralized routing.</strong> The Border Gateway Protocol [30] allows independently administered networks (Autonomous Systems) to exchange routing information and forward packets across network boundaries without requiring central coordination. No single entity controls internet routing. Each AS advertises the destinations it can reach and the routing protocol distributes this information through the network. The internet has no center. It has a protocol.</p>
+<p><strong>Best&#8209;effort delivery with transport&#8209;layer guarantees.</strong> The IP layer provides best&#8209;effort delivery: packets are forwarded toward their destination, but delivery is not guaranteed. The TCP layer adds delivery guarantees: lost packets are detected and retransmitted, packets are reordered if necessary, and the application sees a reliable byte stream regardless of the unreliability of the underlying network. The separation of routing (IP) from delivery guarantee (TCP) allows both to be independently optimized.</p>
+<p>These four design decisions &mdash; packet switching, layered abstraction, decentralized routing, and separated reliability guarantee &mdash; are the architectural core of the data internet. I will show in Section&nbsp;3 that all four have direct analogs in the Energy Internet.</p>
+
+<h3>2.2 What the Grid Did Not Do</h3>
+<p>The electrical grid took the opposite approach on every dimension.</p>
+<p>The grid uses circuit switching: a generator produces power, it flows through transmission lines to a substation, and from there to distribution lines and finally to the consumer. The path is fixed by the physical wiring. There is no dynamic routing. A broken transmission line is a broken path &mdash; there is no protocol to reroute power around it. The grid&#8217;s resilience comes from physical redundancy (parallel transmission lines) rather than dynamic routing.</p>
+<p>The grid is not layered. High&#8209;voltage transmission, medium&#8209;voltage distribution, and low&#8209;voltage delivery are different physical systems, but they are not abstracted from each other. A generator cannot participate in a different grid by implementing an interface specification &mdash; it must be physically connected to the transmission system with compatible voltage and frequency characteristics.</p>
+<p>The grid is centrally coordinated. Grid operators &mdash; independent system operators (ISOs) and regional transmission organizations (RTOs) &mdash; coordinate generation and transmission in real time. The grid has a center. When the center fails, the grid fails. The 2003 North American blackout cascaded through 55&nbsp;million people because a single control center lost situational awareness.</p>
+<p>The grid provides no delivery guarantee at the individual device level. Power arrives at a standard voltage and frequency; what happens to it at the point of consumption is the consumer&#8217;s problem. There is no TCP equivalent for electricity.</p>
+<p>The grid&#8217;s architecture reflects the engineering constraints of its era: it was designed before packet switching, before layered network protocols, and before the computational infrastructure that makes dynamic routing practical. It is not wrong &mdash; it is optimized for a different set of constraints. But it is not the architecture that produces the Energy Internet.</p>
+
+<h3>2.3 The Packet&#8209;Burst Correspondence</h3>
+<p>The most important technical correspondence between the data internet and the Energy Internet is the equivalence between a data packet and an energy burst. This equivalence is what makes the protocol stack analogy functional rather than metaphorical.</p>
+<p>A data packet is a bounded unit of data transmitted as a unit through the network. It carries a header (source address, destination address, routing information, sequence number) and a payload (the data being delivered). It is stored in a buffer at each router, queued for transmission, forwarded on the selected outgoing interface, and confirmed received by the next hop.</p>
+<p>An energy burst is a bounded unit of energy transmitted as a unit through the mesh. It carries header information (source node identity, destination node identity, routing path, burst sequence number, power level) and a payload (the RF energy delivered). It is stored in a supercapacitor at each relay node, queued for transmission in the TDMA schedule, forwarded on the selected outgoing beam path, and confirmed received by the next hop via delivery confirmation telemetry.</p>
+<p>The supercapacitor IS the packet buffer. The TDMA transmission window IS the queue scheduling algorithm. The MFE burst scheduler IS the packet forwarding engine. The DRMA relay chain IS the store&#8209;and&#8209;forward router chain. The SHDCL retry sequence IS TCP retransmission. The delivery confirmation telemetry IS the TCP acknowledgment.</p>
+<p>These are not loose analogies. They are the same mechanism &mdash; store, schedule, forward, confirm &mdash; applied to joules rather than bits. The physics differ (energy dissipates during transmission; bits do not), but the protocol function is identical.</p>
+
+<h3>2.4 The Key Difference: Lossiness</h3>
+<p>The data internet can retransmit a lost packet with zero information loss. A bit transmitted and lost can be retransmitted identically. Energy transmitted and lost &mdash; dissipated as heat during RF propagation &mdash; cannot be recovered. Retransmission of an energy burst costs new energy. This is the fundamental physical difference between data routing and energy routing, and it has protocol implications throughout.</p>
+<p>In the data internet, lossiness at the IP layer is absorbed by TCP retransmission. The cost of retransmission is latency. In the Energy Internet, lossiness at the EPL layer is absorbed by ETCP retransmission (Section&nbsp;6). The cost of retransmission is energy. Every protocol design decision in the Energy Internet must account for this asymmetry: retransmission costs what it is trying to deliver.</p>
+<p>This asymmetry makes energy routing inherently less tolerant of routing inefficiency than data routing. A data packet lost in transit is annoying. An energy burst lost in transit depletes the transmitting node, fails to charge the receiving node, and may leave the mesh in a degraded state that requires SHDCL recovery. Energy routing protocols must minimize retransmission more aggressively than data routing protocols because the cost of retransmission is not just latency &mdash; it is energy.</p>
+
+<h2><span class="section-num">3</span> The Energy Internet Protocol Stack</h2>
+
+<h3>3.1 Design Principles</h3>
+<p>The Energy Internet Protocol Stack (EIPS) is designed on four principles inherited directly from the data internet design philosophy:</p>
+<p><strong>Principle&nbsp;1 &mdash; Layered abstraction.</strong> Each layer provides a defined interface to the layers above and below. A new physical transmission medium participates in the Energy Internet by implementing the EPL interface. A new application that consumes delivered energy participates by using the EAL interface. No layer needs to know the internal implementation of any other layer.</p>
+<p><strong>Principle&nbsp;2 &mdash; Decentralized routing.</strong> No single entity controls Energy Internet routing. Each Energy Autonomous System (EAS) administers its own routing tables internally and exchanges reachability information with peer EAS networks through EBGP. The Energy Internet has no center.</p>
+<p><strong>Principle&nbsp;3 &mdash; Separation of routing and delivery guarantee.</strong> EIP (Energy Internet Protocol) provides routing &mdash; determining which path a burst takes through the network. ETCP (Energy Transmission Control Protocol) provides delivery guarantee &mdash; ensuring that the target device receives at least P<sub>min</sub> across N trials with variance below &sigma;&sup2;<sub>max</sub>. These are independent functions with independent protocols.</p>
+<p><strong>Principle&nbsp;4 &mdash; Physical medium independence.</strong> The Energy Internet is not defined by a specific transmission technology. Directed RF beamforming (Meridian/DWER) is the first medium. Optical energy delivery, millimeter&#8209;wave transmission, inductive relay chains, and future technologies that do not yet exist are all valid EPL implementations as long as they can satisfy the ELL interface requirements: addressed node delivery, power measurement, and delivery confirmation.</p>
+
+<h3>3.2 The Five&#8209;Layer Stack</h3>
+<div class="diagram-box">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;  EAL &#8212; Energy Application Layer              &#9474;
+&#9474;  (Energy as a Service, priority routing,     &#9474;
+&#9474;   application-defined power profiles)         &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  ETL &#8212; Energy Transport Layer                &#9474;
+&#9474;  (ETCP: delivery guarantee, P_min/&#963;&#178;         &#9474;
+&#9474;   enforcement, retransmission, QoS)           &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  ENL &#8212; Energy Network Layer                  &#9474;
+&#9474;  (EIP: addressing, inter-mesh routing,        &#9474;
+&#9474;   EBGP, EDNS resolution)                      &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  ELL &#8212; Energy Link Layer                     &#9474;
+&#9474;  (hop-by-hop delivery, burst framing,         &#9474;
+&#9474;   link-level confirmation, TDMA scheduling)   &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  EPL &#8212; Energy Physical Layer                  &#9474;
+&#9474;  (transmission medium: RF, optical, etc.      &#9474;
+&#9474;   beam control, safety gating, localization)   &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</div>
+<p>Each layer is defined by the services it provides to the layer above and the requirements it places on the layer below.</p>
+
+<h3>3.3 Energy Physical Layer (EPL)</h3>
+<p>The EPL is the transmission medium. It is responsible for the actual delivery of energy from one node to an adjacent node &mdash; a single hop. The EPL does not know about multi&#8209;hop routing, delivery guarantees across an end&#8209;to&#8209;end path, or addressing above the single&#8209;hop level. It knows how to aim energy at a located node, fire a burst, and confirm that energy was received.</p>
+<p>EPL mandatory capabilities:</p>
+<ul>
+  <li><strong>Node localization:</strong> must be able to determine the position of the receiving node within a spatial uncertainty radius r, updated at minimum 10&nbsp;Hz</li>
+  <li><strong>Directed transmission:</strong> must be able to aim energy output toward the located receiver with a beam width that limits energy outside the intended path</li>
+  <li><strong>Power measurement:</strong> receiving node must measure P<sub>received</sub> at mW resolution and report it back to the transmitting node</li>
+  <li><strong>Delivery confirmation:</strong> must provide a confirmed delivery receipt containing P<sub>received</sub>, spatial accuracy achieved, and timestamp</li>
+  <li><strong>Safety gating:</strong> must implement hardware&#8209;level transmission cutoff independent of software gate status</li>
+</ul>
+<p><strong>Meridian/DWER as EPL implementation.</strong> The DWER subsystem as defined in [Meridian Architecture, 2026] is a complete EPL implementation. MTL provides beam steering, safety gating, and physical emission control. The UWB localization subsystem provides node localization. The delivery confirmation telemetry provides power measurement and confirmation. Every EPL mandatory capability is satisfied by the Meridian/DWER specification.</p>
+
+<h3>3.4 Energy Link Layer (ELL)</h3>
+<p>The ELL manages energy delivery across a single hop within the mesh &mdash; between one node and its immediate neighbor. It provides link&#8209;level framing (the Energy Burst Frame, described below), TDMA slot scheduling within the local mesh, link&#8209;quality monitoring, and per&#8209;hop delivery confirmation.</p>
+<p>Energy Burst Frame (EBF):</p>
+<pre>EBF Header:
+  src_node_id     : 64 bits   (sending node's EIP address)
+  dst_node_id     : 64 bits   (receiving node's EIP address)
+  burst_seq_num   : 32 bits   (sequence number for this burst)
+  P_planned_mW    : 16 bits   (planned transmit power)
+  T_window_start  : 64 bits   (network timestamp, &micro;s)
+  T_window_end    : 64 bits   (network timestamp, &micro;s)
+  hop_count       : 8 bits    (number of hops traversed so far)
+  ttl             : 8 bits    (maximum hops remaining)
+  path_id         : 32 bits   (routing path identifier from ENL)
+  safety_flags    : 16 bits   (BSL status flags at time of transmission)
+  checksum        : 32 bits
+EBF Confirmation (returned by receiver):
+  src_node_id     : 64 bits
+  dst_node_id     : 64 bits
+  burst_seq_num   : 32 bits
+  P_received_mW   : 16 bits   (measured received power)
+  V_cap_after     : 16 bits   (supercapacitor voltage after receipt)
+  spatial_error_cm: 8 bits    (position error at time of receipt)
+  T_received      : 64 bits   (network timestamp of receipt)
+  status          : 8 bits    (CONFIRMED / PARTIAL / FAILED)</pre>
+<p>The EBF provides the Energy Internet with its fundamental unit of transmission accounting. Every joule delivered through the Energy Internet is traceable to a specific EBF with a specific confirmation status. This is the foundation for energy billing, regulatory compliance, and safety audit trails.</p>
+<p><strong>ELL relationship to Meridian.</strong> The ELL maps directly onto the Meridian link layer as defined in the DRMA and DWER subsystems. The EBF header corresponds to the BeamCommand struct (MTL), and the EBF confirmation corresponds to the DeliveryConfirm message. Meridian nodes implementing the EIPS run ELL as their link&#8209;layer protocol.</p>
+
+<h3>3.5 Energy Network Layer (ENL)</h3>
+<p>The ENL provides energy routing across multiple hops and across mesh boundaries. It implements EIP &mdash; the Energy Internet Protocol &mdash; for addressing and intra&#8209;AS routing, and EBGP for inter&#8209;AS routing. ENL is the layer that makes the Energy Internet a network rather than a collection of isolated meshes.</p>
+<p>The ENL is analogous to the IP layer in the data internet: it provides best&#8209;effort routing &mdash; the best path currently available is used, but delivery across the full path is not guaranteed at this layer. Delivery guarantees are provided by the ETL above.</p>
+<p>ENL maintains the energy routing table at each node &mdash; not the local per&#8209;mesh routing table maintained by MMF, but the wider energy routing table that includes paths to nodes in other EAS networks. ENL processes EBF headers, determines the next&#8209;hop ELL address for each burst, and forwards bursts accordingly.</p>
+
+<h3>3.6 Energy Transport Layer (ETL)</h3>
+<p>The ETL provides end&#8209;to&#8209;end delivery guarantees across the full path from source to destination &mdash; the equivalent of TCP for energy. It enforces the P<sub>min</sub>/r/&sigma;&sup2;/d determinism standard across the full path, not just per hop. It handles retransmission when delivery fails, reordering when burst sequence is disrupted, and congestion control when the mesh is overloaded.</p>
+<p><strong>ETCP &mdash; Energy Transmission Control Protocol:</strong></p>
+<pre>ETCP Session:
+  source_EIP          : energy address of providing node
+  destination_EIP     : energy address of consuming device
+  P_min_mW            : minimum acceptable power at destination
+  sigma_sq_max        : maximum acceptable delivery variance (%)
+  priority_class      : QoS priority (CRITICAL / HIGH / NORMAL / BACKGROUND)
+  session_duration    : session length in seconds (or INDEFINITE)
+  retry_limit         : maximum retransmission attempts per burst
+  billing_account     : energy credit account for settlement</pre>
+<p>ETCP monitors cumulative delivery statistics across all bursts in a session. If the rolling &sigma;&sup2; across the last N bursts exceeds &sigma;&sup2;<sub>max</sub>, ETCP signals the ENL to reroute through a less lossy path. If P<sub>received</sub> falls below P<sub>min</sub> across three consecutive bursts, ETCP triggers a retransmission and escalates to SHDCL if retransmission fails.</p>
+<p><strong>The cost of retransmission.</strong> As established in Section&nbsp;2.4, energy retransmission costs energy. ETCP&#8217;s retransmission mechanism must account for this: a retransmission request is not free. ETCP maintains a retransmission budget per session &mdash; a maximum number of retransmissions permitted before the session is flagged as inefficient and rerouting is forced. This prevents a poorly performing path from draining nodes through repeated retransmission.</p>
+
+<h3>3.7 Energy Application Layer (EAL)</h3>
+<p>The EAL is the interface between the Energy Internet and the applications that consume delivered energy. It provides three primary services:</p>
+<p><strong>Energy as a Service (EaaS).</strong> A consuming device declares its power profile &mdash; minimum power, preferred power, maximum power, duty cycle &mdash; and the EAL negotiates an ETCP session that satisfies the profile. The device does not manage its own energy delivery; the EaaS layer handles all routing, delivery guarantee, and retransmission management on its behalf.</p>
+<p><strong>Priority routing requests.</strong> The EAL allows consuming devices to request priority&#8209;class delivery. A medical monitoring device requests CRITICAL priority. A background IoT sensor requests BACKGROUND priority. The EAL translates priority classes into QoS parameters for the ETCP session and ENL routing preferences.</p>
+<p><strong>Energy accounting interface.</strong> The EAL provides each consuming device with a standardized interface to its energy consumption accounting: how much energy was delivered in the current session, at what efficiency, from which source nodes, and at what cost in energy credits.</p>

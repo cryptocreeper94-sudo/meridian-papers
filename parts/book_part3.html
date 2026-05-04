@@ -1,0 +1,162 @@
+<!-- CHAPTER TWO -->
+<div class="page-break"></div>
+<h2 class="chapter-title">Chapter Two<br>Deploying in the Real World</h2>
+
+<div class="chapter-opening">
+<p>The gap between a room&#8209;scale wireless charging demonstration and a commercial building deployment is not a gap of physics. The physics works in a hospital corridor, a warehouse, and a twenty&#8209;story office tower. The gap is architectural. Real buildings have open staircases, atriums, elevator shafts, mezzanines, and balconies. Every one creates a geometric condition in which a directed energy beam can traverse a space where a person may be standing.</p>
+<p>The Architectural Voxel Map &mdash; the central contribution of this chapter &mdash; closes this gap.</p>
+</div>
+
+<h3>Abstract</h3>
+<p>This chapter introduces the Architectural Voxel Map (AVM) &mdash; a formal 3D volumetric representation of a building&rsquo;s physical geometry imported into the Meridian routing engine at commissioning and enforced as a hard constraint on every beam path computation. The AVM classifies every voxel as one of seven types, and the routing engine rejects any beam path whose projection intersects a prohibited voxel class.</p>
+
+<p>We define ceiling&#8209;plane routing as the standard deployment posture for occupied buildings, characterize the five void types requiring explicit routing detours, specify the floor&#8209;transition gateway architecture for inter&#8209;floor energy transfer, and provide the formal safety proof for multi&#8209;story deployment.</p>
+
+<h3><span class="section-num">1.</span> Introduction</h3>
+
+<h4>1.2 The Ceiling&#8209;Plane Insight</h4>
+<p>A building&rsquo;s ceiling is a surface that is, under normal occupancy conditions, above every person in the building. A beam that travels along the ceiling plane passes through a geometric zone that people do not occupy. This reframes the safety model from reactive (&ldquo;detect a person, stop the beam&rdquo;) to proactive (&ldquo;route the beam where no person can be&rdquo;).</p>
+
+<h3><span class="section-num">3.</span> The Architectural Voxel Map (AVM)</h3>
+
+<h4>3.1 Voxel Grid Definition</h4>
+<p>The AVM divides the building volume into a uniform 3D grid of voxels. V<sub>size</sub>&nbsp;=&nbsp;25&nbsp;cm is recommended. For a typical 10&#8209;story office building (50&nbsp;m&nbsp;&times;&nbsp;40&nbsp;m, 40&nbsp;m height), the AVM contains approximately 5,120,000 voxels (~5&nbsp;MB).</p>
+
+<h4>3.2 The Seven Voxel Classes</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Class</th><th>ID</th><th>Definition</th><th>Beam Traversal</th></tr>
+  <tr><td>SOLID</td><td>0</td><td>Structural material</td><td>Beam terminates</td></tr>
+  <tr><td>FLOOR_SAFE</td><td>1</td><td>Above z<sub>safe</sub> (floor&nbsp;+&nbsp;2.2&nbsp;m)</td><td>Permitted (preferred)</td></tr>
+  <tr><td>FLOOR_OCCUPIED</td><td>2</td><td>Between floor and z<sub>safe</sub></td><td>Final&#8209;hop only</td></tr>
+  <tr><td>VOID_STAIRCASE</td><td>3</td><td>Open staircase air volume + 50&nbsp;cm buffer</td><td>PROHIBITED</td></tr>
+  <tr><td>VOID_ATRIUM</td><td>4</td><td>Atrium air volume + 50&nbsp;cm buffer</td><td>PROHIBITED</td></tr>
+  <tr><td>VOID_SHAFT</td><td>5</td><td>Elevator / mechanical shaft</td><td>PROHIBITED</td></tr>
+  <tr><td>GATEWAY_ZONE</td><td>6</td><td>Inter&#8209;floor handoff position</td><td>Handoff point</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">4.</span> Ceiling&#8209;Plane Routing</h3>
+
+<h4>4.3 Final&#8209;Hop Protocol</h4>
+<div class="claim-box">
+<p>The final hop is governed by a more restrictive protocol:</p>
+<ul>
+  <li>Power reduced to minimum necessary for delivery</li>
+  <li>Beam width set to minimum aperture (maximum focus)</li>
+  <li>Active tracking engaged (10&nbsp;cm threshold)</li>
+  <li>Enhanced BSL: five&#8209;modality consensus required (vs. three for relay hops)</li>
+  <li>Burst duration limited to 500&nbsp;ms with 50&nbsp;ms hold between bursts</li>
+</ul>
+</div>
+
+<h3><span class="section-num">5.</span> The Five Void Types</h3>
+
+<h4>5.1 Open Staircase</h4>
+<p>A horizontal beam at ceiling height over a staircase opening has a downward projection into a void where persons on the stairs may be present. The routing engine routes around the staircase footprint &mdash; a horizontal detour at ceiling level. <em>Physical analogy: a bridge routing traffic over a river.</em></p>
+
+<h4>5.2 Atrium</h4>
+<p>Multi&#8209;story open volumes invalidate ceiling&#8209;plane routing for any floor bordering the atrium. A perimeter routing strategy places relay nodes around the atrium on each floor, forming a ring. Energy travels around the atrium, never across it.</p>
+
+<h4>5.3 Elevator Shaft</h4>
+<p>Shaft walls provide effective RF attenuation. The routing problem arises only at open shaft doors, handled by the dynamic occupancy overlay marking lobby voxels as VOID_SHAFT during door&#8209;open events.</p>
+
+<h4>5.4 Balcony Overhang</h4>
+<p>Balconies reduce effective ceiling clearance at the overhang position. AVM reclassifies the reduced&#8209;clearance zone as FLOOR_OCCUPIED even if its absolute height would normally be FLOOR_SAFE.</p>
+
+<h4>5.5 Occupied Mezzanine</h4>
+<p>A relay node 6.0&nbsp;m above a main floor but only 1.0&nbsp;m above a mezzanine deck creates an exposure risk. The AVM produces layered classification at the mezzanine location: SOLID (deck), FLOOR_OCCUPIED (above deck to z<sub>safe</sub>), FLOOR_SAFE (above z<sub>safe</sub>).</p>
+
+<h3><span class="section-num">6.</span> Floor&#8209;Transition Gateway Architecture</h3>
+
+<p>Energy cannot be beamed through a concrete floor slab at useful power levels (&gt;40&nbsp;dB attenuation at 60&nbsp;GHz). Three inter&#8209;floor mechanisms:</p>
+<ol>
+  <li><strong>Open penetration</strong> &mdash; conduit chase or purpose&#8209;built RF window</li>
+  <li><strong>Enclosed stairwell</strong> &mdash; continuous air volume between floors</li>
+  <li><strong>Dedicated RF conduit</strong> &mdash; waveguide or low&#8209;loss conduit</li>
+</ol>
+
+<h4>6.2 Gateway Node Specification</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Parameter</th><th>Value</th></tr>
+  <tr><td>Antenna faces</td><td>2 (upper + lower)</td></tr>
+  <tr><td>Frequency</td><td>60 GHz primary</td></tr>
+  <tr><td>Beamwidth per face</td><td>&le;5&deg; full angle</td></tr>
+  <tr><td>Supercapacitor capacity</td><td>10&times; standard relay</td></tr>
+  <tr><td>BSL sensors</td><td>2 sets, full 5&#8209;modality each</td></tr>
+  <tr><td>Aperture requirement</td><td>&ge;15 cm clear path</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">8.</span> The Formal Multi&#8209;Story Safety Proof</h3>
+<div class="claim-box">
+<p><strong>Claim:</strong> The combined enforcement of (1) AVM constraint enforcement, (2) ceiling&#8209;plane routing with z<sub>safe</sub>, (3) final&#8209;hop protocol, and (4) BSL hardware cutoff makes physical harm from Meridian beam traversal impossible under all non&#8209;destructive conditions.</p>
+</div>
+
+<p><strong>Proof by case analysis:</strong></p>
+<ol>
+  <li><strong>Horizontal beam through FLOOR_SAFE:</strong> At z&nbsp;&ge;&nbsp;2.2&nbsp;m, no standing or seated person can occupy the zone. Dynamic BSL detects maintenance activity.</li>
+  <li><strong>Final&#8209;hop through FLOOR_OCCUPIED:</strong> Five&#8209;modality BSL consensus, 500&nbsp;ms burst limit, hardware cutoff within &le;1&nbsp;ms.</li>
+  <li><strong>Void traversal attempt:</strong> Rejected by routing engine. Injection attacks caught by Guardian&#8209;E pre&#8209;transmission check. BSL as final backstop.</li>
+  <li><strong>Staircase/atrium perimeter grazing:</strong> 50&nbsp;cm buffer zone + beam width &lt;&nbsp;18&deg; = physically impossible.</li>
+  <li><strong>Dynamic occupancy incursion:</strong> Max exposure 1&nbsp;ms (hardware cutoff), not 13.7&nbsp;ms (control cycle).</li>
+</ol>
+<p><strong>In all five cases, at least two independent mechanisms prevent harm.</strong></p>
+
+<h3><span class="section-num">9.</span> Frequency Selection</h3>
+<div class="table-wrap">
+<table>
+  <tr><th>Band</th><th>Beamwidth (10&nbsp;cm aperture)</th><th>Slab Attenuation</th><th>Range</th></tr>
+  <tr><td>2.4 / 5.8 GHz</td><td>30&deg;+</td><td>10&ndash;20 dB</td><td>10&ndash;30 m</td></tr>
+  <tr><td>24 GHz</td><td>~15&deg;</td><td>30&ndash;40 dB</td><td>5&ndash;15 m</td></tr>
+  <tr><td>60 GHz (recommended)</td><td>~5&deg;</td><td>&gt;40 dB</td><td>3&ndash;10 m</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">10.</span> Building Type Scenarios</h3>
+
+<h4>10.1 Commercial Office Tower</h4>
+<p>Relay nodes in suspended ceiling grid at 3&ndash;5&nbsp;m spacing. GRNs at stairwell landings. ~1&nbsp;relay per 15&ndash;20&nbsp;m&sup2;. Most regular AVM profile.</p>
+
+<h4>10.2 Hospital</h4>
+<p>Strongest use case &mdash; eliminating battery replacement for patient monitors is a significant infection control benefit. 60&nbsp;GHz has minimal interference with existing medical telemetry (400&nbsp;MHz, 900&nbsp;MHz, 2.4&nbsp;GHz bands).</p>
+
+<h4>10.3 Residential Mid&#8209;Rise</h4>
+<p>Per&#8209;unit mesh with source node plugged into standard outlet. Ceiling height of 2.4&nbsp;m leaves only 0.2&nbsp;m FLOOR_SAFE margin &mdash; Phase&nbsp;2 deployment target.</p>
+
+<h4>10.4 Industrial Warehouse</h4>
+<p>Most favorable environment: 8&ndash;15&nbsp;m ceiling height = 6&ndash;13&nbsp;m of FLOOR_SAFE zone. Primary use: powering dense IoT sensor networks without per&#8209;sensor battery management.</p>
+
+<h3><span class="section-num">11.</span> BIM Integration Pathway</h3>
+<p>The Meridian BIM plugin adds AVM generation, node placement with conflict detection, coverage simulation, gateway coordination, and cryptographically signed AVM export to Revit, AECOsim, and IFC&#8209;compliant platforms.</p>
+
+<h3>Appendix C &mdash; Beam Path Validation Algorithm</h3>
+<pre>
+FUNCTION validate_path(candidate_path, AVM, occupancy_map):
+  FOR each hop (node_i, node_j):
+    swept_volume = compute_swept_volume(positions, beam_width)
+    FOR each voxel v in swept_volume:
+      IF voxel_class IN {VOID_STAIRCASE, VOID_ATRIUM, VOID_SHAFT}:
+        RETURN REJECTED (VOID_TRAVERSAL)
+      IF voxel_class == FLOOR_OCCUPIED AND NOT final_hop:
+        RETURN REJECTED (NON_FINAL_OCCUPIED_TRAVERSAL)
+      IF occupancy_map.is_occupied(v):
+        RETURN REJECTED (DYNAMIC_OCCUPANCY)
+  RETURN VALID
+</pre>
+
+<h3>Appendix D &mdash; AVM Binary Format (.mav)</h3>
+<pre>
+Header (64 bytes):
+  magic: "MAVM"    version: 0x0001    building_id: UUID
+  origin_x/y/z     voxel_size: 0.25m  grid_dims_i/j/k
+  timestamp         author_key_id      Ed25519 signature
+
+Voxel data: [i &times; j &times; k bytes], each byte = class 0&ndash;6
+</pre>
+
+<!-- Part One Closing -->
+<h3>Part One Closing</h3>
+<p>The two chapters of Part One have established what Meridian is as an engineering system and how it gets installed in the physical world. The architecture is complete. The deployment model is specified. The safety proof for multi&#8209;story buildings is formal.</p>
+<p>But understanding an architecture is not the same as understanding what kind of thing the architecture is. Part Two answers that question.</p>

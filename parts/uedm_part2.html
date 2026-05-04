@@ -1,0 +1,101 @@
+<h2><span class="section-num">1</span> Introduction</h2>
+
+<h3>1.1 Two Problems That Have Always Been One</h3>
+<p>Every autonomous device in the physical world needs two things: power and communication. The history of wireless technology treats these as separate problems. The wireless communication industry built Wi&#8209;Fi, Bluetooth, Zigbee, LoRa, 5G, and a dozen other standards for wireless data transfer. The wireless power industry built inductive chargers, RF energy harvesters, and directed beam systems. The two industries produced incompatible infrastructures: a building with Wi&#8209;Fi coverage has wireless communication everywhere, but devices still need batteries or wires for power.</p>
+<p>The separation is not fundamental. It is historical. Power and communication are both electromagnetic phenomena. An RF signal carries energy (which can be harvested) and information (which can be demodulated) simultaneously &mdash; this is the basis of SWIPT (Simultaneous Wireless Information and Power Transfer), an active research area since the 2000s [58, 59]. The question has never been whether power and communication can coexist on the same RF channel. The question is whether they can be <em>co&#8209;routed</em> &mdash; whether the same deterministic routing infrastructure can govern both simultaneously.</p>
+<p>This paper answers that question.</p>
+
+<h3>1.2 What Meridian Already Does</h3>
+<p>The Meridian mesh, as specified in [Meridian Architecture, 2026], routes energy through a distributed network of addressed nodes. To do this, it necessarily moves a substantial volume of data through those same nodes: routing table updates, delivery confirmations, localization signals, security authentication messages, and control&#8209;loop telemetry. This data is currently classified as &#8220;control&#8209;plane traffic&#8221; &mdash; necessary overhead that enables energy routing.</p>
+<p>The argument of this paper begins with a reframing: the control&#8209;plane traffic in the Meridian mesh is not overhead. It is the first payload of the data communication channel that exists latent in the Meridian infrastructure. Extending this to general data communication requires: defining co&#8209;routing arbitration rules, extending the addressing scheme, specifying QoS rules, and defining the security architecture &mdash; which already exists through Guardian Security [Guardian Security, 2026]. None of these extensions require new hardware.</p>
+
+<h3>1.3 The Self&#8209;Sustaining Device</h3>
+<p>The most significant practical implication of the UEDM is the self&#8209;sustaining device: an autonomous sensor, actuator, or monitor that receives both its power and its communication through the same UEDM mesh, requiring no battery, no separate communication radio, and no wired connection to either a power source or a data network.</p>
+<p>Self&#8209;sustaining devices change the economics of autonomous device deployment. The dominant cost of large&#8209;scale IoT deployments is not the sensors &mdash; it is the power and communication infrastructure. A self&#8209;sustaining device powered and connected through the same UEDM mesh eliminates battery replacement, wired power installation, and separate wireless network costs simultaneously.</p>
+
+<h3>1.4 Contributions</h3>
+<ol>
+  <li>I formally recognize the Meridian mesh as an existing dual&#8209;traffic fabric and define the UEDM as its formal extension to general data communication.</li>
+  <li>I define the co&#8209;routing arbitration rules for how energy bursts and data packets share TDMA capacity.</li>
+  <li>I define the UEDM addressing scheme &mdash; a unified 128&#8209;bit namespace for both energy and data.</li>
+  <li>I characterize the self&#8209;sustaining device as a deployment model with defined operational profile.</li>
+</ol>
+
+<h3>1.5 Paper Organization</h3>
+<p>Section&nbsp;2 examines convergent infrastructure history. Section&nbsp;3 characterizes the Meridian mesh as existing dual&#8209;traffic fabric. Section&nbsp;4 defines the UEDM architecture. Section&nbsp;5 specifies co&#8209;routing arbitration. Section&nbsp;6 defines UEDM addressing. Section&nbsp;7 characterizes the self&#8209;sustaining device. Section&nbsp;8 positions the UEDM within the Energy Internet. Section&nbsp;9 describes the UEDM control plane. Section&nbsp;10 discusses applications. Section&nbsp;11 situates this in related work. Section&nbsp;12 states limitations. Section&nbsp;13 concludes.</p>
+
+<h2><span class="section-num">2</span> Background: Convergent Infrastructure</h2>
+
+<h3>2.1 Power Line Communication: The Inversion Precedent</h3>
+<p>Power Line Communication (PLC) [53] uses existing electrical power wiring as a communication medium: high&#8209;frequency data signals superimposed on the 50/60&nbsp;Hz power signal. PLC demonstrated that a medium designed for one resource can simultaneously carry another. It inverts the UEDM concept: it uses a power medium to carry data. The UEDM uses a data networking protocol to carry power.</p>
+
+<h3>2.2 SWIPT: Simultaneous Wireless Information and Power Transfer</h3>
+<p>SWIPT research [58, 59] has demonstrated that a single RF signal can simultaneously transfer energy and information. The fundamental tradeoff is between harvested power and communication data rate. SWIPT systems manage this through receiver design (power splitting) and transmitter design (time switching). The UEDM extends SWIPT from single&#8209;link scenarios to a multi&#8209;hop, topology&#8209;aware, deterministically routed network.</p>
+
+<h3>2.3 Integrated Access and Backhaul</h3>
+<p>The 5G IAB architecture [57] uses the same wireless nodes for both user&#8209;facing access and network backhaul through time&#8209;division multiplexing. The UEDM applies the same principle in the energy domain: the same node participates in both energy delivery and data communication under unified scheduling. The IAB precedent demonstrates that time&#8209;division sharing across multiple traffic types is technically mature.</p>
+
+<h3>2.4 The Convergence Attractor</h3>
+<p>PLC, SWIPT, and IAB each demonstrate that power and communication infrastructure converge when examined without historical separation. The UEDM is the convergence at the routing layer &mdash; the formal definition of a unified protocol stack in which both energy and data are addressed, routed, and security&#8209;governed through a single deterministic framework.</p>
+
+<h2><span class="section-num">3</span> The Meridian Mesh as Existing Dual&#8209;Traffic Fabric</h2>
+
+<h3>3.1 Cataloguing the Data Already in the Mesh</h3>
+<p>The Meridian mesh already carries substantial data traffic in normal operation:</p>
+<table>
+  <tr><th>Traffic Type</th><th>Rate</th><th>Size</th><th>Bytes/sec</th></tr>
+  <tr><td>LUME_X_TELEMETRY</td><td>73/sec</td><td>128&nbsp;B</td><td>9,344 B/s</td></tr>
+  <tr><td>EBF_HEADER + CONFIRMATION</td><td>~10/sec</td><td>96&nbsp;B</td><td>960 B/s</td></tr>
+  <tr><td>NODE_ANNOUNCE</td><td>0.1/sec</td><td>192&nbsp;B</td><td>19 B/s</td></tr>
+  <tr><td>LINK_STATE_UPDATE</td><td>~1/sec</td><td>96&nbsp;B</td><td>96 B/s</td></tr>
+  <tr><td>GUARDIAN_AUTH</td><td>~1/sec</td><td>512&nbsp;B</td><td>512 B/s</td></tr>
+  <tr><td>Other</td><td>&mdash;</td><td>&mdash;</td><td>~200 B/s</td></tr>
+  <tr><th>Total</th><th></th><th></th><th>~11.1 KB/s</th></tr>
+</table>
+<p>Eleven kilobytes per second of structured, addressed, authenticated data already flows through each Meridian node &mdash; approximately the throughput of a 2G cellular data connection, adequate for sensor telemetry, status reporting, and low&#8209;rate command&#8209;and&#8209;control for a wide range of IoT applications. The Meridian mesh is not <em>becoming</em> a communication network. It already is one.</p>
+
+<h3>3.2 Why the Control&#8209;Plane Channel Is a Communication Channel</h3>
+<p>The control&#8209;plane traffic satisfies every requirement of a data communication channel: <strong>addressing</strong> (MC 64&#8209;bit IDs, extensible to EIP 128&#8209;bit), <strong>routing</strong> (topology&#8209;aware DRMA), <strong>authentication</strong> (Guardian Security signed messages), <strong>reliability</strong> (EBF_CONFIRMATION delivery acknowledgment), and <strong>timing</strong> (TDMA deterministic scheduling). The only restriction is content: currently, only system&#8209;defined message types are carried. The UEDM removes this restriction.</p>
+
+<h2><span class="section-num">4</span> The Unified Energy&#8209;Data Mesh Architecture</h2>
+
+<h3>4.1 Architectural Principle</h3>
+<p>The UEDM is built on one architectural principle: <strong>a joule and a bit are both payloads; the difference is their physical carrier, not their addressing, routing, or governance.</strong></p>
+<p>Every node has one address used for both energy delivery and data communication. The routing fabric (DRMA) is shared. The scheduling framework (TDMA) is shared. The security framework (Guardian Security) is shared. The UEDM adds one new concept: the <strong>Resource&#8209;Type Field (RTF)</strong> indicating whether a given TDMA slot carries an energy payload or a data payload.</p>
+<pre>UEDM Frame Header (unified for energy and data):
+  src_node_id     : 128 bits  (UEDM EIP address)
+  dst_node_id     : 128 bits  (UEDM EIP address)
+  resource_type   : 4 bits    (ENERGY=0x1, DATA=0x2, MIXED=0x3, CONTROL=0x4)
+  priority_class  : 4 bits    (CRITICAL, HIGH, NORMAL, BACKGROUND)
+  seq_num         : 32 bits
+  path_id         : 32 bits
+  timing_window   : 128 bits  (start + end, &mu;s precision)
+  safety_flags    : 16 bits   (BSL status, relevant for ENERGY type only)
+  payload_length  : 16 bits
+  checksum        : 32 bits
+  [payload]       : variable  (RF burst parameters if ENERGY, data bytes if DATA)</pre>
+
+<h3>4.2 UEDM Stack</h3>
+<div class="diagram-box">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;  UAL &#8212; Unified Application Layer                       &#9474;
+&#9474;  (Energy application: EaaS; Data application: any)     &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  UTL &#8212; Unified Transport Layer                         &#9474;
+&#9474;  (ETCP for energy; DTCP for data; shared session mgmt) &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  UNL &#8212; Unified Network Layer                           &#9474;
+&#9474;  (EIP/EBGP for routing; shared 128-bit address space)  &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  ULL &#8212; Unified Link Layer                              &#9474;
+&#9474;  (UEDM frame; co-routing arbitration; TDMA scheduling) &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  UPL &#8212; Unified Physical Layer                          &#9474;
+&#9474;  (RF: energy beam for ENERGY; OOK/FSK for DATA)        &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</div>
+<p>Each layer serves both resource types with a unified interface. The only layer where energy and data diverge is the UPL &mdash; the physical carrier is different, though both operate on the same RF hardware through time&#8209;division switching.</p>
+
+<h3>4.3 Physical Layer Duality</h3>
+<p>The Meridian MTL hardware is a phased&#8209;array RF system. The UEDM operates in two modes:</p>
+<p><strong>Mode&nbsp;1 &mdash; Time&#8209;switched:</strong> The TDMA scheduler dedicates specific slots to ENERGY transmission (high power, focused beam, no modulation) and other slots to DATA transmission (low power, modulated signal, no beam focusing). No hardware modifications required.</p>
+<p><strong>Mode&nbsp;2 &mdash; SWIPT&#8209;integrated:</strong> Within a single slot, a portion of the transmitted power is modulated to carry data while the remainder is unmodulated energy. The receiver simultaneously demodulates the data component and rectifies the energy component. This mode maximizes channel utilization but requires more sophisticated receiver hardware.</p>
+<p>Mode&nbsp;1 is the baseline; Mode&nbsp;2 is an optional upgrade for SWIPT&#8209;capable nodes.</p>

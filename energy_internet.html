@@ -1,0 +1,558 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Energy Internet: A Universal Protocol Stack for Deterministic Wireless Power Delivery &mdash; DarkWave Studios LLC</title>
+<style>
+  @page {
+    size: letter; margin: 1in 1in 1.2in 1in;
+    @bottom-center { content: counter(page); font-family: 'Times New Roman', Georgia, serif; font-size: 10pt; color: #333; }
+  }
+  .page-break { display: none; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible !important; }
+    .page-break { display: block; page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    .title-page { min-height: auto !important; padding-top: 2.5in; page-break-after: always; }
+    h2 { page-break-after: avoid; } h3 { page-break-after: avoid; }
+    table { page-break-inside: avoid; } .claim-box { page-break-inside: avoid; }
+    .footnote { page-break-inside: avoid; } pre { page-break-inside: avoid; }
+    p { orphans: 3; widows: 3; }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Times New Roman', Georgia, 'Computer Modern', serif; font-size: 11pt; line-height: 1.5; color: #111; max-width: 7.5in; margin: 0 auto; padding: 0.5in; }
+  .title-page { text-align: center; padding-top: 0.3in; }
+  .title-page h1 { font-size: 17pt; font-weight: 700; line-height: 1.3; margin-bottom: 0.3in; }
+  .title-page .subtitle { font-size: 13pt; font-style: italic; color: #333; margin-bottom: 0.5in; }
+  .title-page .authors { font-size: 13pt; margin-bottom: 0.15in; }
+  .title-page .affiliation { font-size: 11pt; color: #444; font-style: italic; margin-bottom: 0.4in; }
+  .title-page .preprint-note { font-size: 9.5pt; color: #666; border: 1px solid #ccc; display: inline-block; padding: 6px 18px; border-radius: 3px; margin-top: 0.3in; }
+  h2 { font-size: 14pt; font-weight: 700; margin-top: 0.25in; margin-bottom: 0.15in; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  h3 { font-size: 12pt; font-weight: 700; margin-top: 0.25in; margin-bottom: 0.1in; }
+  h4 { font-size: 11pt; font-weight: 700; margin-top: 0.15in; margin-bottom: 0.05in; }
+  p { margin-bottom: 0.1in; text-align: justify; hyphens: none; -webkit-hyphens: none; overflow-wrap: break-word; }
+  .abstract { margin: 0.3in 0.4in; padding: 0.15in 0; }
+  .abstract h2 { text-align: center; border: none; font-size: 13pt; }
+  .abstract p { font-size: 10.5pt; }
+  .keywords { font-size: 10pt; color: #333; margin-top: 0.1in; }
+  .keywords strong { font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; margin: 0.15in 0 0.2in 0; font-size: 10pt; }
+  th, td { border: 1px solid #aaa; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #f0f0f0; font-weight: 700; }
+  code { font-family: 'Courier New', Courier, monospace; font-size: 9.5pt; background: #f5f5f5; padding: 1px 4px; border-radius: 2px; }
+  pre { font-family: 'Courier New', Courier, monospace; font-size: 9pt; background: #f7f7f7; border: 1px solid #ddd; padding: 10px 14px; margin: 0.1in 0 0.15in 0; overflow-x: auto; line-height: 1.4; border-radius: 3px; white-space: pre; }
+  ul, ol { margin: 0.05in 0 0.1in 0.3in; font-size: 11pt; }
+  li { margin-bottom: 3px; }
+  .section-num { color: #555; margin-right: 6px; }
+  blockquote { border-left: 3px solid #bbb; margin: 0.1in 0 0.1in 0.15in; padding: 4px 12px; color: #333; font-style: italic; font-size: 10.5pt; }
+  .claim-box { border: 1px solid #999; background: #fafafa; padding: 10px 14px; margin: 0.08in 0; border-radius: 3px; }
+  .diagram-box { font-family: 'Courier New', Courier, monospace; font-size: 9pt; background: #fcfcfc; border: 1px solid #ccc; padding: 14px 18px; margin: 0.15in 0; line-height: 1.35; border-radius: 3px; white-space: pre; }
+  .invariant-box { border-left: 3px solid #c00; background: #fef8f8; padding: 8px 14px; margin: 0.08in 0; border-radius: 0 3px 3px 0; }
+  .footnote { font-size: 9pt; color: #555; margin-top: 0.3in; border-top: 1px solid #ccc; padding-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="title-page">
+  <h1>The Energy Internet: A Universal Protocol Stack for Deterministic Wireless Power Delivery</h1>
+  <div class="subtitle">Extending the Meridian Architecture Toward a Global Standard for Routed Energy</div>
+  <div class="authors">Ronald &#8220;Jason&#8221; Andrews</div>
+  <div class="affiliation">DarkWave Studios LLC<br/>Nashville, Tennessee, United States<br/>ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009&#8209;0007&#8209;5214&#8209;649X</a></div>
+  <div style="font-size: 10pt; color: #444; margin-bottom: 0.15in;">Version 1.0 &mdash; May 2026</div>
+  <div style="font-size: 10pt; color: #444; margin-bottom: 0.15in;">
+    Companion Papers: Meridian Architecture [DOI to be assigned] &middot; Meridian Organism [DOI to be assigned]<br/>
+    Related: Lume <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a> &middot;
+    Trust Layer <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a> &middot;
+    DAIGS <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a><br/>
+    Lume&#8209;V <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a> &middot;
+    Lume&#8209;X <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a> &middot;
+    Dissolution <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a>
+  </div>
+  <div style="font-size: 10pt; color: #c00; font-weight: bold; margin-bottom: 0.2in;">Patent Pending &mdash; Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing<br/>Lume&#8209;X: Provisionally patented deterministic control runtime</div>
+  <div class="preprint-note">Preprint v1 &mdash; Not peer&#8209;reviewed. Submitted for early dissemination.</div>
+</div>
+
+
+<!-- ABSTRACT -->
+<div class="abstract">
+  <h2>Abstract</h2>
+  <p>The internet did not begin as a global network. It began as a protocol &mdash; a formal specification for how independently administered networks could exchange packets across a shared addressing space using common routing rules. Once the protocol was correct, the network grew to encompass the planet without requiring central coordination. Every device that speaks IP participates in the same network regardless of who built it, where it runs, or what physical medium it uses. The protocol is the internet. The infrastructure follows.</p>
+  <p>I propose that the same transformation is possible for energy delivery &mdash; and that the foundational protocol now exists.</p>
+  <p>The Meridian architecture, defined in the companion paper [Meridian Architecture, 2026], demonstrates that wireless energy can be routed deterministically through a mesh of addressed nodes using routing tables, quality&#8209;of&#8209;service guarantees, and a self&#8209;healing control runtime. The architecture is complete at room scale. This paper extends it toward a universal protocol standard: the Energy Internet.</p>
+  <p>I define the Energy Internet Protocol Stack &mdash; a formal, layered specification for deterministic energy routing across independently administered meshes. The stack comprises five layers: the Energy Physical Layer (EPL), the Energy Link Layer (ELL), the Energy Network Layer (ENL), the Energy Transport Layer (ETL), and the Energy Application Layer (EAL). I define the Energy Internet Protocol (EIP) for addressing and routing, the Energy Transmission Control Protocol (ETCP) for delivery guarantees, the Energy Domain Name System (EDNS) for human&#8209;readable endpoint addressing, and the Energy Border Gateway Protocol (EBGP) for inter&#8209;mesh federation between independently operated networks.</p>
+  <p>I argue that the supercapacitor is the packet buffer of the Energy Internet &mdash; that burst&#8209;mode transmission is packet switching applied to power &mdash; and that every core mechanism of the data internet has a functional analog in the energy domain. I demonstrate that the obstacles to energy internet standardization are not primarily technical but architectural, economic, and governance&#8209;related, and I propose a standardization pathway analogous to the IETF RFC process through which the data internet protocols were developed.</p>
+  <p>This paper makes no claim that the Energy Internet is imminent. Phase&nbsp;1 experimental data for the room&#8209;scale Meridian architecture does not yet exist. The path to the Energy Internet runs through every experimental phase defined in the companion paper. This is a theoretical framework paper. Its purpose is to establish, formally and now, that a universal wireless energy routing protocol is architecturally coherent &mdash; so that when Phase&nbsp;1 data exists, the target is already defined.</p>
+  <div class="keywords"><strong>Keywords:</strong> energy internet, wireless power routing, network protocol stack, deterministic energy delivery, inter&#8209;mesh federation, energy addressing, quality of service, energy border gateway protocol, Meridian, Lume&#8209;X, wireless power transfer standard</div>
+</div>
+
+<h2><span class="section-num">1</span> Introduction</h2>
+
+<h3>1.1 The Wrong Frame</h3>
+<p>The history of wireless power transfer has been written in the wrong frame. Every major milestone in the field &mdash; Brown&#8217;s 54% rectenna efficiency in 1969, the MIT resonance demonstration in 2007, the proliferation of Qi charging pads &mdash; has been framed as a transmission problem. How much power can be transferred? How efficiently? How far? The implicit model is a pipe: a source at one end, a receiver at the other, and the question is how much gets through.</p>
+<p>This frame produced sixty years of genuine technical progress and one fundamental architectural dead end. A pipe, no matter how efficient, cannot scale into infrastructure. Infrastructure requires routing &mdash; the capacity to direct resources along dynamically selected paths through a network of nodes, to reroute around failure, to prioritize competing demands, to guarantee delivery. A pipe has none of these properties. Neither does any wireless power system designed in the transmission frame.</p>
+<p>The internet did not succeed because its transmission technology was superior. Packet radio, coaxial cable, fiber optics, and satellite links are all radically different physical transmission media. They share one thing: the IP protocol, which abstracts away the physical medium and provides a universal addressing, routing, and delivery framework that works identically regardless of what is underneath. Any physical medium that can carry a packet can participate in the internet. The protocol is the infrastructure. The medium is interchangeable.</p>
+<p>I propose applying this insight to energy delivery. The Energy Internet is not a wireless power system &mdash; it is a protocol. A formal specification for how energy flows between addressed nodes across independently administered meshes, using common routing rules, delivery guarantees, and security mechanisms that work identically regardless of the physical transmission medium underneath. Any physical medium capable of delivering energy in a controlled, measurable, confirmed manner can participate in the Energy Internet. The protocol is the infrastructure. Meridian [Meridian Architecture, 2026] is the first medium that can participate.</p>
+
+<h3>1.2 Why Now</h3>
+<p>Two developments make this proposal timely rather than speculative.</p>
+<p>First, the Meridian architecture [Meridian Architecture, 2026] has demonstrated that deterministic wireless energy routing is architecturally complete. The four&#8209;layer Meridian stack &mdash; Meridian Core, Meridian Flow Engine, Meridian Mesh Fabric, and Meridian Transmission Layer &mdash; provides every component required for addressed energy routing: node identity, spatial coordination, flow governance, topology&#8209;aware routing, and physical beam delivery with closed&#8209;loop confirmation. The architecture is not a sketch. It is a formally specified system with defined interfaces between all layers. A protocol built on this foundation has a complete implementation target.</p>
+<p>Second, the convergence of IP networking concepts with physical infrastructure management has accelerated. Software&#8209;defined networking has separated the control plane from the data plane, enabling centralized routing intelligence over distributed physical infrastructure. Network function virtualization has decoupled network functions from dedicated hardware. These developments have created a body of engineering practice and tooling directly applicable to the Energy Internet control plane. The Energy Internet does not need to invent its control architecture from scratch &mdash; it can adopt SDN patterns proven in the data networking domain.</p>
+
+<h3>1.3 The Central Analogy</h3>
+<p>The central analogy of this paper is the correspondence between data packet routing and energy burst routing. I state it precisely here and develop it formally throughout:</p>
+<table>
+  <tr><th>Data Internet</th><th>Energy Internet</th></tr>
+  <tr><td>Bit</td><td>Joule</td></tr>
+  <tr><td>Packet</td><td>Burst</td></tr>
+  <tr><td>Packet buffer (RAM)</td><td>Supercapacitor</td></tr>
+  <tr><td>Store&#8209;and&#8209;forward</td><td>Harvest&#8209;store&#8209;transmit</td></tr>
+  <tr><td>IP address</td><td>Energy address (EIP)</td></tr>
+  <tr><td>Routing table</td><td>Energy routing table</td></tr>
+  <tr><td>TCP delivery guarantee</td><td>ETCP delivery guarantee</td></tr>
+  <tr><td>BGP inter&#8209;domain routing</td><td>EBGP inter&#8209;mesh routing</td></tr>
+  <tr><td>TLS security layer</td><td>Guardian Security (Guardian&#8209;E)</td></tr>
+  <tr><td>DNS</td><td>Energy Domain Name System (EDNS)</td></tr>
+  <tr><td>ISP</td><td>Energy Service Provider (ESP)</td></tr>
+  <tr><td>Internet Exchange Point (IXP)</td><td>Energy Exchange Point (EXP)</td></tr>
+  <tr><td>Autonomous System (AS)</td><td>Energy Autonomous System (EAS)</td></tr>
+</table>
+<p>Each of these correspondences will be developed formally. They are not loose analogies &mdash; they are functional equivalences at the protocol level. The mechanisms differ because the physics of energy and data differ, but the protocol functions are identical.</p>
+
+<h3>1.4 What the Energy Internet Is Not</h3>
+<p>Before proceeding, I want to be explicit about the scope of this proposal.</p>
+<p>The Energy Internet is not a proposal to replace the electrical grid. The conventional grid transmits gigawatts over continental distances with transmission losses of 5&ndash;10%. The Energy Internet, at current development scale, delivers milliwatts to watts over meter&#8209;scale distances. These are different operating regimes by many orders of magnitude. The grid will not be replaced by wireless mesh networks in any foreseeable timeframe. The Energy Internet addresses a different market: low&#8209;power distributed devices &mdash; sensors, wearables, IoT nodes, microcontrollers, relay nodes &mdash; that are poorly served by wired infrastructure, impractical to battery&#8209;maintain at scale, and within the power budget of ambient harvesting and directed beam delivery.</p>
+<p>The Energy Internet is not imminent. No room&#8209;scale Meridian deployment has been experimentally validated. The path from laboratory demonstration to building scale to campus scale to city scale is measured in years per phase, not months. Each phase requires independent efficiency validation, safety certification, and regulatory review.</p>
+<p>The Energy Internet is a standard &mdash; a specification &mdash; not a product. Its value is in establishing the protocol now, so that when the hardware capabilities exist, the routing infrastructure is already defined and interoperability is built in from the first deployment.</p>
+
+<h3>1.5 Paper Organization</h3>
+<p>Section&nbsp;2 examines the data internet as a model for protocol&#8209;driven infrastructure scaling. Section&nbsp;3 defines the Energy Internet Protocol Stack formally. Section&nbsp;4 specifies energy addressing and the Energy Domain Name System. Section&nbsp;5 defines inter&#8209;mesh federation and the Energy Border Gateway Protocol. Section&nbsp;6 develops the quality&#8209;of&#8209;service framework for power delivery. Section&nbsp;7 defines security at Energy Internet scale. Section&nbsp;8 maps the path from current Meridian development to Energy Internet deployment. Section&nbsp;9 addresses governance and standardization. Section&nbsp;10 situates this work in related literature. Section&nbsp;11 states limitations explicitly. Section&nbsp;12 concludes. Four appendices provide formal specifications for the protocol stack, addressing, peering protocol, and standardization roadmap.</p>
+
+<h2><span class="section-num">2</span> Background: The Internet as a Model</h2>
+
+<h3>2.1 How the Data Internet Scaled</h3>
+<p>The ARPANET, the precursor to the modern internet, connected four nodes in 1969. It did not scale to global infrastructure because the underlying transmission technology was superior. It scaled because the protocol was correct [27, 28].</p>
+<p>The key design decisions that made scaling possible were:</p>
+<p><strong>Packet switching.</strong> Rather than reserving a dedicated circuit between sender and receiver (as telephone networks did), packet switching breaks data into independently routed packets. Each packet carries its own destination address and is independently routed through whatever path is currently available. Circuits reserve capacity regardless of use; packets use capacity only when data exists to transmit. This efficiency gain is what made the internet economically viable at scale.</p>
+<p><strong>Layered abstraction.</strong> The OSI reference model [29] and TCP/IP stack separated network concerns into independent layers, each with a defined interface to the layers above and below. Physical medium, link&#8209;level framing, network&#8209;level addressing, transport&#8209;level delivery guarantees, and application&#8209;level services are independently specified. A new physical medium (fiber optics, wireless, satellite) can participate in the internet by implementing the link layer interface &mdash; it does not need to know about TCP, DNS, or any application protocol. The abstraction is what makes the internet medium&#8209;independent.</p>
+<p><strong>Decentralized routing.</strong> The Border Gateway Protocol [30] allows independently administered networks (Autonomous Systems) to exchange routing information and forward packets across network boundaries without requiring central coordination. No single entity controls internet routing. Each AS advertises the destinations it can reach and the routing protocol distributes this information through the network. The internet has no center. It has a protocol.</p>
+<p><strong>Best&#8209;effort delivery with transport&#8209;layer guarantees.</strong> The IP layer provides best&#8209;effort delivery: packets are forwarded toward their destination, but delivery is not guaranteed. The TCP layer adds delivery guarantees: lost packets are detected and retransmitted, packets are reordered if necessary, and the application sees a reliable byte stream regardless of the unreliability of the underlying network. The separation of routing (IP) from delivery guarantee (TCP) allows both to be independently optimized.</p>
+<p>These four design decisions &mdash; packet switching, layered abstraction, decentralized routing, and separated reliability guarantee &mdash; are the architectural core of the data internet. I will show in Section&nbsp;3 that all four have direct analogs in the Energy Internet.</p>
+
+<h3>2.2 What the Grid Did Not Do</h3>
+<p>The electrical grid took the opposite approach on every dimension.</p>
+<p>The grid uses circuit switching: a generator produces power, it flows through transmission lines to a substation, and from there to distribution lines and finally to the consumer. The path is fixed by the physical wiring. There is no dynamic routing. A broken transmission line is a broken path &mdash; there is no protocol to reroute power around it. The grid&#8217;s resilience comes from physical redundancy (parallel transmission lines) rather than dynamic routing.</p>
+<p>The grid is not layered. High&#8209;voltage transmission, medium&#8209;voltage distribution, and low&#8209;voltage delivery are different physical systems, but they are not abstracted from each other. A generator cannot participate in a different grid by implementing an interface specification &mdash; it must be physically connected to the transmission system with compatible voltage and frequency characteristics.</p>
+<p>The grid is centrally coordinated. Grid operators &mdash; independent system operators (ISOs) and regional transmission organizations (RTOs) &mdash; coordinate generation and transmission in real time. The grid has a center. When the center fails, the grid fails. The 2003 North American blackout cascaded through 55&nbsp;million people because a single control center lost situational awareness.</p>
+<p>The grid provides no delivery guarantee at the individual device level. Power arrives at a standard voltage and frequency; what happens to it at the point of consumption is the consumer&#8217;s problem. There is no TCP equivalent for electricity.</p>
+<p>The grid&#8217;s architecture reflects the engineering constraints of its era: it was designed before packet switching, before layered network protocols, and before the computational infrastructure that makes dynamic routing practical. It is not wrong &mdash; it is optimized for a different set of constraints. But it is not the architecture that produces the Energy Internet.</p>
+
+<h3>2.3 The Packet&#8209;Burst Correspondence</h3>
+<p>The most important technical correspondence between the data internet and the Energy Internet is the equivalence between a data packet and an energy burst. This equivalence is what makes the protocol stack analogy functional rather than metaphorical.</p>
+<p>A data packet is a bounded unit of data transmitted as a unit through the network. It carries a header (source address, destination address, routing information, sequence number) and a payload (the data being delivered). It is stored in a buffer at each router, queued for transmission, forwarded on the selected outgoing interface, and confirmed received by the next hop.</p>
+<p>An energy burst is a bounded unit of energy transmitted as a unit through the mesh. It carries header information (source node identity, destination node identity, routing path, burst sequence number, power level) and a payload (the RF energy delivered). It is stored in a supercapacitor at each relay node, queued for transmission in the TDMA schedule, forwarded on the selected outgoing beam path, and confirmed received by the next hop via delivery confirmation telemetry.</p>
+<p>The supercapacitor IS the packet buffer. The TDMA transmission window IS the queue scheduling algorithm. The MFE burst scheduler IS the packet forwarding engine. The DRMA relay chain IS the store&#8209;and&#8209;forward router chain. The SHDCL retry sequence IS TCP retransmission. The delivery confirmation telemetry IS the TCP acknowledgment.</p>
+<p>These are not loose analogies. They are the same mechanism &mdash; store, schedule, forward, confirm &mdash; applied to joules rather than bits. The physics differ (energy dissipates during transmission; bits do not), but the protocol function is identical.</p>
+
+<h3>2.4 The Key Difference: Lossiness</h3>
+<p>The data internet can retransmit a lost packet with zero information loss. A bit transmitted and lost can be retransmitted identically. Energy transmitted and lost &mdash; dissipated as heat during RF propagation &mdash; cannot be recovered. Retransmission of an energy burst costs new energy. This is the fundamental physical difference between data routing and energy routing, and it has protocol implications throughout.</p>
+<p>In the data internet, lossiness at the IP layer is absorbed by TCP retransmission. The cost of retransmission is latency. In the Energy Internet, lossiness at the EPL layer is absorbed by ETCP retransmission (Section&nbsp;6). The cost of retransmission is energy. Every protocol design decision in the Energy Internet must account for this asymmetry: retransmission costs what it is trying to deliver.</p>
+<p>This asymmetry makes energy routing inherently less tolerant of routing inefficiency than data routing. A data packet lost in transit is annoying. An energy burst lost in transit depletes the transmitting node, fails to charge the receiving node, and may leave the mesh in a degraded state that requires SHDCL recovery. Energy routing protocols must minimize retransmission more aggressively than data routing protocols because the cost of retransmission is not just latency &mdash; it is energy.</p>
+
+<h2><span class="section-num">3</span> The Energy Internet Protocol Stack</h2>
+
+<h3>3.1 Design Principles</h3>
+<p>The Energy Internet Protocol Stack (EIPS) is designed on four principles inherited directly from the data internet design philosophy:</p>
+<p><strong>Principle&nbsp;1 &mdash; Layered abstraction.</strong> Each layer provides a defined interface to the layers above and below. A new physical transmission medium participates in the Energy Internet by implementing the EPL interface. A new application that consumes delivered energy participates by using the EAL interface. No layer needs to know the internal implementation of any other layer.</p>
+<p><strong>Principle&nbsp;2 &mdash; Decentralized routing.</strong> No single entity controls Energy Internet routing. Each Energy Autonomous System (EAS) administers its own routing tables internally and exchanges reachability information with peer EAS networks through EBGP. The Energy Internet has no center.</p>
+<p><strong>Principle&nbsp;3 &mdash; Separation of routing and delivery guarantee.</strong> EIP (Energy Internet Protocol) provides routing &mdash; determining which path a burst takes through the network. ETCP (Energy Transmission Control Protocol) provides delivery guarantee &mdash; ensuring that the target device receives at least P<sub>min</sub> across N trials with variance below &sigma;&sup2;<sub>max</sub>. These are independent functions with independent protocols.</p>
+<p><strong>Principle&nbsp;4 &mdash; Physical medium independence.</strong> The Energy Internet is not defined by a specific transmission technology. Directed RF beamforming (Meridian/DWER) is the first medium. Optical energy delivery, millimeter&#8209;wave transmission, inductive relay chains, and future technologies that do not yet exist are all valid EPL implementations as long as they can satisfy the ELL interface requirements: addressed node delivery, power measurement, and delivery confirmation.</p>
+
+<h3>3.2 The Five&#8209;Layer Stack</h3>
+<div class="diagram-box">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;  EAL &#8212; Energy Application Layer              &#9474;
+&#9474;  (Energy as a Service, priority routing,     &#9474;
+&#9474;   application-defined power profiles)         &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  ETL &#8212; Energy Transport Layer                &#9474;
+&#9474;  (ETCP: delivery guarantee, P_min/&#963;&#178;         &#9474;
+&#9474;   enforcement, retransmission, QoS)           &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  ENL &#8212; Energy Network Layer                  &#9474;
+&#9474;  (EIP: addressing, inter-mesh routing,        &#9474;
+&#9474;   EBGP, EDNS resolution)                      &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  ELL &#8212; Energy Link Layer                     &#9474;
+&#9474;  (hop-by-hop delivery, burst framing,         &#9474;
+&#9474;   link-level confirmation, TDMA scheduling)   &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;  EPL &#8212; Energy Physical Layer                  &#9474;
+&#9474;  (transmission medium: RF, optical, etc.      &#9474;
+&#9474;   beam control, safety gating, localization)   &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</div>
+<p>Each layer is defined by the services it provides to the layer above and the requirements it places on the layer below.</p>
+
+<h3>3.3 Energy Physical Layer (EPL)</h3>
+<p>The EPL is the transmission medium. It is responsible for the actual delivery of energy from one node to an adjacent node &mdash; a single hop. The EPL does not know about multi&#8209;hop routing, delivery guarantees across an end&#8209;to&#8209;end path, or addressing above the single&#8209;hop level. It knows how to aim energy at a located node, fire a burst, and confirm that energy was received.</p>
+<p>EPL mandatory capabilities:</p>
+<ul>
+  <li><strong>Node localization:</strong> must be able to determine the position of the receiving node within a spatial uncertainty radius r, updated at minimum 10&nbsp;Hz</li>
+  <li><strong>Directed transmission:</strong> must be able to aim energy output toward the located receiver with a beam width that limits energy outside the intended path</li>
+  <li><strong>Power measurement:</strong> receiving node must measure P<sub>received</sub> at mW resolution and report it back to the transmitting node</li>
+  <li><strong>Delivery confirmation:</strong> must provide a confirmed delivery receipt containing P<sub>received</sub>, spatial accuracy achieved, and timestamp</li>
+  <li><strong>Safety gating:</strong> must implement hardware&#8209;level transmission cutoff independent of software gate status</li>
+</ul>
+<p><strong>Meridian/DWER as EPL implementation.</strong> The DWER subsystem as defined in [Meridian Architecture, 2026] is a complete EPL implementation. MTL provides beam steering, safety gating, and physical emission control. The UWB localization subsystem provides node localization. The delivery confirmation telemetry provides power measurement and confirmation. Every EPL mandatory capability is satisfied by the Meridian/DWER specification.</p>
+
+<h3>3.4 Energy Link Layer (ELL)</h3>
+<p>The ELL manages energy delivery across a single hop within the mesh &mdash; between one node and its immediate neighbor. It provides link&#8209;level framing (the Energy Burst Frame, described below), TDMA slot scheduling within the local mesh, link&#8209;quality monitoring, and per&#8209;hop delivery confirmation.</p>
+<p>Energy Burst Frame (EBF):</p>
+<pre>EBF Header:
+  src_node_id     : 64 bits   (sending node's EIP address)
+  dst_node_id     : 64 bits   (receiving node's EIP address)
+  burst_seq_num   : 32 bits   (sequence number for this burst)
+  P_planned_mW    : 16 bits   (planned transmit power)
+  T_window_start  : 64 bits   (network timestamp, &micro;s)
+  T_window_end    : 64 bits   (network timestamp, &micro;s)
+  hop_count       : 8 bits    (number of hops traversed so far)
+  ttl             : 8 bits    (maximum hops remaining)
+  path_id         : 32 bits   (routing path identifier from ENL)
+  safety_flags    : 16 bits   (BSL status flags at time of transmission)
+  checksum        : 32 bits
+EBF Confirmation (returned by receiver):
+  src_node_id     : 64 bits
+  dst_node_id     : 64 bits
+  burst_seq_num   : 32 bits
+  P_received_mW   : 16 bits   (measured received power)
+  V_cap_after     : 16 bits   (supercapacitor voltage after receipt)
+  spatial_error_cm: 8 bits    (position error at time of receipt)
+  T_received      : 64 bits   (network timestamp of receipt)
+  status          : 8 bits    (CONFIRMED / PARTIAL / FAILED)</pre>
+<p>The EBF provides the Energy Internet with its fundamental unit of transmission accounting. Every joule delivered through the Energy Internet is traceable to a specific EBF with a specific confirmation status. This is the foundation for energy billing, regulatory compliance, and safety audit trails.</p>
+<p><strong>ELL relationship to Meridian.</strong> The ELL maps directly onto the Meridian link layer as defined in the DRMA and DWER subsystems. The EBF header corresponds to the BeamCommand struct (MTL), and the EBF confirmation corresponds to the DeliveryConfirm message. Meridian nodes implementing the EIPS run ELL as their link&#8209;layer protocol.</p>
+
+<h3>3.5 Energy Network Layer (ENL)</h3>
+<p>The ENL provides energy routing across multiple hops and across mesh boundaries. It implements EIP &mdash; the Energy Internet Protocol &mdash; for addressing and intra&#8209;AS routing, and EBGP for inter&#8209;AS routing. ENL is the layer that makes the Energy Internet a network rather than a collection of isolated meshes.</p>
+<p>The ENL is analogous to the IP layer in the data internet: it provides best&#8209;effort routing &mdash; the best path currently available is used, but delivery across the full path is not guaranteed at this layer. Delivery guarantees are provided by the ETL above.</p>
+<p>ENL maintains the energy routing table at each node &mdash; not the local per&#8209;mesh routing table maintained by MMF, but the wider energy routing table that includes paths to nodes in other EAS networks. ENL processes EBF headers, determines the next&#8209;hop ELL address for each burst, and forwards bursts accordingly.</p>
+
+<h3>3.6 Energy Transport Layer (ETL)</h3>
+<p>The ETL provides end&#8209;to&#8209;end delivery guarantees across the full path from source to destination &mdash; the equivalent of TCP for energy. It enforces the P<sub>min</sub>/r/&sigma;&sup2;/d determinism standard across the full path, not just per hop. It handles retransmission when delivery fails, reordering when burst sequence is disrupted, and congestion control when the mesh is overloaded.</p>
+<p><strong>ETCP &mdash; Energy Transmission Control Protocol:</strong></p>
+<pre>ETCP Session:
+  source_EIP          : energy address of providing node
+  destination_EIP     : energy address of consuming device
+  P_min_mW            : minimum acceptable power at destination
+  sigma_sq_max        : maximum acceptable delivery variance (%)
+  priority_class      : QoS priority (CRITICAL / HIGH / NORMAL / BACKGROUND)
+  session_duration    : session length in seconds (or INDEFINITE)
+  retry_limit         : maximum retransmission attempts per burst
+  billing_account     : energy credit account for settlement</pre>
+<p>ETCP monitors cumulative delivery statistics across all bursts in a session. If the rolling &sigma;&sup2; across the last N bursts exceeds &sigma;&sup2;<sub>max</sub>, ETCP signals the ENL to reroute through a less lossy path. If P<sub>received</sub> falls below P<sub>min</sub> across three consecutive bursts, ETCP triggers a retransmission and escalates to SHDCL if retransmission fails.</p>
+<p><strong>The cost of retransmission.</strong> As established in Section&nbsp;2.4, energy retransmission costs energy. ETCP&#8217;s retransmission mechanism must account for this: a retransmission request is not free. ETCP maintains a retransmission budget per session &mdash; a maximum number of retransmissions permitted before the session is flagged as inefficient and rerouting is forced. This prevents a poorly performing path from draining nodes through repeated retransmission.</p>
+
+<h3>3.7 Energy Application Layer (EAL)</h3>
+<p>The EAL is the interface between the Energy Internet and the applications that consume delivered energy. It provides three primary services:</p>
+<p><strong>Energy as a Service (EaaS).</strong> A consuming device declares its power profile &mdash; minimum power, preferred power, maximum power, duty cycle &mdash; and the EAL negotiates an ETCP session that satisfies the profile. The device does not manage its own energy delivery; the EaaS layer handles all routing, delivery guarantee, and retransmission management on its behalf.</p>
+<p><strong>Priority routing requests.</strong> The EAL allows consuming devices to request priority&#8209;class delivery. A medical monitoring device requests CRITICAL priority. A background IoT sensor requests BACKGROUND priority. The EAL translates priority classes into QoS parameters for the ETCP session and ENL routing preferences.</p>
+<p><strong>Energy accounting interface.</strong> The EAL provides each consuming device with a standardized interface to its energy consumption accounting: how much energy was delivered in the current session, at what efficiency, from which source nodes, and at what cost in energy credits.</p>
+
+<h2><span class="section-num">4</span> Energy Addressing and the Energy Domain Name System</h2>
+
+<h3>4.1 The Energy Internet Protocol Address (EIP Address)</h3>
+<p>The MC 64&#8209;bit node identity defined in [Meridian Architecture, 2026] serves as the link&#8209;layer identifier within a single mesh. The Energy Internet requires a hierarchical addressing scheme that spans multiple independently administered meshes &mdash; equivalent to the transition from MAC addresses (link&#8209;layer, locally unique) to IP addresses (network&#8209;layer, globally unique).</p>
+<p>The EIP address is a 128&#8209;bit hierarchical identifier structured as:</p>
+<pre>EIP Address (128 bits):
+  [Global Registry ID : 16 bits]   Assigned by the Energy Internet Registry Authority (EIRA)
+  [EAS Number        : 24 bits]    Energy Autonomous System number &mdash; uniquely identifies mesh operator
+  [Zone ID           : 16 bits]    Logical zone within the EAS
+  [Node Type         : 8 bits]     Functional role (source / relay / destination / harvesting relay / gateway)
+  [Node Serial       : 40 bits]    Unique per-node serial within the EAS
+  [Checksum          : 24 bits]    Address integrity verification</pre>
+<p>This 128&#8209;bit structure provides: 65,536 Global Registry partitions (supporting multiple governance regimes or geographic regions); 16,777,216 unique EAS numbers (each independently administered energy mesh network); 65,536 zones per EAS; 256 node types; 1&nbsp;trillion unique nodes per EAS zone.</p>
+<p>The address space is intentionally large &mdash; designed to accommodate the scale of a global sensor and IoT network without requiring renumbering as the Energy Internet grows. The IPv6 designers learned this lesson painfully from IPv4&#8217;s exhausted 32&#8209;bit space; EIP incorporates it from the beginning.</p>
+<p><strong>Address hierarchy and routing.</strong> The EAS Number in the EIP address is the key to inter&#8209;mesh routing. Within a single EAS, routing uses MMF&#8217;s intra&#8209;mesh routing tables (extended to EIP addressing). Between EAS networks, routing uses EBGP to exchange reachability information: &#8220;EAS&nbsp;42 can reach nodes with EAS Number&nbsp;42 in their address.&#8221; This is structurally identical to BGP routing in the data internet, where Autonomous System Numbers identify networks and BGP routes between them.</p>
+
+<h3>4.2 EIP Subnetting and Zone Aggregation</h3>
+<p>Large EAS deployments &mdash; a campus, a building complex, or an industrial facility &mdash; may contain thousands of nodes organized into zones. Routing announcements for every individual node would overwhelm inter&#8209;mesh routing protocols. EIP uses zone aggregation analogous to IP CIDR (Classless Inter&#8209;Domain Routing): a gateway node announces the entire zone as a single reachable prefix rather than individual node addresses.</p>
+<pre>Zone aggregation example:
+  Full node address: [EIRA:0001][EAS:000042][ZONE:0005][TYPE:02][SERIAL:000000001234][CHK:...]
+  Zone aggregate:    [EIRA:0001][EAS:000042][ZONE:0005][*][*][*]
+  Inter-mesh announcement: "EAS:000042 can deliver energy to all nodes in ZONE:0005"</pre>
+<p>This dramatically reduces the routing table size at inter&#8209;mesh gateway nodes &mdash; exactly as CIDR reduces BGP routing table size in the data internet.</p>
+
+<h3>4.3 Energy Domain Name System (EDNS)</h3>
+<p>EIP addresses are not human&#8209;readable. Just as the Domain Name System translates human&#8209;readable hostnames (google.com) to IP addresses, the Energy Domain Name System translates human&#8209;readable energy endpoint names to EIP addresses.</p>
+<pre>EDNS names follow a hierarchical structure:
+
+[device-name].[zone].[facility].[operator].energy
+Examples:
+  sensor-7.lab-a.building-3.mit.energy
+  cardiac-monitor-icu-4.floor-2.mass-general.energy
+  relay-node-42.zone-5.campus-north.darkwave.energy</pre>
+<p>EDNS resolution works identically to DNS:</p>
+<ol>
+  <li>Consuming device requests EIP address for <code>sensor-7.lab-a.building-3.mit.energy</code></li>
+  <li>Local EDNS resolver checks its cache</li>
+  <li>If not cached: queries the authoritative EDNS server for <code>building-3.mit.energy</code></li>
+  <li>Authoritative server returns the EIP address for <code>sensor-7.lab-a</code></li>
+  <li>Resolver caches the result with a TTL and returns to the requesting device</li>
+</ol>
+<p>EDNS is administered by the facility operator &mdash; in the example above, MIT manages the <code>mit.energy</code> EDNS zone. The root EDNS zone (<code>.energy</code>) is administered by the EIRA (Energy Internet Registry Authority) &mdash; the governance body proposed in Section&nbsp;9.</p>
+<p><strong>EDNS and mobile nodes.</strong> For nodes that move between zones &mdash; a mobile medical device that travels between hospital floors, or a wearable that moves through a building &mdash; EDNS must provide low&#8209;latency address update capability. The TTL on EDNS records for mobile nodes should be short (seconds rather than hours) and the authoritative EDNS server should update records when node position crosses zone boundaries. This is analogous to mobile IP, where a mobile device&#8217;s home agent maintains a current location binding.</p>
+
+<h2><span class="section-num">5</span> Inter&#8209;Mesh Federation and Energy Peering</h2>
+
+<h3>5.1 Energy Autonomous Systems</h3>
+<p>An Energy Autonomous System (EAS) is an independently administered collection of energy routing nodes under common operational control. A university campus, a hospital complex, a smart factory, or a city block could each constitute an EAS. The EAS is the fundamental unit of Energy Internet governance: within an EAS, the operator chooses its own routing protocols and node management practices. Between EAS networks, routing is governed by EBGP.</p>
+<p>Every EAS has:</p>
+<ul>
+  <li>A globally unique EAS Number assigned by the EIRA</li>
+  <li>One or more gateway nodes that peer with adjacent EAS networks</li>
+  <li>An internal routing domain managed by the operator&#8217;s choice of intra&#8209;EAS protocol (Meridian MMF at small scale; more scalable protocols at large scale)</li>
+  <li>A routing policy that defines which destinations the EAS will accept energy traffic for and which EAS peers it will transit traffic between</li>
+</ul>
+<p>This structure is identical to the Autonomous System model of the data internet, and for the same reason: it allows the Energy Internet to scale without requiring any central entity to know the complete topology.</p>
+
+<h3>5.2 Energy Exchange Points (EXPs)</h3>
+<p>In the data internet, major carriers interconnect at Internet Exchange Points (IXPs) &mdash; physical facilities where routers from multiple Autonomous Systems share a common switching fabric and exchange BGP routing information. This eliminates the need for every AS to establish direct connections to every other AS.</p>
+<p>The Energy Internet requires the same infrastructure: Energy Exchange Points (EXPs). An EXP is a physical location &mdash; initially, a wired power connection point &mdash; where multiple EAS gateway nodes are co&#8209;located and can peer directly. At the EXP:</p>
+<ul>
+  <li>Gateway nodes from multiple EAS networks are physically co&#8209;located</li>
+  <li>EAS operators establish EBGP peering sessions with peer operators</li>
+  <li>Energy traffic that crosses AS boundaries is handed off between gateway nodes</li>
+  <li>The EXP maintains a public peering database listing which EAS operators are present and what energy delivery capacity they offer</li>
+</ul>
+<p>As energy routing technology matures and efficiency at longer ranges improves, direct wireless inter&#8209;mesh connections become viable. The EXP model accommodates this evolution: a wired EXP is an ELL implementation, just as a copper IXP and a fiber IXP are both valid data internet IXP implementations. The protocol does not change.</p>
+
+<h3>5.3 Energy Border Gateway Protocol (EBGP)</h3>
+<p>EBGP is the routing protocol that exchanges reachability information between EAS networks. It is a path&#8209;vector protocol &mdash; each EBGP update carries not just the destination and cost, but the complete sequence of EAS numbers that the path traverses. This allows receiving EAS operators to detect and avoid routing loops, apply routing policy based on which operators are in the path, and select paths based on operator relationships as well as technical metrics.</p>
+<pre>EBGP UPDATE message:
+  origin_EAS          : 24 bits   (advertising EAS number)
+  destination_prefix  : 128 bits  (EIP address prefix being announced)
+  AS_path             : variable  (sequence of EAS numbers traversed)
+  P_available_mW      : 16 bits   (available delivery power at destination zone)
+  efficiency_estimate : 8 bits    (estimated end-to-end delivery efficiency %)
+  latency_ms          : 16 bits   (estimated burst delivery latency)
+  safety_certified    : 1 bit     (whether path meets BSL requirements end-to-end)
+  guardian_certified  : 1 bit     (whether path is Guardian Security certified)
+  next_hop_gateway    : 128 bits  (EIP address of next-hop gateway node)</pre>
+<p>The inclusion of <code>safety_certified</code> and <code>guardian_certified</code> flags in EBGP updates is a significant departure from data internet BGP, where security and safety properties are not advertised at the routing layer. In the Energy Internet, safety certification is a routing property &mdash; a consumer device requesting CRITICAL priority delivery (a medical device, for example) should only receive energy over paths that are BSL&#8209;certified end&#8209;to&#8209;end. EBGP carries this information so that ENL routing decisions can enforce it automatically.</p>
+<p><strong>EBGP route selection.</strong> When an ENL router has multiple EBGP routes to the same destination, it selects the preferred route using an ordered set of criteria:</p>
+<ol>
+  <li>Highest local preference (operator&#8209;configured policy)</li>
+  <li>Shortest AS path (fewest inter&#8209;AS hops)</li>
+  <li>Highest P<sub>available</sub> (most delivery capacity)</li>
+  <li>Highest efficiency_estimate (least lossy path)</li>
+  <li>Lowest latency_ms (fastest delivery)</li>
+  <li>Tie&#8209;break: lowest next&#8209;hop gateway EIP address (deterministic)</li>
+</ol>
+<p>Criteria&nbsp;3 and&nbsp;4 are energy&#8209;specific additions. In the data internet, BGP does not consider bandwidth or loss rate at the routing layer. In the Energy Internet, delivery capacity and efficiency are routing&#8209;layer concerns because they directly affect whether ETCP can satisfy the session&#8217;s P<sub>min</sub> requirement.</p>
+
+<h3>5.4 Energy Peering Agreements</h3>
+<p>EAS operators establish peering agreements governing the terms under which they exchange energy traffic. Three peering models exist, directly analogous to data internet peering models:</p>
+<p><strong>Settlement&#8209;free peering.</strong> Two EAS operators of comparable size exchange energy traffic at no charge, agreeing that the traffic flows are roughly balanced over time. Common between adjacent campus meshes or neighboring building systems.</p>
+<p><strong>Transit peering.</strong> A smaller EAS pays a larger EAS to route its traffic to destinations outside their shared zone. The larger EAS provides Energy Internet transit &mdash; access to the wider Energy Internet through its gateway connections.</p>
+<p><strong>Energy credit settlement.</strong> An accounting system for energy traffic that crosses AS boundaries. Energy credits &mdash; denominated in milliwatt&#8209;hours &mdash; are transferred between EAS operators based on measured delivery volumes. The EBF confirmation record provides the audit trail for settlement: every delivered burst is documented with source, destination, power, and timestamp.</p>
+
+<h2><span class="section-num">6</span> Quality of Service for Power Delivery</h2>
+
+<h3>6.1 Why QoS Matters in the Energy Internet</h3>
+<p>In the data internet, QoS differentiates time&#8209;sensitive traffic (voice, video) from best&#8209;effort traffic (file downloads, email). In the Energy Internet, QoS differentiates power&#8209;critical loads from background loads. A cardiac monitor that loses power is a life&#8209;safety event. A background temperature sensor that misses a charging cycle recovers on the next cycle. Power QoS allocates available energy delivery capacity to the highest&#8209;priority loads first, ensuring that critical devices receive P<sub>min</sub> even when the mesh is operating under capacity constraints.</p>
+<p>Energy QoS has an additional dimension absent from data QoS: not just priority, but also delivery guarantee strength. A background sensor can tolerate high &sigma;&sup2; (high variance in received power). A precision actuator cannot. QoS must specify both priority class and the &sigma;&sup2; threshold the session must maintain.</p>
+
+<h3>6.2 QoS Priority Classes</h3>
+<p>The Energy Internet defines four QoS priority classes:</p>
+<p><strong>CRITICAL.</strong> Life&#8209;safety or mission&#8209;critical devices. Examples: implantable medical devices, emergency communications nodes, hospital monitoring equipment, critical infrastructure sensors. CRITICAL sessions receive absolute priority over all other traffic. &sigma;&sup2;<sub>max</sub> is 5% (tightest delivery guarantee).</p>
+<p><strong>HIGH.</strong> Important operational devices. Examples: industrial process monitors, security systems, building management sensors. HIGH sessions receive priority over NORMAL and BACKGROUND but may be preempted by CRITICAL sessions. &sigma;&sup2;<sub>max</sub> is 10%.</p>
+<p><strong>NORMAL.</strong> Standard IoT devices. Examples: occupancy sensors, environmental monitors, asset trackers. NORMAL sessions receive best&#8209;effort service with &sigma;&sup2;<sub>max</sub> of 15%.</p>
+<p><strong>BACKGROUND.</strong> Non&#8209;time&#8209;sensitive devices. Examples: data loggers, passive sensors, occasional&#8209;reporting devices. BACKGROUND sessions use only surplus mesh capacity. &sigma;&sup2;<sub>max</sub> is 20%. No delivery latency guarantee.</p>
+
+<h3>6.3 Energy as a Service (EaaS) Model</h3>
+<p>Energy as a Service extends the QoS framework to a complete managed energy delivery model:</p>
+<pre>EaaS Profile:
+  device_EIP          : device's energy address
+  P_min_mW            : minimum continuous power requirement
+  P_preferred_mW      : preferred operating power
+  duty_cycle          : fraction of time at P_preferred (0.0&ndash;1.0)
+  priority_class      : CRITICAL / HIGH / NORMAL / BACKGROUND
+  sigma_sq_max        : maximum acceptable delivery variance
+  max_burst_latency   : maximum acceptable time between bursts (ms)
+  billing_account     : energy credit account</pre>
+<p><strong>EaaS negotiates delivery.</strong> The EaaS layer establishes ETCP sessions with available source nodes, negotiates EBGP paths that satisfy the profile requirements, and manages routing failover transparently. The device receives power and does not manage its own energy routing.</p>
+<p><strong>EaaS monitors and adapts.</strong> If the enrolled device&#8217;s power consumption pattern changes &mdash; it enters high&#8209;activity mode, requiring more power &mdash; EaaS detects the change through the EBF confirmation records and renegotiates the ETCP session parameters. This is the energy analog of adaptive bitrate streaming in video delivery.</p>
+
+<h3>6.4 Emergency Priority Override</h3>
+<p>The Energy Internet must handle emergency situations in which normal priority scheduling is insufficient. An EMP event, a natural disaster, or a grid outage creates a condition where available energy routing capacity suddenly drops while CRITICAL demand surges.</p>
+<p>The Emergency Priority Override (EPO) mechanism allows designated emergency management authorities to issue a network&#8209;wide priority reset: all BACKGROUND and NORMAL sessions are suspended, all HIGH sessions are rate&#8209;limited, and all available mesh capacity is reserved for CRITICAL sessions. EPO is authenticated by the Guardian Security layer using emergency management authority credentials.</p>
+<p>EPO is not a product feature &mdash; it is a protocol requirement for any Energy Internet deployment that serves life&#8209;safety applications.</p>
+
+<h2><span class="section-num">7</span> Security at Scale: Guardian Security as Energy TLS</h2>
+
+<h3>7.1 The Threat Model Expands at Internet Scale</h3>
+<p>Within a single Meridian mesh, the Guardian Security threat model [Meridian Architecture, 2026] covers six primary vectors: localization spoofing, routing table manipulation, beam hijacking, denial&#8209;of&#8209;power attacks, node impersonation, and timing attacks. These threats are addressed by per&#8209;node cryptographic authentication, signed routing updates, delivery confirmation verification, and TDMA timing enforcement.</p>
+<p>At Energy Internet scale, the threat model expands in three dimensions:</p>
+<p><strong>Scale.</strong> An attacker targeting a single mesh node faces local defenses only. An attacker targeting the inter&#8209;mesh routing infrastructure faces the entire Energy Internet. EBGP route manipulation &mdash; analogous to BGP hijacking in the data internet &mdash; can redirect energy traffic across entire EAS networks.</p>
+<p><strong>Sophistication.</strong> Single&#8209;mesh attacks require physical proximity to the target mesh. Internet&#8209;scale attacks can be launched remotely, from anywhere with access to the EBGP peering infrastructure.</p>
+<p><strong>Stakes.</strong> In the data internet, a successful attack degrades data delivery. In the Energy Internet, a successful attack at CRITICAL priority can deny power to life&#8209;safety devices. The stakes of security failure are not measured in data loss but in physical harm.</p>
+
+<h3>7.2 Guardian Security at Three Levels</h3>
+<p>Guardian Security (Guardian&#8209;E in the energy domain, domain: TrustShield.tech) operates at three levels in the Energy Internet:</p>
+<p><strong>Level&nbsp;1 &mdash; Intra&#8209;mesh security.</strong> The Guardian Security implementation defined in [Meridian Architecture, 2026]. Per&#8209;node cryptographic authentication, signed EBF frames, TDMA timing enforcement, delivery confirmation verification. Unchanged from the single&#8209;mesh implementation.</p>
+<p><strong>Level&nbsp;2 &mdash; Inter&#8209;mesh security (Energy TLS).</strong> Guardian Security extended to the inter&#8209;mesh interface. Every EBGP session between gateway nodes is authenticated using EAS&#8209;level public key infrastructure (PKI). EBGP updates are signed by the originating EAS gateway. Receiving gateways verify the signature before accepting and propagating route updates. Route origin validation confirms that an EAS advertising a destination actually controls the EIP address prefix it is advertising. This is Energy TLS &mdash; the analog of Transport Layer Security.</p>
+<p><strong>Level&nbsp;3 &mdash; Registry security.</strong> Guardian Security at the EIRA level. EAS Number assignments, EIP address prefix delegations, and EDNS zone delegations are cryptographically signed by the EIRA and verifiable by any EIP node. A forged EAS Number or a fraudulently delegated address prefix is detectable by any properly configured ENL node.</p>
+
+<h3>7.3 Energy RPKI: Route Origin Validation</h3>
+<p>The data internet&#8217;s Resource Public Key Infrastructure (RPKI) provides cryptographic attestation that an AS is authorized to originate routes for a given IP address prefix. Energy RPKI (ERPKI) provides the same function for EIP address prefixes: the EIRA maintains a signed database of which EAS is authorized to originate routes for which EIP prefix, and ENL routers validate EBGP route origins against this database before accepting them.</p>
+<p>A route origin that does not validate against ERPKI is rejected. This prevents the energy equivalent of BGP hijacking &mdash; an adversary announcing routes for EIP prefixes they do not control in order to intercept or disrupt energy traffic to those addresses.</p>
+
+<h3>7.4 Emergency Authority Credentials</h3>
+<p>The Emergency Priority Override mechanism (Section&nbsp;6.4) requires authentication of emergency authority credentials. Guardian Security manages a separate credential class &mdash; Emergency Authority Credentials (EAC) &mdash; issued to designated emergency management bodies: hospitals, emergency services, military installations, critical infrastructure operators.</p>
+<p>EAC holders can issue signed EPO commands that propagate through the Energy Internet via EBGP. ENL routers that receive a valid EPO command apply the emergency priority scheduling immediately. Invalid or unsigned EPO commands are rejected. The EAC credential system is administered by the EIRA and is audited by Guardian Security&#8217;s certificate chain logging.</p>
+
+<h2><span class="section-num">8</span> The Path from Meridian to Energy Internet</h2>
+
+<h3>8.1 Development Phases</h3>
+<p>The Energy Internet is not built at once. It is built incrementally, each phase validating the assumptions of the next.</p>
+<p><strong>Phase&nbsp;0 &mdash; Current state.</strong> The Meridian architecture is formally specified. Lume&#8209;X is validated at 73&nbsp;Hz. No hardware experiment has been conducted. The Energy Internet Protocol Stack is defined in this paper. The path is clear; the walking has not begun.</p>
+<p><strong>Phase&nbsp;1 &mdash; Single&#8209;mesh validation (Years&nbsp;1&ndash;2).</strong> DWER Phase&nbsp;1&ndash;3 experimental results validate point&#8209;to&#8209;point and mesh energy routing at room scale. A single Meridian EAS operates and is confirmed against the P<sub>min</sub>/r/&sigma;&sup2;/d determinism standard. The EPL, ELL, and intra&#8209;EAS ENL layers are validated in hardware.</p>
+<p><strong>Phase&nbsp;2 &mdash; Multi&#8209;mesh federation (Years&nbsp;2&ndash;4).</strong> Two independently operated Meridian EAS networks establish an EBGP peering session. Energy traffic is successfully routed across the AS boundary. Inter&#8209;mesh Guardian Security authentication is validated. Energy credit settlement between the two operators is demonstrated.</p>
+<p><strong>Phase&nbsp;3 &mdash; Building scale (Years&nbsp;3&ndash;6).</strong> A full building is covered by a Meridian Energy Internet deployment &mdash; multiple EAS zones, an in&#8209;building EXP, CRITICAL priority delivery to life&#8209;safety devices, and EaaS subscriptions for standard devices.</p>
+<p><strong>Phase&nbsp;4 &mdash; Campus scale (Years&nbsp;5&ndash;10).</strong> Multiple buildings interconnect through EXPs. EBGP peering between building&#8209;level EAS networks enables campus&#8209;wide energy routing. Higher&#8209;frequency operation (24&nbsp;GHz, 60&nbsp;GHz) improves beam precision and supports higher node density.</p>
+<p><strong>Phase&nbsp;5 &mdash; Energy Internet (Years&nbsp;10+).</strong> The EIPS is formally standardized. Multiple independent operators deploy compatible Energy Internet infrastructure. EBGP peering between city&#8209;level EAS networks. Energy Internet exchange points in major urban centers.</p>
+
+<h3>8.2 The Efficiency Constraint at Scale</h3>
+<p>The single largest technical obstacle to Energy Internet scaling is efficiency. At room scale, end&#8209;to&#8209;end efficiency of 3&ndash;25% is acceptable. As the network scales and the delivered power requirements grow, efficiency becomes a binding constraint.</p>
+<p>The efficiency improvement path runs through: higher&#8209;frequency operation (shorter wavelength &rarr; smaller antenna aperture &rarr; tighter beams &rarr; less path loss); better rectenna design (current 50&ndash;70% RF&#8209;to&#8209;DC conversion can improve toward 85%+); denser node deployment (shorter hop distances &rarr; less per&#8209;hop path loss); better beam shaping (tighter main lobes &rarr; less power in non&#8209;useful directions); adaptive beam tracking (dynamic nulling of interference directions).</p>
+<p>None of these improvements are speculative &mdash; they are active research areas with documented progress. The Energy Internet does not require a breakthrough; it requires the accumulation of incremental efficiency improvements across all stages of the energy path.</p>
+
+<h3>8.3 The Regulatory Pathway</h3>
+<p>Energy Internet deployment at building and campus scale requires regulatory approval that does not yet exist for this class of system. The regulatory pathway requires: Phase&nbsp;1&ndash;3 experimental safety data demonstrating BSL compliance at room scale; submission of a regulatory framework proposal to the FCC, Ofcom, and ITU; development of a type&#8209;approval process for Energy Internet nodes; development of an operator licensing framework for EAS operators; international harmonization of operating frequency bands and power limits.</p>
+<p>This is not a short process. Regulatory development for new wireless technology frameworks typically takes five to ten years from initial proposal to formal rule. The regulatory pathway must begin concurrently with Phase&nbsp;1 experimental validation &mdash; not after.</p>
+
+<h2><span class="section-num">9</span> Governance and Standardization</h2>
+
+<h3>9.1 Why Governance Matters</h3>
+<p>The data internet&#8217;s most important governance decision was to make IP an open standard &mdash; freely implementable by anyone, with no royalties, governed by the IETF through a consensus&#8209;based process. This decision is what allowed the internet to scale globally across every political and economic boundary.</p>
+<p>I propose that the Energy Internet Protocol Stack be submitted to an open standards process &mdash; the IETF or an equivalent body &mdash; for development and maintenance as an open standard. DarkWave Studios LLC commits to making the foundational EIPS specification royalty&#8209;free. The provisional patent portfolio covering the Meridian architecture will be licensed under FRAND (Fair, Reasonable, and Non&#8209;Discriminatory) terms for implementations that comply with the open standard.</p>
+
+<h3>9.2 The Energy Internet Registry Authority (EIRA)</h3>
+<p>The Energy Internet requires a registry authority analogous to IANA and ICANN:</p>
+<p>EIRA functions:</p>
+<ul>
+  <li>Assign EAS Numbers to qualifying Energy Internet operators</li>
+  <li>Delegate EIP address prefixes to EAS operators</li>
+  <li>Administer the root EDNS zone (<code>.energy</code>)</li>
+  <li>Maintain the ERPKI root certificate for Energy Internet route origin validation</li>
+  <li>Issue Emergency Authority Credentials to qualifying emergency management bodies</li>
+  <li>Publish the authoritative EIPS standard and manage its versioning</li>
+</ul>
+<p><strong>EIRA governance model.</strong> The EIRA should be a multi&#8209;stakeholder body, not a government agency or a single company. Stakeholders include: EAS operators, device manufacturers, regulatory agencies, safety certification bodies, emergency management agencies, and civil society representatives.</p>
+
+<h3>9.3 The RFC Process for Energy Internet Standards</h3>
+<p>I propose an Energy RFC (ERFC) process for Energy Internet standards development:</p>
+<table>
+  <tr><th>ERFC</th><th>Title</th><th>Dependencies</th></tr>
+  <tr><td>ERFC&#8209;0001</td><td>Energy Internet Protocol Stack</td><td>None</td></tr>
+  <tr><td>ERFC&#8209;0002</td><td>Energy Internet Protocol (EIP)</td><td>ERFC&#8209;0001</td></tr>
+  <tr><td>ERFC&#8209;0003</td><td>Energy Transmission Control Protocol (ETCP)</td><td>ERFC&#8209;0001, 0002</td></tr>
+  <tr><td>ERFC&#8209;0004</td><td>Energy Border Gateway Protocol (EBGP)</td><td>ERFC&#8209;0001, 0002</td></tr>
+  <tr><td>ERFC&#8209;0005</td><td>Energy Domain Name System (EDNS)</td><td>ERFC&#8209;0002</td></tr>
+  <tr><td>ERFC&#8209;0006</td><td>Energy Resource PKI (ERPKI)</td><td>ERFC&#8209;0002, 0004</td></tr>
+  <tr><td>ERFC&#8209;0007</td><td>Energy QoS and Priority Classes</td><td>ERFC&#8209;0003</td></tr>
+  <tr><td>ERFC&#8209;0008</td><td>Guardian Security for the Energy Internet</td><td>ERFC&#8209;0001, 0006</td></tr>
+</table>
+<p>These eight documents constitute the minimum viable standards package for an interoperable Energy Internet.</p>
+
+<h2><span class="section-num">10</span> Related Work</h2>
+
+<h3>10.1 Wireless Power Transfer Systems</h3>
+<p>Kurs et al. [3] demonstrated resonant inductive coupling over a 2&#8209;meter gap, achieving approximately 40% efficiency. This work is foundational to the EPL layer but addresses single&#8209;link transmission only &mdash; no routing, no multi&#8209;hop, no protocol stack. Zhang et al. [11] survey the wireless power transfer field comprehensively, documenting decades of efficiency improvements. None of the surveyed systems define a network protocol for energy delivery.</p>
+
+<h3>10.2 Smart Grid and SCADA Literature</h3>
+<p>The smart grid literature (Fang et al. [31]; Gungor et al. [32]) defines communication protocols for monitoring and controlling electrical grids, but does not address wireless energy routing. SCADA systems provide supervisory control over wired infrastructure; the Energy Internet provides deterministic routing over wireless mesh infrastructure. The control challenges differ fundamentally: SCADA manages continuous power flow over fixed paths; the Energy Internet manages burst&#8209;mode energy delivery over dynamically routed mesh paths.</p>
+
+<h3>10.3 Energy Harvesting Networks</h3>
+<p>The energy harvesting literature (Mitcheson et al. [5]; Vullers et al. [7]; Wang [8]) documents significant advances in ambient energy collection efficiency. However, energy harvesting research has focused almost entirely on the collection technology itself &mdash; transducer design, power management, and application duty&#8209;cycle optimization &mdash; and has not defined a network protocol for harvested energy distribution. The DAEH subsystem in Meridian bridges this gap by integrating harvesting as a first&#8209;class layer in the protocol stack.</p>
+
+<h3>10.4 Wireless Sensor Network Protocols</h3>
+<p>Wireless sensor network (WSN) protocols (ZigBee, LoRaWAN, BLE Mesh) define multi&#8209;hop communication for sensor data but do not address energy routing. Some WSN research has explored energy&#8209;aware routing &mdash; selecting data forwarding paths to equalize battery drain across nodes &mdash; but this optimizes data routing for energy, not energy routing itself.</p>
+
+<h3>10.5 Internet Protocol Architecture</h3>
+<p>The TCP/IP architecture (Cerf and Kahn [27]; Postel [28]), the BGP specification (Rekhter et al. [30]), and the DNS specification (Mockapetris [33]) are the primary protocol models from which the Energy Internet Protocol Stack is derived. The contribution of this paper is to demonstrate that the data internet&#8217;s protocol architecture is applicable to energy delivery &mdash; not as metaphor, but as functional specification.</p>
+
+<h2><span class="section-num">11</span> Limitations and Honest Scope</h2>
+
+<h3>11.1 No Experimental Data Exists</h3>
+<p>No Energy Internet deployment has been constructed. No single&#8209;mesh Meridian hardware experiment has been conducted. This paper is entirely theoretical. The protocol stack, addressing scheme, federation model, and governance framework are all formal specifications without empirical validation. The gap between formal specification and operational system is significant and must be traversed through experimental validation at every scale from bench&#8209;top to building.</p>
+
+<h3>11.2 Efficiency at Scale Is Unknown</h3>
+<p>End&#8209;to&#8209;end efficiency of a multi&#8209;hop, multi&#8209;AS Energy Internet path has not been measured because no such path exists. Theoretical efficiency models for multi&#8209;hop relay chains suggest significant cumulative loss. Whether the Energy Internet can deliver useful power across ten or twenty hops &mdash; the scale required for building&#8209;level coverage &mdash; is an open empirical question.</p>
+
+<h3>11.3 Economic Viability Is Not Established</h3>
+<p>Whether the Energy Internet is economically viable &mdash; whether the energy credit accounting model produces a positive return for EAS operators &mdash; depends on deployment costs, operating costs, and the value of the services delivered. No cost model is available because no hardware cost data exists for Meridian nodes at any production scale. This paper does not claim economic viability.</p>
+
+<h3>11.4 Regulatory Approval Is Not Guaranteed</h3>
+<p>The regulatory environment for wireless power delivery at the scale contemplated in this paper does not exist. FCC Part&nbsp;18 rules govern ISM band emissions, and FCC OET Bulletin&nbsp;65 governs human RF exposure, but neither was designed for Energy Internet operations. Regulatory approval is an open question that depends on experimental safety data that does not yet exist.</p>
+
+<h3>11.5 Governance Is Aspirational</h3>
+<p>The EIRA, ERPKI, and ERFC process are proposals, not institutions. Whether the Energy Internet governance framework will resemble what is proposed here depends on institutional developments that are beyond the control of any single organization.</p>
+
+<h2><span class="section-num">12</span> Conclusion</h2>
+<p>The internet is a protocol. The physical infrastructure &mdash; copper, fiber, wireless, satellite &mdash; is the medium. The protocol is what makes a billion independent devices on independently administered networks into a single coherent system. Any device that speaks IP participates in the internet. The protocol is the infrastructure.</p>
+<p>I have proposed that a universal protocol for energy routing is architecturally coherent and formally specifiable today. The Energy Internet Protocol Stack provides five layers of abstraction from physical transmission to application&#8209;level service. EIP provides addressing. ETCP provides delivery guarantees. EBGP provides inter&#8209;mesh federation. EDNS provides human&#8209;readable naming. Guardian Security provides authentication at every layer. The protocol stack is complete.</p>
+<p>The path from specification to infrastructure is long. Phase&nbsp;1 experimental validation of the Meridian architecture has not begun. Multi&#8209;mesh federation is years away. Building&#8209;scale deployment is a decade away. The Energy Internet itself is a generation&#8209;scale infrastructure project.</p>
+<p>But the protocol can be correct now. The internet&#8217;s architects did not wait for fiber optics before defining TCP/IP. They defined the protocol on the infrastructure they had, and the protocol scaled to infrastructure they could not have imagined. The Energy Internet protocol is defined on the infrastructure that exists today &mdash; Meridian at room scale &mdash; and it is designed to scale to infrastructure that does not yet exist.</p>
+<p>The data internet began with four nodes and a correct protocol. The Energy Internet begins with a formal specification and no nodes. The specification is in your hands. Phase&nbsp;1 is next.</p>
+
+<div class="page-break"></div>
+
+<h2>References</h2>
+<ol>
+  <li>Brown, W.C. (1969). &#8220;Experiments in the Transportation of Energy by Microwave Beam.&#8221; <em>IEEE PTGMTT International Symposium Digest.</em></li>
+  <li>Brown, W.C. (1984). &#8220;The History of Power Transmission by Radio Waves.&#8221; <em>IEEE Trans. Microwave Theory and Techniques,</em> 32(9), 1230&ndash;1242.</li>
+  <li>Kurs, A., et&nbsp;al. (2007). &#8220;Wireless Power Transfer via Strongly Coupled Magnetic Resonances.&#8221; <em>Science,</em> 317(5834), 83&ndash;86.</li>
+  <li>Glaser, P.E. (1968). &#8220;Power from the Sun: Its Future.&#8221; <em>Science,</em> 162(3856), 857&ndash;861.</li>
+  <li>Mitcheson, P.D., et&nbsp;al. (2008). &#8220;Energy Harvesting From Human and Machine Motion.&#8221; <em>Proc. IEEE,</em> 96(9), 1457&ndash;1486.</li>
+  <li>Roundy, S., Wright, P.K., &amp; Rabaey, J. (2004). <em>Energy Scavenging for Wireless Sensor Networks.</em> Kluwer Academic Publishers.</li>
+  <li>Vullers, R.J.M., et&nbsp;al. (2010). &#8220;Micropower Energy Harvesting.&#8221; <em>Solid&#8209;State Electronics,</em> 53(7), 684&ndash;693.</li>
+  <li>Wang, Z.L. (2012). &#8220;Self&#8209;Powered Nanosensors and Nanosystems.&#8221; <em>Advanced Materials,</em> 24(2), 280&ndash;285.</li>
+  <li>Dickinson, R.M. (1975). &#8220;Rectenna Power Systems.&#8221; <em>Proc. IEEE Conf. Industrial Applications of Microwave Energy.</em></li>
+  <li>Fan, Y., Li, X., &amp; Xu, X. (2013). &#8220;Relay Effect of Wireless Power Transfer Using Strongly Coupled Magnetic Resonances.&#8221; <em>Progress in Electromagnetics Research,</em> 138, 153&ndash;171.</li>
+  <li>Zhang, Z., et&nbsp;al. (2019). &#8220;Wireless Power Transfer &mdash; An Overview.&#8221; <em>IEEE Trans. Industrial Electronics,</em> 66(2), 1044&ndash;1058.</li>
+  <li>ICNIRP (2020). &#8220;Guidelines for Limiting Exposure to Electromagnetic Fields (100&nbsp;kHz to 300&nbsp;GHz).&#8221; <em>Health Physics,</em> 118(5), 483&ndash;524.</li>
+  <li>FCC (2019). <em>Evaluating Compliance with FCC Guidelines for Human Exposure to Radiofrequency Electromagnetic Fields.</em> OET Bulletin 65.</li>
+  <li>Decawave (2019). <em>DWM1001 Module Datasheet.</em> Rev 1.3.</li>
+  <li>Pozar, D.M. (2011). <em>Microwave Engineering,</em> 4th ed. Wiley.</li>
+  <li>Skolnik, M.I. (2008). <em>Radar Handbook,</em> 3rd ed. McGraw&#8209;Hill.</li>
+  <li>DHS (2012). <em>HEMP Protection for Ground&#8209;Based C4I Facilities.</em> MIL&#8209;HDBK&#8209;423.</li>
+  <li>Andrews, J. (2026). <em>Lume Language Specification.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a></li>
+  <li>Andrews, J. (2026). <em>Trust Layer Ecosystem.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a></li>
+  <li>Andrews, J. (2026). <em>DAIGS Framework.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;V Verification Suite.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a></li>
+  <li>Andrews, J. (2026). <em>Deterministic Dissolution.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a></li>
+  <li>Andrews, J. (2026). <em>Meridian Architecture.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Meridian as Synthetic Organism.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>The Unified Energy&#8209;Data Mesh.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Guardian Security.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Cerf, V. &amp; Kahn, R. (1974). &#8220;A Protocol for Packet Network Intercommunication.&#8221; <em>IEEE Trans. Communications,</em> 22(5), 637&ndash;648.</li>
+  <li>Postel, J. (1981). &#8220;Internet Protocol.&#8221; RFC&nbsp;791, IETF.</li>
+  <li>ISO/IEC 7498&#8209;1 (1994). <em>Information technology &mdash; Open Systems Interconnection &mdash; Basic Reference Model.</em></li>
+  <li>Rekhter, Y., Li, T., &amp; Hares, S. (2006). &#8220;A Border Gateway Protocol 4 (BGP&#8209;4).&#8221; RFC&nbsp;4271, IETF.</li>
+  <li>Fang, X., et&nbsp;al. (2012). &#8220;Smart Grid &mdash; The New and Improved Power Grid: A Survey.&#8221; <em>IEEE Communications Surveys &amp; Tutorials,</em> 14(4), 944&ndash;980.</li>
+  <li>Gungor, V.C., et&nbsp;al. (2011). &#8220;Smart Grid Technologies: Communication Technologies and Standards.&#8221; <em>IEEE Trans. Industrial Informatics,</em> 7(4), 529&ndash;539.</li>
+  <li>Mockapetris, P. (1987). &#8220;Domain Names &mdash; Concepts and Facilities.&#8221; RFC&nbsp;1034, IETF.</li>
+</ol>
+
+<div class="footnote" style="page-break-inside: avoid;">
+  <p>This paper discloses only the protocol stack architecture and governance framework of the Energy Internet. No implementation details, source code, or proprietary algorithms are included. All examples use synthetic scenarios. The Energy Internet is not a software product, AI model, or autonomous system. It is a protocol standard for deterministic wireless energy routing.<br>
+  <strong>Patent Pending</strong> &mdash; &#8220;Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing Using Ambient Harvesting, Mesh Coordination, and Directional Transmission.&#8221; DarkWave Studios LLC.<br>
+  &copy; 2026 DarkWave Studios LLC. All rights reserved.<br>
+  Correspondence: Jason Andrews, DarkWave Studios LLC, Nashville, TN. Email: team@dwsc.io<br>
+  ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009-0007-5214-649X</a><br>
+  Website: <a href="https://lume-lang.org">lume-lang.org</a> &middot; GitHub: <a href="https://github.com/cryptocreeper94-sudo">github.com/cryptocreeper94-sudo</a><br>
+  This preprint has not undergone peer review. It is submitted for early dissemination and to establish priority of invention.</p>
+</div>
+
+</body>
+</html>

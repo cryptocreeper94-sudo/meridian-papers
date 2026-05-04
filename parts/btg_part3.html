@@ -1,0 +1,107 @@
+<h2><span class="section-num">5</span> Fusion Integration: Deterministic Generation to Deterministic Routing</h2>
+
+<h3>5.1 The Deterministic Fusion Control Framework</h3>
+<p>The companion Canon&sup2; series applies the core Lume&#8209;X invariant enforcement model to magnetic confinement fusion plasma. Four primary invariants characterize the plasma state:</p>
+<div class="invariant-box">
+<p><strong>INV&#8209;F1 (Energy Confinement):</strong> &tau;<sub>E</sub> &ge; &tau;<sub>E,min</sub> &mdash; energy confinement time at or above the minimum for sustained ignition. Violation triggers plasma heating adjustment.</p>
+<p><strong>INV&#8209;F2 (Beta Limit):</strong> &beta; &le; &beta;<sub>max</sub> &mdash; plasma beta below the MHD stability limit. Violation triggers magnetic field adjustment or plasma density reduction.</p>
+<p><strong>INV&#8209;F3 (Greenwald Density):</strong> n<sub>e</sub> &le; n<sub>G</sub> &mdash; electron density below the Greenwald density limit. Violation triggers fueling rate reduction.</p>
+<p><strong>INV&#8209;F4 (Energy Gain):</strong> Q &ge; 1 &mdash; energy multiplication factor at or above breakeven. The operational invariant: net energy production only when Q&nbsp;&ge;&nbsp;1.</p>
+</div>
+<p>Lume&#8209;X enforces these invariants at the plasma control timescale (1&ndash;10&nbsp;ms for MHD instabilities), consistent with the Lume&#8209;X cycle time specification.</p>
+
+<h3>5.2 Output Modulation</h3>
+<p>A fusion reactor governed by the framework can modulate output within [P<sub>min_fusion</sub>, P<sub>max_fusion</sub>] by adjusting fueling rate and auxiliary heating power. Plasma thermal response time: 1&ndash;10&nbsp;seconds. The T1 control cycle (100ms) is faster than the plasma modulation response. Demand&#8209;following operates across three timescales:</p>
+<ul>
+  <li><strong>Short&#8209;term (&lt;1s):</strong> Buffered by district rectenna&#8217;s local supercapacitor bank and short&#8209;term battery.</li>
+  <li><strong>Medium&#8209;term (1&ndash;10s):</strong> Tracked by fusion output modulation response.</li>
+  <li><strong>Long&#8209;term (&gt;10s):</strong> Handled by fusion output modulation with full settling.</li>
+</ul>
+
+<h3>5.3 The Deterministic Generation Chain</h3>
+<p>Every layer from plasma to device is:</p>
+<ul>
+  <li><strong>Identity&#8209;verified:</strong> Trust Layer identity at every node, T1&#8209;TX through leaf device.</li>
+  <li><strong>Explicitly routed:</strong> Beam routing at Tier&nbsp;1, mesh routing at Tier&nbsp;2.</li>
+  <li><strong>Invariant&#8209;enforced:</strong> Lume&#8209;X at generation, T1 control at transmission, Lume&#8209;X at mesh.</li>
+  <li><strong>Self&#8209;maintaining:</strong> Deterministic fusion control auto&#8209;recovers from plasma perturbation; Meridian SHDCL auto&#8209;recovers from mesh perturbation.</li>
+</ul>
+<p>This is the complete Deterministic Infrastructure stack.</p>
+
+<h2><span class="section-num">6</span> Tier&nbsp;1 Safety Architecture at Scale</h2>
+
+<h3>6.1 The Categorically Different Safety Problem</h3>
+<p>The Meridian BSL is designed for milliwatt&#8209;to&#8209;watt beams over 1&ndash;10&nbsp;meters in a building interior. None of its assumptions hold for megawatt beams over kilometers of open airspace.</p>
+<p>A 10&nbsp;MW beam at 2.45&nbsp;GHz from a 10m aperture produces ~130&nbsp;kW/m&sup2; at the aperture face and ~10&ndash;30&nbsp;kW/m&sup2; at the receiver 5&nbsp;km away &mdash; 1,000&ndash;3,000&times; above the ICNIRP public reference level of 10&nbsp;W/m&sup2;. The Tier&nbsp;1 safety architecture must be a <em>prevention</em> system, not a detection&#8209;and&#8209;response system.</p>
+
+<h3>6.2 Retrodirective Pilot&#8209;Tone Locking</h3>
+<p>The central safety element, originally developed for the NASA Solar Power Satellite reference design:</p>
+<ol>
+  <li>The T1&#8209;RX transmits a low&#8209;power pilot tone at f<sub>beam</sub> + &Delta;f (e.g., 2.4502&nbsp;GHz) from a phase&#8209;reference antenna at the receiver array center.</li>
+  <li>The T1&#8209;TX receives the pilot, computes the precise direction, and conjugates the beam phase to converge at the pilot source location.</li>
+  <li>The T1&#8209;TX emits power <em>only when</em> the pilot is actively received above a minimum threshold. Loss of pilot = beam stops &mdash; <strong>hardware&#8209;enforced</strong> via a hardware AND gate on the PA chain. No software command required.</li>
+  <li>The pilot transmitter runs on an independent power source (dedicated battery &ge;30 days or standalone solar panel), ensuring main power loss at the receiver does not cause beam loss.</li>
+</ol>
+<p><strong>Safety guarantee:</strong> The beam is physically impossible to redirect to an unintended receiver &mdash; the transmitter only knows the direction from which the pilot arrives. Redirecting requires physically capturing the pilot transmitter, a physical attack requiring site access.</p>
+
+<h3>6.3 Exclusion Zone Design</h3>
+<p>For a 10&nbsp;MW beam with 46&nbsp;dB sidelobe suppression (Taylor taper):</p>
+<table>
+  <tr><th>Distance from TX</th><th>Beam Radius</th><th>Exclusion Radius</th></tr>
+  <tr><td>100m</td><td>~8m</td><td>~25m</td></tr>
+  <tr><td>1 km</td><td>~10m</td><td>~30m</td></tr>
+  <tr><td>5 km (receiver)</td><td>~12m</td><td>~35m</td></tr>
+</table>
+<p>The exclusion zone is a corridor approximately 70m wide (35m each side of centerline). Physical fencing, posted warnings, and automated access control are required for any publicly accessible portion at or below rooftop height.</p>
+
+<h3>6.4 Intruder Detection</h3>
+<p>Three independent systems operate in parallel:</p>
+<ul>
+  <li><strong>Radar monitoring:</strong> X&#8209;band (10&nbsp;GHz) surveillance radar monitoring the beam corridor for objects &gt;0.1&nbsp;m&sup2; RCS. Detection triggers power reduction to 1% within 50ms, shutoff within 100ms.</li>
+  <li><strong>ADS&#8209;B integration:</strong> Aircraft transponder data ingested; automatic shutoff when any trajectory is predicted to intersect the exclusion corridor within 60&nbsp;seconds.</li>
+  <li><strong>Optical/thermal camera:</strong> Camera array along beam path for ground&#8209;level incursion detection. Human presence triggers immediate shutoff.</li>
+</ul>
+<p>All three connect to beam shutoff hardware via independent hardwired channels. Any single event triggers cutoff. Re&#8209;activation requires all three systems clear <em>plus</em> human operator confirmation. Re&#8209;activation is not automatic.</p>
+
+<h3>6.5 Comparison with Existing High&#8209;Power RF Infrastructure</h3>
+<p>Existing precedents include ATC radar (500&nbsp;kW peak at 2.7&ndash;2.9&nbsp;GHz), Cold War troposcatter links (10&ndash;100&nbsp;kW over 100&ndash;300&nbsp;km), and satellite uplink earth stations (up to 75&nbsp;kW EIRP continuous). The Tier&nbsp;1 architecture is architecturally similar, adapted for terrestrial power beaming geometry.</p>
+
+<h2><span class="section-num">7</span> System Efficiency: An Honest Analysis</h2>
+
+<h3>7.1 The Full Thermal&#8209;to&#8209;Device Chain</h3>
+<p><strong>Proposed wireless architecture:</strong></p>
+<table>
+  <tr><th>Stage</th><th>Component</th><th>Efficiency</th><th>Notes</th></tr>
+  <tr><td>Fusion thermal &rarr; electrical</td><td>Turbine generator</td><td>42%</td><td>ITER&#8209;class projection</td></tr>
+  <tr><td>DC &rarr; RF (2.45&nbsp;GHz)</td><td>Solid&#8209;state PA array</td><td>85%</td><td>Current GaN</td></tr>
+  <tr><td>RF propagation + collection</td><td>Tier&nbsp;1 beam, 5km, 10m</td><td>75%</td><td>Fresnel analysis</td></tr>
+  <tr><td>RF &rarr; DC</td><td>Rectenna array</td><td>82%</td><td>Schottky rectenna</td></tr>
+  <tr><td>DC &rarr; RF (60&nbsp;GHz)</td><td>Meridian source node</td><td>70%</td><td>Near&#8209;term projection</td></tr>
+  <tr><td>Meridian mesh delivery</td><td>Multi&#8209;hop relay</td><td>80%</td><td>95%/hop, 4&#8209;hop avg</td></tr>
+  <tr><td>RF &rarr; DC (device)</td><td>Device receiver</td><td>75%</td><td>Integrated rectifier</td></tr>
+  <tr><th colspan="2">Total (thermal to device)</th><th>~14.6%</th><th></th></tr>
+</table>
+
+<p><strong>Conventional wired grid (same fusion source):</strong></p>
+<table>
+  <tr><th>Stage</th><th>Component</th><th>Efficiency</th><th>Notes</th></tr>
+  <tr><td>Fusion thermal &rarr; electrical</td><td>Turbine generator</td><td>42%</td><td>Same source</td></tr>
+  <tr><td>HV transmission</td><td>500kV AC, 500km</td><td>94%</td><td>~1%/100km</td></tr>
+  <tr><td>Substation transformation</td><td>Step&#8209;down</td><td>98%</td><td>Modern transformer</td></tr>
+  <tr><td>Distribution</td><td>11kV &rarr; building</td><td>95%</td><td>Distribution losses</td></tr>
+  <tr><td>Building distribution</td><td>Panel &rarr; outlet</td><td>98%</td><td>Internal wiring</td></tr>
+  <tr><td>Device charging</td><td>Adapter + charge</td><td>85%</td><td>USB&#8209;C PD</td></tr>
+  <tr><th colspan="2">Total (thermal to device)</th><th>~30.5%</th><th></th></tr>
+</table>
+<p>The wireless architecture is approximately half the efficiency of the wired grid. This is the honest number.</p>
+
+<h3>7.2 The Efficiency Counterargument</h3>
+<p>The relevant comparison is total system cost per delivered watt&#8209;year, including capital, operating, and externalized costs. Three factors shift this comparison:</p>
+<ul>
+  <li><strong>Capital cost elimination:</strong> The wired grid charges $4&nbsp;trillion of T&amp;D infrastructure. The wireless architecture&#8217;s capital cost is phased array antennas, rectennas, and Meridian nodes &mdash; solid&#8209;state electronics with 20&ndash;30 year lifetimes and no civil infrastructure.</li>
+  <li><strong>Fuel cost irrelevance:</strong> With fusion, fuel cost is near&#8209;zero. The efficiency penalty means slightly more generation capacity, not fuel exhaustion.</li>
+  <li><strong>Resilience valuation:</strong> U.S. grid outage costs are estimated at $150&nbsp;billion per year (Lawrence Berkeley National Laboratory). A wireless architecture with no physical plant to fail eliminates this cost class.</li>
+</ul>
+
+<h3>7.3 Efficiency Improvement Trajectories</h3>
+<p>With projected 2030 technology levels &mdash; rectenna 88&ndash;92%, device receiver 80&ndash;85%, 20m apertures for 83% collection, 3&#8209;hop average for 86% mesh efficiency &mdash; projected thermal&#8209;to&#8209;device efficiency reaches approximately 21&ndash;24%. The gap narrows but does not close on efficiency alone. The architecture does not need to win on efficiency &mdash; it needs to win on total system cost, resilience, deployment speed, and flexibility.</p>

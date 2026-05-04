@@ -1,0 +1,92 @@
+<h2><span class="section-num">10</span> Related Work</h2>
+
+<h3>10.1 Wireless Power Transfer Systems</h3>
+<p>Kurs et al. [3] demonstrated resonant inductive coupling over a 2&#8209;meter gap, achieving approximately 40% efficiency. This work is foundational to the EPL layer but addresses single&#8209;link transmission only &mdash; no routing, no multi&#8209;hop, no protocol stack. Zhang et al. [11] survey the wireless power transfer field comprehensively, documenting decades of efficiency improvements. None of the surveyed systems define a network protocol for energy delivery.</p>
+
+<h3>10.2 Smart Grid and SCADA Literature</h3>
+<p>The smart grid literature (Fang et al. [31]; Gungor et al. [32]) defines communication protocols for monitoring and controlling electrical grids, but does not address wireless energy routing. SCADA systems provide supervisory control over wired infrastructure; the Energy Internet provides deterministic routing over wireless mesh infrastructure. The control challenges differ fundamentally: SCADA manages continuous power flow over fixed paths; the Energy Internet manages burst&#8209;mode energy delivery over dynamically routed mesh paths.</p>
+
+<h3>10.3 Energy Harvesting Networks</h3>
+<p>The energy harvesting literature (Mitcheson et al. [5]; Vullers et al. [7]; Wang [8]) documents significant advances in ambient energy collection efficiency. However, energy harvesting research has focused almost entirely on the collection technology itself &mdash; transducer design, power management, and application duty&#8209;cycle optimization &mdash; and has not defined a network protocol for harvested energy distribution. The DAEH subsystem in Meridian bridges this gap by integrating harvesting as a first&#8209;class layer in the protocol stack.</p>
+
+<h3>10.4 Wireless Sensor Network Protocols</h3>
+<p>Wireless sensor network (WSN) protocols (ZigBee, LoRaWAN, BLE Mesh) define multi&#8209;hop communication for sensor data but do not address energy routing. Some WSN research has explored energy&#8209;aware routing &mdash; selecting data forwarding paths to equalize battery drain across nodes &mdash; but this optimizes data routing for energy, not energy routing itself.</p>
+
+<h3>10.5 Internet Protocol Architecture</h3>
+<p>The TCP/IP architecture (Cerf and Kahn [27]; Postel [28]), the BGP specification (Rekhter et al. [30]), and the DNS specification (Mockapetris [33]) are the primary protocol models from which the Energy Internet Protocol Stack is derived. The contribution of this paper is to demonstrate that the data internet&#8217;s protocol architecture is applicable to energy delivery &mdash; not as metaphor, but as functional specification.</p>
+
+<h2><span class="section-num">11</span> Limitations and Honest Scope</h2>
+
+<h3>11.1 No Experimental Data Exists</h3>
+<p>No Energy Internet deployment has been constructed. No single&#8209;mesh Meridian hardware experiment has been conducted. This paper is entirely theoretical. The protocol stack, addressing scheme, federation model, and governance framework are all formal specifications without empirical validation. The gap between formal specification and operational system is significant and must be traversed through experimental validation at every scale from bench&#8209;top to building.</p>
+
+<h3>11.2 Efficiency at Scale Is Unknown</h3>
+<p>End&#8209;to&#8209;end efficiency of a multi&#8209;hop, multi&#8209;AS Energy Internet path has not been measured because no such path exists. Theoretical efficiency models for multi&#8209;hop relay chains suggest significant cumulative loss. Whether the Energy Internet can deliver useful power across ten or twenty hops &mdash; the scale required for building&#8209;level coverage &mdash; is an open empirical question.</p>
+
+<h3>11.3 Economic Viability Is Not Established</h3>
+<p>Whether the Energy Internet is economically viable &mdash; whether the energy credit accounting model produces a positive return for EAS operators &mdash; depends on deployment costs, operating costs, and the value of the services delivered. No cost model is available because no hardware cost data exists for Meridian nodes at any production scale. This paper does not claim economic viability.</p>
+
+<h3>11.4 Regulatory Approval Is Not Guaranteed</h3>
+<p>The regulatory environment for wireless power delivery at the scale contemplated in this paper does not exist. FCC Part&nbsp;18 rules govern ISM band emissions, and FCC OET Bulletin&nbsp;65 governs human RF exposure, but neither was designed for Energy Internet operations. Regulatory approval is an open question that depends on experimental safety data that does not yet exist.</p>
+
+<h3>11.5 Governance Is Aspirational</h3>
+<p>The EIRA, ERPKI, and ERFC process are proposals, not institutions. Whether the Energy Internet governance framework will resemble what is proposed here depends on institutional developments that are beyond the control of any single organization.</p>
+
+<h2><span class="section-num">12</span> Conclusion</h2>
+<p>The internet is a protocol. The physical infrastructure &mdash; copper, fiber, wireless, satellite &mdash; is the medium. The protocol is what makes a billion independent devices on independently administered networks into a single coherent system. Any device that speaks IP participates in the internet. The protocol is the infrastructure.</p>
+<p>I have proposed that a universal protocol for energy routing is architecturally coherent and formally specifiable today. The Energy Internet Protocol Stack provides five layers of abstraction from physical transmission to application&#8209;level service. EIP provides addressing. ETCP provides delivery guarantees. EBGP provides inter&#8209;mesh federation. EDNS provides human&#8209;readable naming. Guardian Security provides authentication at every layer. The protocol stack is complete.</p>
+<p>The path from specification to infrastructure is long. Phase&nbsp;1 experimental validation of the Meridian architecture has not begun. Multi&#8209;mesh federation is years away. Building&#8209;scale deployment is a decade away. The Energy Internet itself is a generation&#8209;scale infrastructure project.</p>
+<p>But the protocol can be correct now. The internet&#8217;s architects did not wait for fiber optics before defining TCP/IP. They defined the protocol on the infrastructure they had, and the protocol scaled to infrastructure they could not have imagined. The Energy Internet protocol is defined on the infrastructure that exists today &mdash; Meridian at room scale &mdash; and it is designed to scale to infrastructure that does not yet exist.</p>
+<p>The data internet began with four nodes and a correct protocol. The Energy Internet begins with a formal specification and no nodes. The specification is in your hands. Phase&nbsp;1 is next.</p>
+
+<div class="page-break"></div>
+
+<h2>References</h2>
+<ol>
+  <li>Brown, W.C. (1969). &#8220;Experiments in the Transportation of Energy by Microwave Beam.&#8221; <em>IEEE PTGMTT International Symposium Digest.</em></li>
+  <li>Brown, W.C. (1984). &#8220;The History of Power Transmission by Radio Waves.&#8221; <em>IEEE Trans. Microwave Theory and Techniques,</em> 32(9), 1230&ndash;1242.</li>
+  <li>Kurs, A., et&nbsp;al. (2007). &#8220;Wireless Power Transfer via Strongly Coupled Magnetic Resonances.&#8221; <em>Science,</em> 317(5834), 83&ndash;86.</li>
+  <li>Glaser, P.E. (1968). &#8220;Power from the Sun: Its Future.&#8221; <em>Science,</em> 162(3856), 857&ndash;861.</li>
+  <li>Mitcheson, P.D., et&nbsp;al. (2008). &#8220;Energy Harvesting From Human and Machine Motion.&#8221; <em>Proc. IEEE,</em> 96(9), 1457&ndash;1486.</li>
+  <li>Roundy, S., Wright, P.K., &amp; Rabaey, J. (2004). <em>Energy Scavenging for Wireless Sensor Networks.</em> Kluwer Academic Publishers.</li>
+  <li>Vullers, R.J.M., et&nbsp;al. (2010). &#8220;Micropower Energy Harvesting.&#8221; <em>Solid&#8209;State Electronics,</em> 53(7), 684&ndash;693.</li>
+  <li>Wang, Z.L. (2012). &#8220;Self&#8209;Powered Nanosensors and Nanosystems.&#8221; <em>Advanced Materials,</em> 24(2), 280&ndash;285.</li>
+  <li>Dickinson, R.M. (1975). &#8220;Rectenna Power Systems.&#8221; <em>Proc. IEEE Conf. Industrial Applications of Microwave Energy.</em></li>
+  <li>Fan, Y., Li, X., &amp; Xu, X. (2013). &#8220;Relay Effect of Wireless Power Transfer Using Strongly Coupled Magnetic Resonances.&#8221; <em>Progress in Electromagnetics Research,</em> 138, 153&ndash;171.</li>
+  <li>Zhang, Z., et&nbsp;al. (2019). &#8220;Wireless Power Transfer &mdash; An Overview.&#8221; <em>IEEE Trans. Industrial Electronics,</em> 66(2), 1044&ndash;1058.</li>
+  <li>ICNIRP (2020). &#8220;Guidelines for Limiting Exposure to Electromagnetic Fields (100&nbsp;kHz to 300&nbsp;GHz).&#8221; <em>Health Physics,</em> 118(5), 483&ndash;524.</li>
+  <li>FCC (2019). <em>Evaluating Compliance with FCC Guidelines for Human Exposure to Radiofrequency Electromagnetic Fields.</em> OET Bulletin 65.</li>
+  <li>Decawave (2019). <em>DWM1001 Module Datasheet.</em> Rev 1.3.</li>
+  <li>Pozar, D.M. (2011). <em>Microwave Engineering,</em> 4th ed. Wiley.</li>
+  <li>Skolnik, M.I. (2008). <em>Radar Handbook,</em> 3rd ed. McGraw&#8209;Hill.</li>
+  <li>DHS (2012). <em>HEMP Protection for Ground&#8209;Based C4I Facilities.</em> MIL&#8209;HDBK&#8209;423.</li>
+  <li>Andrews, J. (2026). <em>Lume Language Specification.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a></li>
+  <li>Andrews, J. (2026). <em>Trust Layer Ecosystem.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a></li>
+  <li>Andrews, J. (2026). <em>DAIGS Framework.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;V Verification Suite.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a></li>
+  <li>Andrews, J. (2026). <em>Deterministic Dissolution.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a></li>
+  <li>Andrews, J. (2026). <em>Meridian Architecture.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Meridian as Synthetic Organism.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>The Unified Energy&#8209;Data Mesh.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Guardian Security.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Cerf, V. &amp; Kahn, R. (1974). &#8220;A Protocol for Packet Network Intercommunication.&#8221; <em>IEEE Trans. Communications,</em> 22(5), 637&ndash;648.</li>
+  <li>Postel, J. (1981). &#8220;Internet Protocol.&#8221; RFC&nbsp;791, IETF.</li>
+  <li>ISO/IEC 7498&#8209;1 (1994). <em>Information technology &mdash; Open Systems Interconnection &mdash; Basic Reference Model.</em></li>
+  <li>Rekhter, Y., Li, T., &amp; Hares, S. (2006). &#8220;A Border Gateway Protocol 4 (BGP&#8209;4).&#8221; RFC&nbsp;4271, IETF.</li>
+  <li>Fang, X., et&nbsp;al. (2012). &#8220;Smart Grid &mdash; The New and Improved Power Grid: A Survey.&#8221; <em>IEEE Communications Surveys &amp; Tutorials,</em> 14(4), 944&ndash;980.</li>
+  <li>Gungor, V.C., et&nbsp;al. (2011). &#8220;Smart Grid Technologies: Communication Technologies and Standards.&#8221; <em>IEEE Trans. Industrial Informatics,</em> 7(4), 529&ndash;539.</li>
+  <li>Mockapetris, P. (1987). &#8220;Domain Names &mdash; Concepts and Facilities.&#8221; RFC&nbsp;1034, IETF.</li>
+</ol>
+
+<div class="footnote" style="page-break-inside: avoid;">
+  <p>This paper discloses only the protocol stack architecture and governance framework of the Energy Internet. No implementation details, source code, or proprietary algorithms are included. All examples use synthetic scenarios. The Energy Internet is not a software product, AI model, or autonomous system. It is a protocol standard for deterministic wireless energy routing.<br>
+  <strong>Patent Pending</strong> &mdash; &#8220;Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing Using Ambient Harvesting, Mesh Coordination, and Directional Transmission.&#8221; DarkWave Studios LLC.<br>
+  &copy; 2026 DarkWave Studios LLC. All rights reserved.<br>
+  Correspondence: Jason Andrews, DarkWave Studios LLC, Nashville, TN. Email: team@dwsc.io<br>
+  ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009-0007-5214-649X</a><br>
+  Website: <a href="https://lume-lang.org">lume-lang.org</a> &middot; GitHub: <a href="https://github.com/cryptocreeper94-sudo">github.com/cryptocreeper94-sudo</a><br>
+  This preprint has not undergone peer review. It is submitted for early dissemination and to establish priority of invention.</p>
+</div>
+
+</body>
+</html>

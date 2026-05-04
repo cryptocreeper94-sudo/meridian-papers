@@ -1,0 +1,98 @@
+<h2><span class="section-num">1</span> Introduction</h2>
+
+<h3>1.1 The Gap This Paper Fills</h3>
+<p>The Meridian architecture [Meridian Architecture, 2026] specifies how energy is routed through a mesh of addressed nodes. It defines the routing protocol, the control runtime, the security framework, and the self&#8209;healing mechanisms. It does not specify where, physically, the nodes go &mdash; or how the building&#8217;s geometry constrains where the beams between them may travel.</p>
+<p>This gap is not academic. It is the difference between a paper that describes a correct routing protocol for a free&#8209;space volume and a product that can be installed in a hospital, an office tower, a residential building, or a warehouse without injuring anyone.</p>
+
+<h3>1.2 The Ceiling&#8209;Plane Insight</h3>
+<p>The motivating insight is simple: a building&#8217;s ceiling is a surface that is, under normal occupancy conditions, above every person in the building. A beam that travels along the ceiling plane &mdash; horizontally at ceiling height between relay nodes mounted at the ceiling &mdash; passes through a geometric zone that people do not occupy. The beam path is safe not because a sensor detected no person in its way, but because no person <em>can be</em> in its way given the physical geometry.</p>
+<p>This reframes the safety model from reactive (detect a person, stop the beam) to proactive (route the beam where no person can be). The BSL remains as the enforcement backstop. But the primary safety mechanism is architectural routing &mdash; choosing beam paths that are geometrically separated from occupied space.</p>
+
+<h3>1.3 Contributions</h3>
+<ol>
+  <li>The formal definition of the Architectural Voxel Map (AVM) &mdash; a seven&#8209;class 3D volumetric representation of building geometry enforced as a hard constraint on every beam path.</li>
+  <li>The ceiling&#8209;plane routing model as the standard deployment posture for occupied buildings, with formal geometric proofs of its safety properties.</li>
+  <li>Characterization of five void types (open staircase, atrium, elevator shaft, balcony overhang, occupied mezzanine) and the specific routing detour each requires.</li>
+  <li>The floor&#8209;transition gateway architecture &mdash; the physical and protocol specification for inter&#8209;floor energy transfer at designated transition points.</li>
+  <li>The BIM integration pathway &mdash; a specification for how Meridian deployment becomes a co&#8209;designed architectural layer.</li>
+</ol>
+
+<h3>1.4 Paper Organization</h3>
+<p>Section&nbsp;2 characterizes the gap between network topology and physical architecture. Section&nbsp;3 defines the AVM. Section&nbsp;4 specifies ceiling&#8209;plane routing. Section&nbsp;5 characterizes the five void types. Section&nbsp;6 defines floor&#8209;transition gateways. Section&nbsp;7 describes the dynamic occupancy overlay. Section&nbsp;8 provides the formal safety proof. Section&nbsp;9 addresses frequency selection. Section&nbsp;10 presents building type scenarios. Section&nbsp;11 specifies BIM integration. Section&nbsp;12 defines the commissioning protocol. Section&nbsp;13 covers related work. Section&nbsp;14 states limitations. Section&nbsp;15 concludes.</p>
+
+<h2><span class="section-num">2</span> Background: The Gap Between Network Topology and Physical Architecture</h2>
+
+<h3>2.1 How Current Routing Models Represent Space</h3>
+<p>The DRMA routing engine [Meridian Architecture, 2026 &sect;9] maintains a routing table that represents the mesh as a graph: nodes as vertices, wireless links as edges, link quality as edge weights. This representation is accurate for connectivity but does not model the physical geometry of the space those links traverse. A link between two ceiling&#8209;mounted nodes may cross over an open staircase void, meaning the beam has zero effective clearance because the floor is not there.</p>
+<p>Routing tables are correct about connectivity; they are silent about the physical geometry of beam paths.</p>
+
+<h3>2.2 Why Node Positions Alone Are Insufficient</h3>
+<p><strong>First,</strong> link paths are not points. A link between two nodes defines a beam cross&#8209;section sweeping through a volume that may intersect an architectural void even if both endpoints are safe.</p>
+<p><strong>Second,</strong> buildings change. A building commissioned in January may have its staircase opening enlarged in March. Without an updatable AVM, the routing engine operates on a stale model.</p>
+<p><strong>Third,</strong> height alone is not the safety criterion. A node at 3.0m on floor&nbsp;2, directly above an open staircase connecting floors&nbsp;1 and&nbsp;2, is potentially 6.0m+ above floor&nbsp;1. Height is floor&#8209;relative, not building&#8209;relative.</p>
+
+<h3>2.3 The AVM as the Necessary Extension</h3>
+<p>The AVM augments the node routing graph with the physical geometry the graph cannot represent. The routing engine uses both: the node graph to find candidate paths, and the AVM to validate that candidate paths are geometrically safe before authorizing them.</p>
+
+<h2><span class="section-num">3</span> The Architectural Voxel Map (AVM)</h2>
+
+<h3>3.1 Voxel Grid Definition</h3>
+<p>The AVM divides the building volume into a uniform 3D grid of voxels, each a cube of side length V<sub>size</sub>. For standard commercial deployment, V<sub>size</sub> = 25&nbsp;cm is recommended &mdash; sufficient to resolve staircase openings, balcony edges, and mechanical penetrations.</p>
+<pre>AVM coordinate system:
+  Origin: building datum point (typically ground floor SW corner)
+  X: East (meters)
+  Y: North (meters)
+  Z: Up (meters)
+Voxel index (i, j, k) corresponds to physical volume:
+  X &isin; [i &times; V_size, (i+1) &times; V_size]
+  Y &isin; [j &times; V_size, (j+1) &times; V_size]
+  Z &isin; [k &times; V_size, (k+1) &times; V_size]</pre>
+<p>For a typical 10&#8209;story office building (50m &times; 40m footprint, 40m height), the AVM contains approximately 5,120,000 voxels. At 1 byte per voxel, the full AVM is approximately 5&nbsp;MB &mdash; trivial to store and load at commissioning.</p>
+
+<h3>3.2 The Seven Voxel Classes</h3>
+<table>
+  <tr><th>Class</th><th>ID</th><th>Definition</th><th>Beam Traversal</th></tr>
+  <tr><td>SOLID</td><td>0</td><td>Structural material: concrete, masonry, steel, timber, glass</td><td>Beam terminates (physical boundary)</td></tr>
+  <tr><td>FLOOR_SAFE</td><td>1</td><td>Above z<sub>safe</sub> (floor_slab + 2.2m) and below ceiling slab</td><td>Permitted (preferred routing zone)</td></tr>
+  <tr><td>FLOOR_OCCUPIED</td><td>2</td><td>Between floor_slab and z<sub>safe</sub></td><td>Final&#8209;hop geometry only</td></tr>
+  <tr><td>VOID_STAIRCASE</td><td>3</td><td>Open staircase air volume + 50&nbsp;cm buffer</td><td>PROHIBITED</td></tr>
+  <tr><td>VOID_ATRIUM</td><td>4</td><td>Atrium air volume + 50&nbsp;cm buffer</td><td>PROHIBITED</td></tr>
+  <tr><td>VOID_SHAFT</td><td>5</td><td>Elevator, mechanical, or other enclosed shaft</td><td>PROHIBITED</td></tr>
+  <tr><td>GATEWAY_ZONE</td><td>6</td><td>Designated inter&#8209;floor handoff position</td><td>Beam termination and handoff</td></tr>
+</table>
+
+<h3>3.3 AVM Construction</h3>
+<p><strong>Source&nbsp;1 &mdash; BIM export (preferred).</strong> The Meridian BIM plugin generates the AVM automatically from the architectural model, classifying each voxel by querying the BIM model&#8217;s spatial elements.</p>
+<p><strong>Source&nbsp;2 &mdash; As&#8209;built survey.</strong> LiDAR point cloud scanning produces a 3D model classified into AVM voxel types by the commissioning tool.</p>
+<p><strong>Source&nbsp;3 &mdash; Floor plan annotation.</strong> 2D floor plans annotated with void types and extruded vertically. Least accurate method, requires careful annotation.</p>
+
+<h3>3.4 AVM Updates</h3>
+<p>The AVM must be updated whenever building geometry changes. The commissioning tool maintains version history and requires re&#8209;validation of all existing beam paths against the new AVM. Invalid paths are recomputed before resuming operation.</p>
+
+<h2><span class="section-num">4</span> Ceiling&#8209;Plane Routing: The Standard Deployment Posture</h2>
+
+<h3>4.1 Definition</h3>
+<p>Ceiling&#8209;plane routing requires relay nodes to be mounted at ceiling height within FLOOR_SAFE voxels. Beam paths remain within FLOOR_SAFE voxels except for the controlled final&#8209;hop descent to destination devices.</p>
+<pre>Ceiling-plane route &rho; from source s to relay chain [r&sub1;, r&sub2;, ..., r_n] to device d:
+  For all hops h_i from node n_i to n_(i+1), where n_(i+1) &ne; d:
+    all voxels in swept_volume(beam(n_i, n_(i+1))) &isin; FLOOR_SAFE &cup; SOLID
+  For the final hop from r_n to d:
+    horizontal component &isin; FLOOR_SAFE
+    vertical descent component &isin; FLOOR_OCCUPIED
+    final-hop protocol active (BSL engaged, tracking active, power limited)</pre>
+
+<h3>4.2 Node Placement Requirements</h3>
+<p><strong>Mounting height:</strong> Node center at z &ge; z<sub>safe</sub>(floor). Typical: z<sub>ceiling</sub> &minus; 5&nbsp;cm (flush) or z<sub>ceiling</sub> &minus; 15&nbsp;cm (pendant).</p>
+<p><strong>Mounting position:</strong> Not directly above any VOID class, even if height is within FLOOR_SAFE.</p>
+<p><strong>Beam angle envelope:</strong> &theta;<sub>max</sub> = arctan((z<sub>node</sub> &minus; z<sub>safe</sub>) / d<sub>min</sub>). Typical: z<sub>node</sub> = 2.7m, z<sub>safe</sub> = 2.2m, d<sub>min</sub> = 1.5m &rarr; &theta;<sub>max</sub> &asymp; 18.4&deg;.</p>
+<p><strong>Density:</strong> Sufficient to maintain FLOOR_SAFE paths around all VOID voxels.</p>
+
+<h3>4.3 Final&#8209;Hop Protocol</h3>
+<p>The final hop &mdash; from the last relay node down to the destination device &mdash; is the only segment through FLOOR_OCCUPIED space. It is governed by:</p>
+<ul>
+  <li><strong>Power reduction:</strong> P<sub>final</sub> &le; P<sub>relay</sub> &times; attenuation_factor for the final hop distance.</li>
+  <li><strong>Beam width reduction:</strong> Maximum array focusing &mdash; minimum swept volume through FLOOR_OCCUPIED.</li>
+  <li><strong>Active tracking:</strong> Lume&#8209;X continuous position tracking; beam held if device moves &gt;10&nbsp;cm from last confirmed position.</li>
+  <li><strong>Enhanced BSL:</strong> Five&#8209;modality consensus required (vs. three&#8209;modality for relay hops).</li>
+  <li><strong>Burst duration limiting:</strong> T<sub>burst_max</sub> = 500ms, with 50ms hold between bursts for BSL sensor updates.</li>
+</ul>

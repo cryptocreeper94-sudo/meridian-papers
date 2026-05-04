@@ -1,0 +1,346 @@
+<!-- PART ONE -->
+<div class="page-break"></div>
+<div class="part-header">
+  <h2>PART ONE</h2>
+  <div class="part-subtitle">The Machine: How Meridian Works</div>
+</div>
+
+<p>A new infrastructure technology lives or dies on the quality of its engineering specification. A beautiful theory built on a weak architecture is marketing. A complete, formal, internally consistent engineering specification is the foundation on which everything else rests.</p>
+
+<p>Part One covers the engineering. Chapter One specifies the four&#8209;layer Meridian architecture in full: the node addressing system, the multi&#8209;hop mesh routing protocol, the burst&#8209;mode energy storage and scheduling layer, the directed transmission mechanism, and the 73&nbsp;Hz deterministic control runtime that governs all four layers simultaneously. Chapter Two takes that architecture out of the laboratory and into real buildings.</p>
+
+<p>Read Part One if you want to understand what Meridian is before you consider what it means.</p>
+
+<div class="page-break"></div>
+
+<!-- CHAPTER ONE -->
+<h2 class="chapter-title">Chapter One<br>The Four&#8209;Layer Architecture</h2>
+
+<div class="chapter-opening">
+<p>Every great infrastructure technology is, at its core, an abstraction. The electrical grid abstracts away the complexity of power generation. The internet abstracts away the complexity of network topology. Meridian is an abstraction for wireless energy delivery. It separates the &ldquo;what&rdquo; &mdash; deterministic, loss&#8209;bounded, addressed energy delivery to any device in the network &mdash; from the &ldquo;how&rdquo; &mdash; the ambient harvesting, burst&#8209;mode storage, multi&#8209;hop relay, and directed transmission mechanisms that implement the delivery.</p>
+</div>
+
+<h3>Abstract</h3>
+<p>We present Meridian, a four&#8209;layer deterministic wireless energy routing architecture that unifies ambient energy harvesting, burst&#8209;mode storage, mesh&#8209;based relay coordination, and directed wireless power delivery under a single governing framework. Meridian defines a universal energy coordinate system, a deterministic flow engine, a multi&#8209;hop mesh fabric, and a directional transmission layer &mdash; designated Meridian Core (MC), Meridian Flow Engine (MFE), Meridian Mesh Fabric (MMF), and Meridian Transmission Layer (MTL) respectively.</p>
+
+<p>Meridian integrates three established DarkWave subsystems: DWER (Deterministic Wireless Energy Routing) for point&#8209;to&#8209;point directed beam delivery, DRMA (Distributed Relay Mesh Architecture) for multi&#8209;hop energy routing, and DAEH (Deterministic Ambient Energy Harvesting) for node&#8209;autonomous power accumulation. The architecture is controlled by Lume&#8209;X, a provisionally patented deterministic control runtime validated at 73&nbsp;Hz cycle frequency, and enforced by Guardian Security (energy&#8209;domain designation: Guardian&#8209;E).</p>
+
+<p>No experimental data currently exists for this architecture. This paper establishes the formal theoretical and architectural foundation. Phase&nbsp;1 experimental validation is the immediate next step.</p>
+
+<h3><span class="section-num">1.</span> Introduction</h3>
+
+<h4>1.1 The Problem with Wireless Power Today</h4>
+<p>Wireless power transfer has been a subject of active research and commercial development for more than sixty years, yet the field has not produced a system capable of operating deterministically. Current commercial wireless power systems share a fundamental architectural limitation: none of them can guarantee delivery. They transmit energy into the environment and rely on proximity, orientation, or statistical averaging to achieve acceptable transfer rates.</p>
+
+<p>This limitation is not a product of insufficient engineering effort. It is a consequence of the underlying architectural approach: existing wireless power systems are broadcast systems. They were not designed to route. Routing requires a formal model of the network, a defined path between source and destination, confirmation that delivery occurred, and a recovery mechanism when delivery fails. No existing wireless power system provides any of these four properties.</p>
+
+<h4>1.2 The Routing Reframe</h4>
+<p>The foundational insight of this work is that wireless energy delivery is a routing problem, not a transmission problem. Packet&#8209;switched data networks solved this problem decades ago, and the conceptual framework they produced &mdash; addressed nodes, routing tables, QoS guarantees, topology&#8209;aware path selection, failure detection and recovery &mdash; applies directly and powerfully to wireless energy delivery.</p>
+
+<h4>1.3 The Meridian Architecture</h4>
+<p>Meridian is a four&#8209;layer deterministic wireless energy routing architecture:</p>
+<ul>
+  <li><strong>Meridian Core (MC)</strong> &mdash; the foundational coordinate system defining node identity, spatial orientation, charge&#8209;state vector representation, and deterministic timing primitives.</li>
+  <li><strong>Meridian Flow Engine (MFE)</strong> &mdash; the energy&#8209;flow logic layer converting charge&#8209;state data into deterministic routing decisions.</li>
+  <li><strong>Meridian Mesh Fabric (MMF)</strong> &mdash; the multi&#8209;hop coordination layer maintaining routing tables, link&#8209;state awareness, and neighbor&#8209;graph topology.</li>
+  <li><strong>Meridian Transmission Layer (MTL)</strong> &mdash; the physical execution layer controlling beam steering, RF emission shaping, safety gating, and closed&#8209;loop delivery confirmation.</li>
+</ul>
+
+<p>These four layers are vertically coupled and governed by five global invariants enforced continuously by Lume&#8209;X: no uncontrolled discharge, no ambiguous routing, no non&#8209;deterministic flow, no unsafe transmission events, and no mesh&#8209;level oscillation.</p>
+
+<h4>1.4 Novel Research Contributions</h4>
+<p>This work makes eleven distinct contributions not present in current wireless power or mesh networking literature:</p>
+<ol>
+  <li><strong>Self&#8209;Healing Deterministic Control Layer (SHDCL)</strong> &mdash; the first application of a self&#8209;healing runtime to wireless energy routing.</li>
+  <li><strong>Energy Routing as a Network Protocol Stack</strong> &mdash; DRMA formally modeled as an IP&#8209;addressed, routing&#8209;protocol&#8209;governed, QoS&#8209;guaranteed power mesh.</li>
+  <li><strong>Formal Determinism Definition for Wireless Power</strong> &mdash; the P<sub>min</sub>/r/&sigma;&sup2;/d framework.</li>
+  <li><strong>Bi&#8209;Directional Energy Flow in a Mesh</strong> &mdash; dynamic energy flow reversal based on real&#8209;time mesh state.</li>
+  <li><strong>Natural Language Human&#8209;Machine Interface for Power Mesh Control</strong></li>
+  <li><strong>Formal Security Threat Model for Deterministic Energy Routing</strong></li>
+  <li><strong>Burst&#8209;Mode Harvesting as a First&#8209;Class Architectural Layer</strong></li>
+  <li><strong>Dual&#8209;Mode Mechanical Harvester Design</strong></li>
+  <li><strong>Biological Safety Layer as a Named System Component</strong></li>
+  <li><strong>EMP and Geomagnetic Storm Resilience Architecture</strong></li>
+  <li><strong>Phase&#8209;Change Material Storage for Relay Nodes</strong></li>
+</ol>
+
+<h4>1.5 Scope and Honest Limitations</h4>
+<p>This paper presents a formal theoretical and architectural framework. No experimental data exists at time of writing. Current development scale powers low&#8209;power devices: sensors, wearables, IoT nodes, and microcontrollers. Claims about powering critical infrastructure are long&#8209;horizon goals contingent on solving open efficiency and energy&#8209;density problems.</p>
+
+<h3><span class="section-num">2.</span> Background and Related Work</h3>
+
+<h4>2.1 Wireless Power Transfer</h4>
+<p><strong>Microwave Power Transmission (MPT).</strong> William Brown at Raytheon demonstrated the first sustained microwave power link in the 1960s and 1970s, achieving approximately 54% rectenna conversion efficiency at fixed&#8209;point operation. NASA&rsquo;s Solar Power Satellite concept extended this work to orbital scale.</p>
+
+<p><strong>Resonant Inductive Coupling.</strong> Kurs et al. at MIT (2007) demonstrated mid&#8209;range wireless power transfer using strongly coupled magnetic resonators, achieving approximately 40% efficiency over 2&nbsp;meters. Range is fundamentally limited by resonator coil diameter.</p>
+
+<p><strong>Phased&#8209;Array Beamforming.</strong> Phased&#8209;array antenna technology is mature in radar, 5G massive MIMO, and satellite communications. Modern phased&#8209;array systems at 28&nbsp;GHz achieve beam widths of less than two degrees.</p>
+
+<p><strong>Commercial Systems.</strong> WiTricity, Ossia Cota, and Energous WattUp &mdash; none formally define determinism, none provide closed&#8209;loop delivery confirmation, and none implement routing.</p>
+
+<h4>2.5 Identified Gaps Addressed by This Work</h4>
+<ol>
+  <li>No wireless power system implements formal routing. Meridian implements the full network protocol stack architecture.</li>
+  <li>No wireless power system defines or enforces a formal determinism standard. Meridian defines P<sub>min</sub>/r/&sigma;&sup2;/d.</li>
+  <li>No wireless power system integrates a self&#8209;healing control runtime. Meridian integrates Lume&#8209;X with SHDCL.</li>
+  <li>No wireless power system integrates ambient harvesting as a coordinated architectural layer.</li>
+  <li>No wireless power system has a formal security threat model. Meridian integrates Guardian Security.</li>
+</ol>
+
+<h3><span class="section-num">3.</span> System Overview</h3>
+
+<h4>3.1 Architecture Summary</h4>
+<p>Meridian is best understood as an operating system for deterministic wireless energy. DWER performs directional beam transmission. DRMA performs multi&#8209;hop mesh routing. DAEH performs ambient energy harvesting and burst&#8209;mode storage. Meridian provides the coordinate system, the flow logic, the mesh coordination, and the transmission governance layer.</p>
+
+<h4>3.2 Vertical Coupling Model</h4>
+<pre>
+[MTL — Physical Transmission]
+       ↑↓ directives / confirmation
+[MMF — Mesh Coordination]
+       ↑↓ flow vectors / topology data
+[MFE — Flow Engine]
+       ↑↓ charge state / burst schedule
+[MC  — Core Coordinate System]
+       ↑↓ identity / position / timing
+</pre>
+
+<h4>3.5 System&#8209;Level Invariants</h4>
+<div class="invariant-box"><strong>INV&#8209;1 &mdash; No Uncontrolled Discharge.</strong> No node transmits energy without a confirmed downstream receiver, a valid routing path, and sufficient charge.</div>
+<div class="invariant-box"><strong>INV&#8209;2 &mdash; No Ambiguous Routing.</strong> Every energy packet has exactly one active route at any given time.</div>
+<div class="invariant-box"><strong>INV&#8209;3 &mdash; No Non&#8209;Deterministic Flow.</strong> All energy movement is governed by the P<sub>min</sub>/r/&sigma;&sup2;/d framework.</div>
+<div class="invariant-box"><strong>INV&#8209;4 &mdash; No Unsafe Transmission Events.</strong> No beam fires without confirmed receiver, clear exclusion zone, and sub&#8209;ICNIRP power density.</div>
+<div class="invariant-box"><strong>INV&#8209;5 &mdash; No Mesh Oscillation.</strong> Energy cycling without net forward progress is detected and resolved.</div>
+
+<h3><span class="section-num">4.</span> Meridian Core (MC): The Energy Coordinate System</h3>
+
+<h4>4.2 Node Identity</h4>
+<p>Every Meridian node has a unique 64&#8209;bit identifier:</p>
+<pre>[Network_ID : 16 bits][Zone_ID : 16 bits][Node_Type : 8 bits][Node_Serial : 24 bits]</pre>
+
+<h4>4.3 Spatial Orientation</h4>
+<p>Each node maintains a spatial state vector:</p>
+<pre>S = [x, y, z, θ_azimuth, θ_elevation, Δx, Δy, Δz]</pre>
+
+<h4>4.4 Charge&#8209;State Vector</h4>
+<pre>C = [V_cap, V_min, V_burst, V_max, dV/dt, mode, harvest_rate, cycles]</pre>
+
+<h4>4.5 Timing Primitives</h4>
+<p>The 73&nbsp;Hz cycle rate corresponds to a 13.7&nbsp;ms control cycle &mdash; the fundamental timing resolution of the Meridian control system.</p>
+
+<h3><span class="section-num">5.</span> Meridian Flow Engine (MFE)</h3>
+
+<h4>5.2 Flow&#8209;Selection Algorithm</h4>
+<p>Priority score P:</p>
+<pre>P = w₁ × (V_cap - V_burst)/(V_max - V_burst)   [charge surplus]
+  + w₂ × (destination_priority)                  [urgency]
+  + w₃ × (link_quality)                          [reliability]
+  + w₄ × (1 - mesh_load)                         [congestion]</pre>
+<p>Default weights: w<sub>1</sub>&nbsp;=&nbsp;0.4, w<sub>2</sub>&nbsp;=&nbsp;0.3, w<sub>3</sub>&nbsp;=&nbsp;0.2, w<sub>4</sub>&nbsp;=&nbsp;0.1.</p>
+
+<h4>5.3 Burst&#8209;Mode Scheduling</h4>
+<pre>if V_cap >= V_burst:
+    compute T_burst = T_now + alignment_delay
+    assign TDMA slot starting at T_burst
+    set node.mode = READY → TRANSMITTING → HARVEST
+else:
+    compute T_ready = T_now + (V_burst - V_cap) / dV_dt
+    if dV_dt < dV_dt_min:
+        flag node for DWER supplementation</pre>
+
+<h3><span class="section-num">6.</span> Meridian Mesh Fabric (MMF)</h3>
+
+<h4>6.2 Routing Tables</h4>
+<pre>R[destination_id] = {
+    next_hop_id,
+    path_cost,          // expected delivery loss
+    hop_count,
+    link_quality,       // rolling reliability estimate
+    alternate_next_hop, // pre-computed fallback
+    last_updated,
+    state               // ACTIVE, DEGRADED, FAILED
+}</pre>
+
+<h4>6.3 Path Selection</h4>
+<pre>PathCost(path) = Σ L(link_i) for all links i in path
+               + penalty × hop_count</pre>
+
+<h4>6.4 Bi&#8209;Directional Energy Flow</h4>
+<p>Energy can flow in either direction on any link, from any node with surplus charge to any node with depleted charge &mdash; a distinguishing capability of the Meridian mesh.</p>
+
+<h3><span class="section-num">7.</span> Meridian Transmission Layer (MTL)</h3>
+
+<h4>7.2 Beam Steering</h4>
+<pre>BeamCommand = {
+    target_node_id, target_position,
+    power_level_mW,     // never exceeds 1000 mW = 1W
+    beam_width_deg, frequency_GHz,
+    timing_window, safety_constraints
+}</pre>
+
+<h4>7.3 Safety Gating</h4>
+<div class="claim-box">
+<p><strong>Five&#8209;Condition Safety Gate</strong> &mdash; all must pass before any beam fires:</p>
+<ol>
+  <li>Receiver confirmed (position &lt;&nbsp;500&nbsp;ms old)</li>
+  <li>Path authorized by MMF routing table</li>
+  <li>Exclusion zone clear (0.5&nbsp;m radius cylinder)</li>
+  <li>Power density &lt;&nbsp;ICNIRP limits (2&nbsp;W/m&sup2; at 2.4&nbsp;GHz)</li>
+  <li>Charge sufficient (V<sub>cap</sub>&nbsp;&ge;&nbsp;V<sub>burst</sub>)</li>
+</ol>
+</div>
+
+<h3><span class="section-num">8.</span> Ambient Harvesting Integration (DAEH)</h3>
+
+<h4>8.3 Honest Power Density Baselines</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Source</th><th>Power Density</th><th>Notes</th></tr>
+  <tr><td>Ambient RF indoor (random)</td><td>0.01&ndash;1&nbsp;&mu;W/cm&sup2;</td><td>Highly location&#8209;dependent</td></tr>
+  <tr><td>RF from known sources</td><td>1&ndash;100&nbsp;&mu;W/cm&sup2;</td><td>Predictable, targetable</td></tr>
+  <tr><td>Thermal gradient TEG</td><td>1&ndash;10&nbsp;&mu;W/cm&sup2;</td><td>Requires &Delta;T</td></tr>
+  <tr><td>Piezoelectric vibration</td><td>10&ndash;100&nbsp;&mu;W/cm&sup2;</td><td>Requires mechanical excitation</td></tr>
+  <tr><td>Indoor solar / ambient light</td><td>10&ndash;100&nbsp;&mu;W/cm&sup2;</td><td>Most mature modality</td></tr>
+  <tr><td>Triboelectric TENG</td><td>1&ndash;100&nbsp;&mu;W/cm&sup2;</td><td>Highly environment&#8209;dependent</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">9.</span> Mesh Routing Integration (DRMA)</h3>
+
+<h4>9.2 Why Short Hops Beat Long Hops</h4>
+<p>At 2.4&nbsp;GHz, FSPL increases by 6&nbsp;dB every time distance doubles. Breaking a 4&#8209;meter path into four 1&#8209;meter hops saves approximately 12&nbsp;dB in path loss per hop but incurs per&#8209;hop conversion losses (30&ndash;52% round&#8209;trip efficiency). Break&#8209;even occurs at approximately 2&ndash;3&nbsp;meters.</p>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Per&#8209;Hop Stage</th><th>Estimated Efficiency</th></tr>
+  <tr><td>Rectenna RF to DC</td><td>50&ndash;70%</td></tr>
+  <tr><td>Re&#8209;transmission DC to RF</td><td>60&ndash;75%</td></tr>
+  <tr><td>Per&#8209;hop round&#8209;trip</td><td>~30&ndash;52%</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">10.</span> Wireless Transmission Integration (DWER)</h3>
+
+<h4>10.2 The Determinism Standard</h4>
+<div class="claim-box">
+<p><strong>Deterministic delivery:</strong> for a given transmitter configuration and receiver position, the system guarantees P<sub>min</sub>&nbsp;(mW) within spatial uncertainty radius r&nbsp;(cm), with variance &sigma;&sup2; below threshold, across N&nbsp;&ge;&nbsp;20 repeated trials under identical conditions, at distance d&nbsp;(m).</p>
+</div>
+
+<h4>10.3 Efficiency Budget</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Stage</th><th>Estimated Efficiency</th></tr>
+  <tr><td>Power amplifier to antenna</td><td>60&ndash;75%</td></tr>
+  <tr><td>Free&#8209;space path loss (1&nbsp;m, focused beam)</td><td>10&ndash;30%</td></tr>
+  <tr><td>Rectenna RF to DC conversion</td><td>50&ndash;70%</td></tr>
+  <tr><td>End&#8209;to&#8209;end (optimistic)</td><td>~15&ndash;25%</td></tr>
+  <tr><td>End&#8209;to&#8209;end (conservative)</td><td>~3&ndash;10%</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">11.</span> Global Invariant Enforcement</h3>
+<p>The five global invariants are not design aspirations. They are hard assertions enforced by the Lume&#8209;X runtime at every control cycle &mdash; every 13.7&nbsp;ms.</p>
+
+<h3><span class="section-num">12.</span> Control and Safety Layer</h3>
+
+<h4>12.3 Natural Language Control Interface</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Natural Language Command</th><th>Meridian Operation</th></tr>
+  <tr><td>&ldquo;Reroute power around node 3&rdquo;</td><td>MMF: mark Node&#8209;3 EXCLUDED, recalculate paths</td></tr>
+  <tr><td>&ldquo;Increase harvest priority on south wall&rdquo;</td><td>MFE: raise burst schedule priority for Zone south_wall</td></tr>
+  <tr><td>&ldquo;Switch to burst&#8209;only mode&rdquo;</td><td>MFE: disable DWER supplementation</td></tr>
+  <tr><td>&ldquo;Reduce beam power on corridor to 50%&rdquo;</td><td>MTL: set power_level_mW = 0.5 &times; current</td></tr>
+  <tr><td>&ldquo;Show charge state of all relay nodes&rdquo;</td><td>MC: broadcast CHARGE_STATE_REPORT</td></tr>
+</table>
+</div>
+
+<h4>12.4 Guardian Security Integration</h4>
+<p>Guardian Security (Guardian&#8209;E) provides six primary defenses: localization spoofing defense, routing table integrity, beam hijacking prevention, denial&#8209;of&#8209;power detection, node impersonation prevention, and timing attack resistance.</p>
+
+<h3><span class="section-num">13.</span> Implementation Considerations</h3>
+
+<h4>13.2 Supercapacitor Sizing</h4>
+<pre>E_burst = P_burst × T_burst
+C = 2 × E_burst / (V_burst² - V_min²)</pre>
+
+<h3>Appendix A &mdash; Formal Definitions and Notation</h3>
+<pre>C = [V_cap, V_min, V_burst, V_max, dV/dt, mode, harvest_rate, cycles]
+F = [source_id, P_available, direction_vector, loss_model, priority, T_available]
+R[i][j] = { next_hop, cost, hops, quality, alt_next_hop, updated, state }</pre>
+
+<h3>Appendix B &mdash; Meridian State Machine</h3>
+<pre>Node Lifecycle: INIT → DISCOVERY → ACTIVE → DEGRADED → FAILED → RECOVERED
+Transmission Gate: IDLE → CHECKING → GATED/AUTHORIZED → FIRING → CONFIRMING → LOGGED</pre>
+
+<h3>Appendix C &mdash; Mathematical Model of Loss&#8209;Bounded Flow</h3>
+<div class="table-wrap">
+<table>
+  <tr><th>Distance</th><th>FSPL at 2.4&nbsp;GHz</th></tr>
+  <tr><td>1 m</td><td>40.0 dB</td></tr>
+  <tr><td>2 m</td><td>46.0 dB</td></tr>
+  <tr><td>3 m</td><td>49.5 dB</td></tr>
+  <tr><td>4 m</td><td>52.0 dB</td></tr>
+</table>
+</div>
+
+<h3>Appendix E &mdash; Safety Model</h3>
+<div class="claim-box">
+<p><strong>Guardian&#8209;E Rules GE&#8209;01 through GE&#8209;11:</strong></p>
+<ol>
+  <li>Every transmission must be authorized by a valid signed routing entry.</li>
+  <li>Position data must be independently confirmed before beam fire.</li>
+  <li>Delivery confirmation must match target position within r&nbsp;cm.</li>
+  <li>All inter&#8209;node messages must be authenticated.</li>
+  <li>TDMA window violations trigger immediate quarantine.</li>
+  <li>Delivery failure &gt;&nbsp;20% triggers DENIAL_OF_POWER_SUSPECTED.</li>
+  <li>Energy flow reversal requires authenticated surplus node.</li>
+  <li>Inconsistent charge&#8209;state reporting is flagged.</li>
+  <li>All security events logged before action.</li>
+  <li>No Guardian&#8209;E action suppresses a SAFETY_GATE event.</li>
+  <li>All violations reported to Lume&#8209;X for SHDCL coordination.</li>
+</ol>
+</div>
+
+<h3>Appendix E.3 &mdash; Failure&#8209;Mode Analysis</h3>
+<div class="table-wrap">
+<table>
+  <tr><th>Failure Mode</th><th>Detection</th><th>Response</th></tr>
+  <tr><td>Localization signal lost</td><td>MC position age &gt;&nbsp;500&nbsp;ms</td><td>Beam hold, re&#8209;acquisition</td></tr>
+  <tr><td>Node failure</td><td>No heartbeat &times;&nbsp;2 cycles</td><td>Route around node</td></tr>
+  <tr><td>Gate condition failure</td><td>MTL gate check</td><td>Block transmission</td></tr>
+  <tr><td>Delivery not confirmed</td><td>Confirmation timeout</td><td>Retry &times;&nbsp;2, then SHDCL</td></tr>
+  <tr><td>&sigma;&sup2; threshold exceeded</td><td>MFE variance monitor</td><td>Link DEGRADED, alt path</td></tr>
+  <tr><td>Biological presence</td><td>Exclusion zone sensor</td><td>Immediate beam cut</td></tr>
+  <tr><td>Power density threshold</td><td>BSL continuous monitor</td><td>Throttle, then cut</td></tr>
+  <tr><td>Routing oscillation</td><td>MMF flow history</td><td>Flow stabilization lock</td></tr>
+  <tr><td>Security rule violation</td><td>Guardian&#8209;E engine</td><td>Per&#8209;rule response</td></tr>
+</table>
+</div>
+
+<h3>Appendix F &mdash; Reference Implementation Blueprint</h3>
+<pre>Layer 5: Lume-X Runtime (software)
+Layer 4: Meridian Control Software (MC + MFE + MMF + MTL)
+Layer 3: Communication Interface (USB for Phase 1)
+Layer 2: Sensor and Actuator Firmware (UWB, RF, charge)
+Layer 1: Hardware (phased-array, rectenna, supercap, MCU, UWB)</pre>
+
+<h3>References</h3>
+<ol style="font-size:0.9em;">
+  <li>Brown, W.C. (1969). &ldquo;Experiments in the Transportation of Energy by Microwave Beam.&rdquo; IEEE PTGMTT.</li>
+  <li>Brown, W.C. (1984). &ldquo;The History of Power Transmission by Radio Waves.&rdquo; IEEE Trans. MTT, 32(9).</li>
+  <li>Kurs, A., et al. (2007). &ldquo;Wireless Power Transfer via Strongly Coupled Magnetic Resonances.&rdquo; Science, 317(5834).</li>
+  <li>Glaser, P.E. (1968). &ldquo;Power from the Sun: Its Future.&rdquo; Science, 162(3856).</li>
+  <li>Mitcheson, P.D., et al. (2008). &ldquo;Energy Harvesting From Human and Machine Motion.&rdquo; Proc. IEEE, 96(9).</li>
+  <li>Roundy, S., Wright, P.K., &amp; Rabaey, J. (2004). Energy Scavenging for Wireless Sensor Networks. Kluwer.</li>
+  <li>Vullers, R.J.M., et al. (2010). &ldquo;Micropower Energy Harvesting.&rdquo; Solid-State Electronics, 53(7).</li>
+  <li>Wang, Z.L. (2012). &ldquo;Self-Powered Nanosensors and Nanosystems.&rdquo; Advanced Materials, 24(2).</li>
+  <li>Andrews, J. (2026). Lume Language Specification. DarkWave Studios LLC. DOI: 10.5281/zenodo.19382282.</li>
+  <li>Andrews, J. (2026). Trust Layer Ecosystem. DarkWave Studios LLC. DOI: 10.5281/zenodo.19560674.</li>
+  <li>ICNIRP. (2020). &ldquo;Guidelines for Limiting Exposure to EMF.&rdquo; Health Physics, 118(5).</li>
+  <li>Decawave. (2019). DWM1001 Module Datasheet. Rev 1.3.</li>
+</ol>
+
+<!-- Chapter Bridge -->
+<h3>Chapter Bridge: From Machine to Building</h3>
+<p>The architecture specified in Chapter One operates in abstract space: nodes at defined positions, links with defined quality metrics, invariants with defined enforcement mechanisms. The engineering is complete. The architecture is correct.</p>
+<p>But buildings are not abstract space. Chapter Two answers the question: how does this architecture get deployed in the real, messy, architecturally complex buildings that humans actually occupy?</p>

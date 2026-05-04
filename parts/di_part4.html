@@ -1,0 +1,207 @@
+<h2><span class="section-num">8</span> Cross&#8209;Domain Interoperability</h2>
+<p>A single DI instance is valuable within its domain. Multiple DI instances that interoperate across domain boundaries are qualitatively more powerful.</p>
+<p>The Trust Layer and Meridian already interoperate: Guardian Security uses the Trust Layer PKI to authenticate Meridian nodes. A Meridian node&#8217;s identity is Trust Layer&#8209;global. Any system that participates in the Trust Layer can verify a Meridian node&#8217;s identity without Meridian&#8209;specific knowledge.</p>
+<p>This suggests a general model for cross&#8209;domain DI interoperability:</p>
+<p><strong>Shared identity substrate.</strong> The Trust Layer provides the identity foundation for all DI instances. A node participating in the energy domain (Meridian), the computation domain (DAIGS), or any future domain is the same identity in all of them. Single identity, multiple domain participation.</p>
+<p><strong>Shared governance substrate.</strong> The Trust Layer enforces governance policy across all DI instances. A policy that says &#8220;devices below trust level&nbsp;3 cannot receive high&#8209;power energy delivery&#8221; is enforced at the Trust Layer level and respected by Meridian&#8217;s routing layer.</p>
+<p><strong>Shared audit substrate.</strong> Every event in every DI instance generates a certificate chain entry. The certificate chain is the universal audit log for all DI instances. A compliance query about a device&#8217;s energy consumption, trust interactions, and computation usage can be answered from the unified audit log.</p>
+<p><strong>Cross&#8209;domain resource coordination.</strong> When a device needs energy (Meridian), computation (DAIGS), and authenticated identity (Trust Layer) simultaneously, the three DI instances coordinate through shared identity and governance. The device presents its Trust Layer identity and the three systems coordinate their resource provision. This is the DI equivalent of a converged network.</p>
+
+<h2><span class="section-num">9</span> The Prediction: Future Deterministic Infrastructure Domains</h2>
+
+<h3>9.1 Transportation Domain: Deterministic Mobility Infrastructure (DMI)</h3>
+<p><strong>Resource:</strong> Right&#8209;of&#8209;way &mdash; access to physical space for movement at a specific time.</p>
+<p><strong>Identity requirements.</strong> Every vehicle possesses a verified identity encoding its physical profile and authorization level. A vehicle without verified identity cannot receive right&#8209;of&#8209;way assignment.</p>
+<p><strong>Explicit routing.</strong> Right&#8209;of&#8209;way is allocated along specific paths at specific times. Intersection coordination routes vehicles through conflict zones along non&#8209;conflicting temporal paths.</p>
+<p><strong>Invariant set.</strong> No two vehicles occupy the same physical space at the same time. No vehicle exceeds its authorized speed envelope.</p>
+<p><strong>Organism classification:</strong> Type&nbsp;3 predicted.</p>
+
+<h3>9.2 Manufacturing Domain: Deterministic Production Infrastructure (DPI)</h3>
+<p><strong>Resource:</strong> Production capacity &mdash; access to manufacturing equipment, materials, and qualified operators.</p>
+<p><strong>Identity requirements.</strong> Every production resource possesses a verified identity encoding its capability profile. A production step cannot be scheduled to a resource whose identity does not include the required capability.</p>
+<p><strong>Explicit routing.</strong> Production jobs are routed through the manufacturing mesh along capability&#8209;matched paths &mdash; not assigned by a central scheduler, but routed hop&#8209;by&#8209;hop through available resources.</p>
+<p><strong>Invariant set.</strong> No production step is scheduled to a mismatched resource. No expired material lot is used.</p>
+<p><strong>Organism classification:</strong> Type&nbsp;3&ndash;4 predicted.</p>
+
+<h3>9.3 Emergency Coordination Domain: Deterministic Response Infrastructure (DRI)</h3>
+<p><strong>Resource:</strong> Response capacity &mdash; allocation of emergency personnel, equipment, and supplies to active incidents.</p>
+<p><strong>Explicit routing.</strong> Response capacity is routed to incidents along capability&#8209;matched, time&#8209;optimal paths through the response mesh &mdash; not dispatched from a central table, but routed dynamically based on real&#8209;time availability.</p>
+<p><strong>Invariant set.</strong> Every active incident has assigned response capacity above its minimum threshold. Critical incidents receive CRITICAL priority override.</p>
+<p><strong>Organism classification:</strong> Type&nbsp;3 predicted with strong self&#8209;preservation characteristics.</p>
+
+<h3>9.4 Ambient Computation Domain: Deterministic Inference Infrastructure (DII)</h3>
+<p><strong>Resource:</strong> Inference capacity &mdash; allocation of AI inference computation across a mesh of compute nodes.</p>
+<p><strong>Explicit routing.</strong> Inference requests are routed through the compute mesh to capability&#8209;matched nodes. Load balancing is deterministic. Inference results are returned along the same verified path with full audit trail.</p>
+<p><strong>Invariant set.</strong> No sensitive inference is routed to an unauthorized node. No inference result is delivered without a verifiable execution trace.</p>
+<p><strong>Organism classification:</strong> Type&nbsp;2&ndash;3 predicted. DII is the inference&#8209;specific extension of DAIGS [17].</p>
+
+<h2><span class="section-num">10</span> Implications for Physical System Design</h2>
+
+<h3>10.1 The Design Checklist</h3>
+<p>The four properties provide a design checklist for any autonomous physical system:</p>
+<table>
+  <tr><th>Property</th><th>Checklist Items</th></tr>
+  <tr><td>1 &mdash; Verified Identity</td><td>Identity established at manufacture and immutable? Cryptographically bound and locally verifiable? Capability&#8209;encoding? Propagated to all models?</td></tr>
+  <tr><td>2 &mdash; Explicit Routing</td><td>Resources routed along defined paths? Routing deterministic? Routes validated against safety invariants? Delivery confirmation?</td></tr>
+  <tr><td>3 &mdash; Invariant Homeostasis</td><td>Defined global invariant set? Checked continuously? Violation detection within one cycle? Pre&#8209;specified recovery sequences?</td></tr>
+  <tr><td>4 &mdash; Organism Self&#8209;Maintenance</td><td>Self&#8209;healing without human intervention? Conservation mode under constraint? Adaptive behavior within bounds? Identity persistence?</td></tr>
+</table>
+<p>A system missing any item has a corresponding class of failure modes that cannot be recovered from without external intervention.</p>
+
+<h3>10.2 The Cost of Incompleteness</h3>
+<p><strong>Missing Property&nbsp;1:</strong> The system cannot enforce any access policy. Security depends entirely on physical access control, which is impossible in distributed deployments.</p>
+<p><strong>Missing Property&nbsp;2:</strong> Resources are wasted. Safety envelopes cannot be enforced end&#8209;to&#8209;end. Denial&#8209;of&#8209;resource attacks are trivially mounted.</p>
+<p><strong>Missing Property&nbsp;3:</strong> The system drifts into unsafe states. The 2003 North American blackout was a Property&nbsp;3 failure: invariant monitoring was not continuous, and a recoverable perturbation cascaded to catastrophic failure.</p>
+<p><strong>Missing Property&nbsp;4:</strong> The system requires human intervention for all failure recovery. This creates a hard scaling limit and a hard availability limit.</p>
+
+<h3>10.3 The Design Paradigm Shift</h3>
+<p>Deterministic Infrastructure represents a paradigm shift: from system&#8209;as&#8209;machine to system&#8209;as&#8209;organism. The machine paradigm designs systems as passive components operated by human supervisors. The organism paradigm designs systems as autonomous agents that maintain their own operational integrity. The contribution of DI is precision: it specifies exactly which organismic properties are necessary and sufficient, provides the axiomatic foundation, and supplies the implementation substrate.</p>
+<p>The paradigm shift is not optional. It is driven by scale. Human&#8209;supervised machine infrastructure cannot serve a trillion autonomous devices. Only organism&#8209;like infrastructure can scale to that deployment density.</p>
+
+<h2><span class="section-num">11</span> Related Work</h2>
+
+<h3>11.1 Autonomic Computing</h3>
+<p>The autonomic computing vision [24] proposed self&#8209;managing systems with four properties: self&#8209;configuration, self&#8209;optimization, self&#8209;healing, and self&#8209;protection. This vision anticipated several aspects of DI. The critical difference is the axiomatic foundation. Autonomic computing describes desired properties but does not provide an axiomatic framework that guarantees their achievement.</p>
+
+<h3>11.2 Cyber&#8209;Physical Systems</h3>
+<p>The CPS literature [26, 27] studies the integration of computational and physical processes. The distinction is scope. CPS research focuses on individual systems; Deterministic Infrastructure is a general framework applicable across all autonomous physical domains.</p>
+
+<h3>11.3 Self&#8209;Organizing Systems</h3>
+<p>Self&#8209;organizing systems [29] exhibit some DI properties (distributed coordination, resilience) but not others (verified identity, invariant homeostasis). The key distinction is determinism. Self&#8209;organizing systems are probabilistic; DI systems produce guaranteed outcomes per&#8209;instance.</p>
+
+<h3>11.4 Distributed Ledger Technology</h3>
+<p>Blockchain provides verified identity and some invariant enforcement but cannot operate at infrastructure timescales. Blockchain consensus operates at seconds to minutes; DI operates at milliseconds. The Trust Layer achieves the governance properties of blockchain at infrastructure timescales by replacing consensus with deterministic cryptographic verification.</p>
+
+<h3>11.5 The Lume Ecosystem</h3>
+<p>The three companion papers [21, 22, 23] provide the concrete grounding for this general theory. The Trust Layer [16], DAIGS [17], Lume&#8209;V [18], Lume&#8209;X [19], and Deterministic Dissolution [20] provide additional instances and tooling. This paper synthesizes these contributions into a general framework.</p>
+
+<h2><span class="section-num">12</span> Limitations and Honest Boundaries</h2>
+<p><strong>The theory rests on three confirmed instances.</strong> Three instances do not prove generality. The predictions in Section&nbsp;9 are argued predictions, not demonstrated facts.</p>
+<p><strong>The 42&nbsp;Assumptions have not been formally proven to entail the four properties.</strong> The mapping in Section&nbsp;4 is argued rather than formally derived. A formal proof is future work.</p>
+<p><strong>DI does not eliminate all failure modes.</strong> It cannot prevent hardware failures that exceed the SHDCL recovery budget, adversarial attacks that compromise the Trust Layer PKI, or physical events that destroy nodes faster than self&#8209;maintenance can respond.</p>
+<p><strong>Cross&#8209;domain interoperability is architectural, not operational.</strong> The integration of Meridian&#8217;s energy routing with the Trust Layer&#8217;s identity governance has not been fully implemented.</p>
+<p><strong>The general theory does not address economics.</strong> Building DI across multiple physical domains requires significant capital investment, regulatory engagement, and stakeholder coordination.</p>
+
+<h2><span class="section-num">13</span> Conclusion</h2>
+<p>Three papers built a system. This paper explains what that system is a part of.</p>
+<p>Meridian is not a wireless energy router that happens to have interesting theoretical properties. It is the first formally specified instance of a general class &mdash; Deterministic Infrastructure &mdash; defined by four properties that together make autonomous physical operation safe, scalable, and governable without central authority. The Trust Layer is another instance in the identity domain. DAIGS is another in the computation domain. Four more domains are predicted on the basis of the general theory.</p>
+<p>The properties that define this class are not arbitrary. They are the minimum requirements for any autonomous physical system that must operate in an adversarial environment without human supervision. Verified identity, explicit routing, invariant homeostasis, and organism&#8209;like self&#8209;maintenance are the properties that biological organisms evolved because they faced the same requirements.</p>
+<p>The Lume ecosystem is the first complete framework for building Deterministic Infrastructure. It provides the language (Lume), the axioms (the 42&nbsp;Assumptions), the verification layer (Lume&#8209;V), and the operational runtime (Lume&#8209;X). Any autonomous physical system built on this substrate will converge toward all four properties as a logical consequence of the foundation.</p>
+<p>The world needs Deterministic Infrastructure. The gap between the autonomous device density that is coming and the infrastructure paradigms that currently exist is not a gap that can be closed by improving existing infrastructure. It requires a new paradigm. Deterministic Infrastructure is that paradigm. The Lume ecosystem is its foundation. And this paper is its first formal statement as a general theory.</p>
+<p>The work that remains is vast. But the theory now exists. The instances now exist. The foundation now exists. What comes next is construction.</p>
+
+<div class="page-break"></div>
+
+<h2>Appendix A &mdash; The Four Properties: Formal Definitions</h2>
+<pre>Property 1 &mdash; Verified Identity at Every Node
+  identity(N) = &lang;ID_N, PKI_cert_N, capabilities_N, propagation_model_N&rang;
+  where:
+    ID_N         is fixed at provisioning and immutable
+    PKI_cert_N   is cryptographically bound to ID_N and locally verifiable
+    capabilities_N encodes what N can do, derived from manufacture
+    propagation_model_N specifies how network(N) is built from identity(N)
+  System S satisfies Property 1 iff: no interaction between N1 and N2
+  occurs without mutual verification of PKI_cert for both parties.
+
+Property 2 &mdash; Explicitly Routed Resources
+  route(s, d, t) = &lang;path, quantity_at_each_hop, timing, safety_envelope&rang;
+  System S satisfies Property 2 iff: no resource transfer occurs for
+  which a validated route(s, d, t) does not exist.
+
+Property 3 &mdash; Invariant-Enforced Homeostasis
+  Let INV(S) = {inv_1, ..., inv_n}. System S satisfies Property 3 iff:
+  &forall;t: &forall;inv_i &isin; INV(S): inv_i(state(S, t)) = TRUE
+  &or; &exist;t' &le; t + T_cycle: recovery(S, t') &rarr; inv_i(state(S, t')) = TRUE
+
+Property 4 &mdash; Organism-Like Self-Maintenance
+  System S satisfies Property 4 iff S implements:
+    self_heal(f) &rarr; recovery without external intervention
+    self_preserve(v) | v &lt; v_min &rarr; conservation mode
+    adapt(e) &rarr; behavior adjusted within INV(S)
+    persist_identity() &rarr; identity(N) unchanged despite changes</pre>
+
+<h2>Appendix B &mdash; Domain Mapping Table</h2>
+<table>
+  <tr><th>Domain</th><th>DI Instance</th><th>Resource Routed</th><th>Identity Substrate</th><th>Classification</th></tr>
+  <tr><td>Energy</td><td>Meridian</td><td>Electrical energy (RF bursts)</td><td>MC 64&#8209;bit / Trust Layer PKI</td><td>Type&nbsp;3+ structural</td></tr>
+  <tr><td>Identity/Data</td><td>Trust Layer</td><td>Trust relationships, credentials</td><td>Cryptographic entity identity</td><td>Type&nbsp;3 confirmed</td></tr>
+  <tr><td>Multi&#8209;Agent</td><td>DAIGS</td><td>Computation allocation</td><td>Agent role identity</td><td>Type&nbsp;2&ndash;3</td></tr>
+  <tr><td>Transportation</td><td>DMI (predicted)</td><td>Right&#8209;of&#8209;way</td><td>Vehicle capability identity</td><td>Type&nbsp;3 predicted</td></tr>
+  <tr><td>Manufacturing</td><td>DPI (predicted)</td><td>Production capacity</td><td>Resource capability profile</td><td>Type&nbsp;3&ndash;4 predicted</td></tr>
+  <tr><td>Emergency</td><td>DRI (predicted)</td><td>Response capacity</td><td>Responder capability profile</td><td>Type&nbsp;3 predicted</td></tr>
+  <tr><td>Ambient Compute</td><td>DII (predicted)</td><td>Inference capacity</td><td>Compute node capability profile</td><td>Type&nbsp;2&ndash;3 predicted</td></tr>
+</table>
+
+<h2>Appendix C &mdash; Convergence Prediction Matrix</h2>
+<table>
+  <tr><th>DI Domain</th><th>P1 Emergence</th><th>P2 Emergence</th><th>P3 Emergence</th><th>P4 Emergence</th><th>Type</th><th>Timeline</th></tr>
+  <tr><td>Transportation (DMI)</td><td>Immediate</td><td>Early</td><td>Mid&#8209;term</td><td>Mid&#8209;term</td><td>3</td><td>3&ndash;7 years</td></tr>
+  <tr><td>Manufacturing (DPI)</td><td>Early</td><td>Mid&#8209;term</td><td>Early</td><td>Mid&#8209;term</td><td>3&ndash;4</td><td>2&ndash;5 years</td></tr>
+  <tr><td>Emergency (DRI)</td><td>Immediate</td><td>Early</td><td>Early</td><td>Long&#8209;term</td><td>3</td><td>5&ndash;10 years</td></tr>
+  <tr><td>Ambient Compute (DII)</td><td>Immediate</td><td>Early</td><td>Mid&#8209;term</td><td>Early</td><td>2&ndash;3</td><td>1&ndash;3 years</td></tr>
+</table>
+
+<h2>Appendix D &mdash; Cross&#8209;Reference to Companion Papers</h2>
+<table>
+  <tr><th>Concept</th><th>Source Paper</th><th>Section</th></tr>
+  <tr><td>Meridian architecture (Property&nbsp;1&ndash;4 implementation)</td><td>Meridian Architecture, 2026</td><td>&sect;4&ndash;&sect;12</td></tr>
+  <tr><td>MC node identity</td><td>Meridian Architecture, 2026</td><td>&sect;4.2</td></tr>
+  <tr><td>DRMA multi&#8209;hop routing</td><td>Meridian Architecture, 2026</td><td>&sect;9</td></tr>
+  <tr><td>INV&#8209;1 through INV&#8209;5</td><td>Meridian Architecture, 2026</td><td>&sect;3.5, &sect;11</td></tr>
+  <tr><td>SHDCL self&#8209;healing</td><td>Meridian Architecture, 2026</td><td>&sect;12.2</td></tr>
+  <tr><td>Synthetic Organism classification</td><td>Meridian Organism, 2026</td><td>&sect;7</td></tr>
+  <tr><td>14&#8209;subsystem biological isomorphism</td><td>Meridian Organism, 2026</td><td>&sect;3&ndash;&sect;4</td></tr>
+  <tr><td>42&nbsp;Assumptions as biological axioms</td><td>Meridian Organism, 2026</td><td>&sect;6</td></tr>
+  <tr><td>Energy Internet Protocol Stack</td><td>Energy Internet, 2026</td><td>&sect;3</td></tr>
+  <tr><td>EBGP inter&#8209;mesh federation</td><td>Energy Internet, 2026</td><td>&sect;5</td></tr>
+  <tr><td>Emergency Priority Override</td><td>Energy Internet, 2026</td><td>&sect;6.4</td></tr>
+  <tr><td>EIRA governance model</td><td>Energy Internet, 2026</td><td>&sect;9.2</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>References</h2>
+<ol>
+  <li value="15">Andrews, J. (2026). <em>Lume Language Specification.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a></li>
+  <li>Andrews, J. (2026). <em>Trust Layer Ecosystem.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a></li>
+  <li>Andrews, J. (2026). <em>DAIGS Framework.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;V Verification Suite.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;X Multi&#8209;Agent Cognition.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a></li>
+  <li>Andrews, J. (2026). <em>Deterministic Dissolution.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a></li>
+  <li>Andrews, J. (2026). <em>Meridian Architecture.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Meridian as Synthetic Organism.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>The Energy Internet.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li value="24">Kephart, J.O., &amp; Chess, D.M. (2003). &#8220;The Vision of Autonomic Computing.&#8221; <em>IEEE Computer,</em> 36(1), 41&ndash;50.</li>
+  <li>Psaier, H., &amp; Dustdar, S. (2011). &#8220;A Survey on Self&#8209;Healing Systems.&#8221; <em>Computing,</em> 91(1), 43&ndash;73.</li>
+  <li>Lee, E.A. (2008). &#8220;Cyber Physical Systems: Design Challenges.&#8221; <em>ISORC,</em> 363&ndash;369.</li>
+  <li>Rajkumar, R., et&nbsp;al. (2010). &#8220;Cyber&#8209;Physical Systems: The Next Computing Revolution.&#8221; <em>DAC,</em> 731&ndash;736.</li>
+  <li>Bonabeau, E., Dorigo, M., &amp; Theraulaz, G. (1999). <em>Swarm Intelligence: From Natural to Artificial Systems.</em> Oxford University Press.</li>
+  <li>Camazine, S., et&nbsp;al. (2001). <em>Self&#8209;Organization in Biological Systems.</em> Princeton University Press.</li>
+  <li value="53">Amin, M. (2000). &#8220;Toward Self&#8209;Healing Energy Infrastructure Systems.&#8221; <em>IEEE Computer Applications in Power,</em> 14(1), 20&ndash;28.</li>
+  <li>Strogatz, S.H. (2001). &#8220;Exploring Complex Networks.&#8221; <em>Nature,</em> 410, 268&ndash;276.</li>
+  <li>Barab&aacute;si, A.L., &amp; Albert, R. (1999). &#8220;Emergence of Scaling in Random Networks.&#8221; <em>Science,</em> 286(5439), 509&ndash;512.</li>
+  <li>Simon, H.A. (1962). &#8220;The Architecture of Complexity.&#8221; <em>Proc. American Philosophical Society,</em> 106(6), 467&ndash;482.</li>
+  <li>Minar, N., et&nbsp;al. (1996). &#8220;The Swarm Simulation System.&#8221; Working Paper 96&#8209;06&#8209;042, Santa Fe Institute.</li>
+  <li>De Wolf, T., &amp; Holvoet, T. (2005). &#8220;Emergence Versus Self&#8209;Organisation.&#8221; <em>Engineering Self&#8209;Organising Systems,</em> LNCS 3464, 1&ndash;15.</li>
+  <li>Sztipanovits, J., &amp; Karsai, G. (1997). &#8220;Model&#8209;Integrated Computing.&#8221; <em>IEEE Computer,</em> 30(4), 110&ndash;111.</li>
+  <li>Lamport, L. (1978). &#8220;Time, Clocks, and the Ordering of Events in a Distributed System.&#8221; <em>CACM,</em> 21(7), 558&ndash;565.</li>
+  <li>Fischer, M.J., Lynch, N.A., &amp; Paterson, M.S. (1985). &#8220;Impossibility of Distributed Consensus with One Faulty Process.&#8221; <em>JACM,</em> 32(2), 374&ndash;382.</li>
+  <li>Brewer, E.A. (2000). &#8220;Towards Robust Distributed Systems.&#8221; <em>PODC 2000.</em></li>
+  <li>Kitano, H. (2002). &#8220;Systems Biology: A Brief Overview.&#8221; <em>Science,</em> 295(5560), 1662&ndash;1664.</li>
+  <li>Alon, U. (2007). &#8220;Network Motifs: Theory and Experimental Approaches.&#8221; <em>Nature Reviews Genetics,</em> 8(6), 450&ndash;461.</li>
+  <li>Litman, T. (2020). &#8220;Autonomous Vehicle Implementation Predictions.&#8221; Victoria Transport Policy Institute.</li>
+  <li>Tao, F., et&nbsp;al. (2018). &#8220;Digital Twin&#8209;Driven Product Design Framework.&#8221; <em>Intl. J. Production Research,</em> 57(12), 3935&ndash;3953.</li>
+</ol>
+
+<div class="footnote" style="page-break-inside: avoid;">
+  <p>This paper discloses only the general theory of Deterministic Infrastructure. No implementation details, source code, or proprietary algorithms are included. All examples use synthetic scenarios.<br>
+  <strong>Patent Pending</strong> &mdash; &#8220;Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing Using Ambient Harvesting, Mesh Coordination, and Directional Transmission.&#8221; DarkWave Studios LLC.<br>
+  &copy; 2026 DarkWave Studios LLC. All rights reserved.<br>
+  Correspondence: Jason Andrews, DarkWave Studios LLC, Nashville, TN. Email: team@dwsc.io<br>
+  ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009-0007-5214-649X</a><br>
+  Website: <a href="https://lume-lang.org">lume-lang.org</a> &middot; GitHub: <a href="https://github.com/cryptocreeper94-sudo">github.com/cryptocreeper94-sudo</a><br>
+  This preprint has not undergone peer review. It is submitted for early dissemination and to establish priority of invention.</p>
+</div>
+
+</body>
+</html>

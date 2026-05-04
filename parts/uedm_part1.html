@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Unified Energy&#8209;Data Mesh &mdash; DarkWave Studios LLC</title>
+<style>
+  @page {
+    size: letter; margin: 1in 1in 1.2in 1in;
+    @bottom-center { content: counter(page); font-family: 'Times New Roman', Georgia, serif; font-size: 10pt; color: #333; }
+  }
+  .page-break { display: none; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible !important; }
+    .page-break { display: block; page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    .title-page { min-height: auto !important; padding-top: 2.5in; page-break-after: always; }
+    h2 { page-break-after: avoid; } h3 { page-break-after: avoid; }
+    table { page-break-inside: avoid; } .claim-box { page-break-inside: avoid; }
+    .footnote { page-break-inside: avoid; } pre { page-break-inside: avoid; }
+    p { orphans: 3; widows: 3; }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Times New Roman', Georgia, 'Computer Modern', serif; font-size: 11pt; line-height: 1.5; color: #111; max-width: 7.5in; margin: 0 auto; padding: 0.5in; }
+  .title-page { text-align: center; padding-top: 0.3in; }
+  .title-page h1 { font-size: 17pt; font-weight: 700; line-height: 1.3; margin-bottom: 0.3in; }
+  .title-page .subtitle { font-size: 13pt; font-style: italic; color: #333; margin-bottom: 0.5in; }
+  .title-page .authors { font-size: 13pt; margin-bottom: 0.15in; }
+  .title-page .affiliation { font-size: 11pt; color: #444; font-style: italic; margin-bottom: 0.4in; }
+  .title-page .preprint-note { font-size: 9.5pt; color: #666; border: 1px solid #ccc; display: inline-block; padding: 6px 18px; border-radius: 3px; margin-top: 0.3in; }
+  h2 { font-size: 14pt; font-weight: 700; margin-top: 0.25in; margin-bottom: 0.15in; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  h3 { font-size: 12pt; font-weight: 700; margin-top: 0.25in; margin-bottom: 0.1in; }
+  h4 { font-size: 11pt; font-weight: 700; margin-top: 0.15in; margin-bottom: 0.05in; }
+  p { margin-bottom: 0.1in; text-align: justify; hyphens: none; -webkit-hyphens: none; overflow-wrap: break-word; }
+  .abstract { margin: 0.3in 0.4in; padding: 0.15in 0; }
+  .abstract h2 { text-align: center; border: none; font-size: 13pt; }
+  .abstract p { font-size: 10.5pt; }
+  .keywords { font-size: 10pt; color: #333; margin-top: 0.1in; }
+  .keywords strong { font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; margin: 0.15in 0 0.2in 0; font-size: 10pt; }
+  th, td { border: 1px solid #aaa; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #f0f0f0; font-weight: 700; }
+  code { font-family: 'Courier New', Courier, monospace; font-size: 9.5pt; background: #f5f5f5; padding: 1px 4px; border-radius: 2px; }
+  pre { font-family: 'Courier New', Courier, monospace; font-size: 9pt; background: #f7f7f7; border: 1px solid #ddd; padding: 10px 14px; margin: 0.1in 0 0.15in 0; overflow-x: auto; line-height: 1.4; border-radius: 3px; white-space: pre; }
+  ul, ol { margin: 0.05in 0 0.1in 0.3in; font-size: 11pt; }
+  li { margin-bottom: 3px; }
+  .section-num { color: #555; margin-right: 6px; }
+  blockquote { border-left: 3px solid #bbb; margin: 0.1in 0 0.1in 0.15in; padding: 4px 12px; color: #333; font-style: italic; font-size: 10.5pt; }
+  .claim-box { border: 1px solid #999; background: #fafafa; padding: 10px 14px; margin: 0.08in 0; border-radius: 3px; }
+  .diagram-box { font-family: 'Courier New', Courier, monospace; font-size: 9pt; background: #fcfcfc; border: 1px solid #ccc; padding: 14px 18px; margin: 0.15in 0; line-height: 1.35; border-radius: 3px; white-space: pre; }
+  .footnote { font-size: 9pt; color: #555; margin-top: 0.3in; border-top: 1px solid #ccc; padding-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="title-page">
+  <h1>The Unified Energy&#8209;Data Mesh: Co&#8209;Routing Power and Information Through a Single Deterministic Fabric</h1>
+  <div class="subtitle">When the Wire That Carries the Packet Also Carries the Watt</div>
+  <div class="authors">Ronald &#8220;Jason&#8221; Andrews</div>
+  <div class="affiliation">DarkWave Studios LLC<br/>Nashville, Tennessee, United States<br/>ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009&#8209;0007&#8209;5214&#8209;649X</a></div>
+  <div style="font-size: 10pt; color: #444; margin-bottom: 0.15in;">Version 1.0 &mdash; May 2026</div>
+  <div style="font-size: 10pt; color: #444; margin-bottom: 0.15in;">
+    Companion Papers: Meridian Architecture [DOI to be assigned] &middot; Meridian Organism [DOI to be assigned] &middot; Energy Internet [DOI to be assigned] &middot; DI Theory [DOI to be assigned] &middot; Guardian Security [DOI to be assigned]<br/>
+    Related: Lume <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a> &middot;
+    Trust Layer <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a> &middot;
+    DAIGS <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a><br/>
+    Lume&#8209;V <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a> &middot;
+    Lume&#8209;X <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a> &middot;
+    Dissolution <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a>
+  </div>
+  <div style="font-size: 10pt; color: #c00; font-weight: bold; margin-bottom: 0.2in;">Patent Pending &mdash; Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing<br/>Lume&#8209;X: Provisionally patented deterministic control runtime</div>
+  <div class="preprint-note">Preprint v1 &mdash; Not peer&#8209;reviewed. Submitted for early dissemination.</div>
+</div>
+
+<!-- ABSTRACT -->
+<div class="abstract">
+  <h2>Abstract</h2>
+  <p>The Meridian mesh already carries two kinds of traffic. The first is energy: RF bursts routed hop&#8209;by&#8209;hop from source nodes to destination devices. The second is data: LINK_STATE_UPDATE messages, NODE_ANNOUNCE broadcasts, EBF delivery confirmations, Guardian Security authentication exchanges, and Lume&#8209;X cross&#8209;layer monitoring packets. These control&#8209;plane messages are structured, addressed, routed information flowing across the same physical nodes as the energy they govern. The Meridian mesh is already a unified energy&#8209;data fabric. It just has not been formally recognized as one.</p>
+  <p>This paper formalizes the co&#8209;routing architecture of the Meridian mesh &mdash; the simultaneous routing of energy and data through the same physical node infrastructure under a shared addressing and governance framework. I define the Unified Energy&#8209;Data Mesh (UEDM) as a formal architecture in which the same addressed nodes, topology&#8209;aware routing fabric, and Trust Layer identity substrate serve both energy delivery and data communication simultaneously.</p>
+  <p>I define the co&#8209;routing arbitration rules governing how energy bursts and data packets share TDMA capacity without conflict. I define the UEDM addressing scheme unifying energy delivery addresses (EIP) and data communication addresses under the same 128&#8209;bit namespace. I show that the UEDM collapses two infrastructure problems &mdash; power delivery and device communication &mdash; into one, enabling a class of self&#8209;sustaining autonomous devices that power themselves and communicate through the same wireless fabric.</p>
+  <p>I propose the UEDM as the convergence point of the Energy Internet and the Trust Layer communication infrastructure: a single fabric that routes both resources and information under a unified governance framework, providing the complete infrastructure substrate for autonomous physical systems operating in the Deterministic Infrastructure paradigm.</p>
+  <div class="keywords"><strong>Keywords:</strong> unified energy&#8209;data mesh, co&#8209;routing, wireless power and communication, SWIPT, Meridian, deterministic infrastructure, TDMA co&#8209;scheduling, ambient IoT, self&#8209;sustaining networks, simultaneous wireless information and power transfer</div>
+</div>

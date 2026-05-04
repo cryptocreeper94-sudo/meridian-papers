@@ -1,0 +1,142 @@
+<h2><span class="section-num">10</span> Related Work</h2>
+
+<h3>10.1 Wireless Network Security</h3>
+<p>The wireless data network security literature is extensive and directly relevant. IEEE 802.11i (WPA2/3) [35] provides the reference architecture for wireless network authentication and key management. The 5G security architecture [36] provides the reference for subscriber identity management at scale. Guardian Security&#8217;s pre&#8209;transmission authentication protocol draws on both, adapted for the energy delivery context where the &#8220;data&#8221; being protected is joules rather than bits.</p>
+<p>The critical distinction is that wireless network security assumes a stable separation between the control plane and the data plane. Guardian Security operates in an environment where the control plane measurement is also a physical measurement of the data plane output. This coupling is the source of T6 and T1, which have no analog in wireless data network security.</p>
+
+<h3>10.2 Industrial Control System Security</h3>
+<p>ICS security [37, 38] addresses security for systems where cyber&#8209;physical coupling creates physical consequences for security failures &mdash; exactly the challenge Guardian Security addresses. The MITRE ATT&amp;CK for ICS framework [39] informed the development of the T1&ndash;T11 threat taxonomy. The Stuxnet case [40] is the canonical demonstration that cyber attacks on physical control systems can produce physical damage.</p>
+<p>The key distinction from ICS security is that Guardian Security operates on a wireless, distributed, autonomously administered mesh rather than a fixed, wired, centrally administered control network. ICS security assumes network perimeter control; Guardian Security cannot assume perimeter control because the RF transmission medium is inherently accessible to any attacker within range.</p>
+
+<h3>10.3 Physical Layer Security</h3>
+<p>Physical layer security research [41, 42] exploits the physical properties of wireless channels to provide security guarantees that cannot be bypassed by higher&#8209;layer attacks. This approach is complementary to Guardian Security&#8217;s protocol&#8209;layer defenses. The localization integrity verification in Guardian Security (multi&#8209;source position consistency checking) draws on physical layer security principles.</p>
+
+<h3>10.4 The Lume Ecosystem Security Framework</h3>
+<p>The Trust Layer [16] provides the identity foundation that Guardian Security builds on. Guardian&#8209;E is the energy&#8209;domain specialization that adds the physical&#8209;layer defenses specific to the energy routing context. Guardian Security is the first published formal specification of a Guardian deployment in a physical domain. The security architecture defined in this paper is the reference for future Guardian deployments in the transportation, manufacturing, and ambient computation domains described in [DI Theory, 2026].</p>
+
+<h2><span class="section-num">11</span> Limitations and Honest Boundaries</h2>
+<p><strong>The threat taxonomy covers the current architecture, not all future attacks.</strong> The T1&ndash;T11 taxonomy is derived from the attack surface of the current Meridian architecture. Novel attack techniques not anticipated in this analysis may find gaps. The ERFC process includes a vulnerability disclosure process and a taxonomy update mechanism for new threat categories.</p>
+<p><strong>Physical node compromise (T8) has limited software&#8209;layer defenses.</strong> An attacker with sustained physical access and sufficient technical knowledge can defeat the BSL hardware safeguards. This is the irreducible residual risk of any physically deployed system.</p>
+<p><strong>Coverage proof assumes correct implementation.</strong> The coverage proof demonstrates that every attack path crosses at least one enforcement boundary. It does not prove that the implementation of those boundaries is correct. Implementation vulnerabilities can create gaps not present in the specification. Lume&#8209;V formal verification [18] of the Guardian Security implementation is the mitigation; it has not yet been completed for all components.</p>
+<p><strong>Multi&#8209;party compromise is not addressed.</strong> The framework assumes that the Trust Layer PKI root is not compromised. A compromise of the root credential would defeat every cryptographic defense simultaneously.</p>
+<p><strong>No experimental validation exists.</strong> Guardian Security has been formally specified but not deployed in a physical mesh. All quantitative claims are based on architectural analysis of the Meridian specification.</p>
+
+<h2><span class="section-num">12</span> Conclusion</h2>
+<p>Wireless energy routing is not a data routing problem with a different payload. It is a fundamentally different security domain &mdash; one where successful attacks produce physical consequences, where the control plane is coupled to physical measurements, and where identity must be verified before the first joule flows rather than after the first packet arrives.</p>
+<p>No formal security framework for this domain previously existed. This paper provides one.</p>
+<p>The Guardian Security framework &mdash; two&#8209;tier innate&#8209;plus&#8209;adaptive defense, pre&#8209;transmission authentication, eleven&#8209;category threat coverage, BSL physical invariant, and certificate chain audit &mdash; addresses the complete attack surface of a deterministic wireless energy routing system. It provides four formal security guarantees: authenticity, integrity, availability, and non&#8209;repudiation. The coverage proof demonstrates that every attack path requires traversal of at least one enforcement boundary.</p>
+<p>The most important security property of the Guardian Security framework is the one that cannot be improved through protocol design: the Biological Safety Layer invariant. The BSL guarantees that no beam strikes a biological target regardless of the state of every software and protocol defense. This guarantee is the irreducible physical security baseline of wireless energy routing &mdash; the property that makes the difference between a security failure that damages data and a security failure that damages people.</p>
+<p>The Energy Internet cannot be built without this foundation. Guardian Security is the security foundation that the Energy Internet needs to be built on, stated now, so that it is built in from the first deployment rather than retrofitted from the last breach.</p>
+
+<div class="page-break"></div>
+
+<h2>Appendix A &mdash; Complete Threat Taxonomy</h2>
+<table>
+  <tr><th>ID</th><th>Name</th><th>Attack Interface</th><th>Objective</th><th>Max Consequence</th><th>Guardian&#8209;E Tier</th></tr>
+  <tr><td>T1</td><td>Localization Spoofing</td><td>PAI&#8209;2, NAI&#8209;2</td><td>Beam misdirection</td><td>Physical injury</td><td>Adaptive + BSL</td></tr>
+  <tr><td>T2</td><td>Routing Table Manipulation</td><td>NAI&#8209;1</td><td>Traffic redirection</td><td>All traffic hijacked</td><td>Adaptive</td></tr>
+  <tr><td>T3</td><td>Beam Hijacking</td><td>PAI&#8209;1, NAI&#8209;2, IAI&#8209;1</td><td>Attacker receives beam</td><td>Critical device denied</td><td>Adaptive</td></tr>
+  <tr><td>T4</td><td>Denial&#8209;of&#8209;Power</td><td>NAI&#8209;1, NAI&#8209;2, PAI&#8209;1</td><td>Devices denied service</td><td>Mesh blackout</td><td>Innate + Adaptive</td></tr>
+  <tr><td>T5</td><td>Node Impersonation</td><td>IAI&#8209;1, NAI&#8209;1</td><td>Attacker receives allocation</td><td>Mesh infiltration</td><td>Adaptive</td></tr>
+  <tr><td>T6</td><td>Delivery Confirmation Falsification</td><td>NAI&#8209;3</td><td>False accounting</td><td>Model corruption</td><td>Adaptive</td></tr>
+  <tr><td>T7</td><td>Timing Attacks</td><td>NAI&#8209;1, NAI&#8209;2</td><td>Scheduling disruption</td><td>Effective denial&#8209;of&#8209;power</td><td>Innate + Adaptive</td></tr>
+  <tr><td>T8</td><td>Physical Node Compromise</td><td>PAI&#8209;3</td><td>Insider access</td><td>All attacks from trusted position</td><td>Adaptive (limited)</td></tr>
+  <tr><td>T9</td><td>Energy Credit Fraud</td><td>NAI&#8209;2, IAI&#8209;2</td><td>Financial fraud</td><td>ESP economic disruption</td><td>Adaptive</td></tr>
+  <tr><td>T10</td><td>EBGP Route Hijacking</td><td>NAI&#8209;4</td><td>Internet&#8209;scale redirection</td><td>EAS isolation or theft</td><td>Adaptive (L2)</td></tr>
+  <tr><td>T11</td><td>Safety System Bypass</td><td>PAI&#8209;3, NAI&#8209;2</td><td>BSL disabled</td><td>Physical injury (worst case)</td><td>BSL (hardware)</td></tr>
+</table>
+
+<h2>Appendix B &mdash; Guardian Security Rule Set (Summary)</h2>
+<table>
+  <tr><th>Rule ID</th><th>Description</th><th>Threat</th><th>Enforcement Point</th></tr>
+  <tr><td>GS&#8209;R01</td><td>All participants verify PKI credential before interaction</td><td>T5</td><td>Pre&#8209;transmission auth Step&nbsp;1</td></tr>
+  <tr><td>GS&#8209;R02</td><td>All routing updates require valid signature</td><td>T2</td><td>NAI&#8209;1 input validation</td></tr>
+  <tr><td>GS&#8209;R03</td><td>Position consistency check across &ge;2 sources</td><td>T1</td><td>Pre&#8209;transmission auth position check</td></tr>
+  <tr><td>GS&#8209;R04</td><td>Delivery confirmation physics cross&#8209;validation</td><td>T6</td><td>Post&#8209;delivery confirmation handler</td></tr>
+  <tr><td>GS&#8209;R05</td><td>One&#8209;credential&#8209;one&#8209;position enforcement</td><td>T5</td><td>NODE_ANNOUNCE handler</td></tr>
+  <tr><td>GS&#8209;R06</td><td>Per&#8209;node request rate limiting</td><td>T4</td><td>ENL request scheduler</td></tr>
+  <tr><td>GS&#8209;R07</td><td>CRITICAL priority capacity reservation</td><td>T4</td><td>ETL QoS enforcer</td></tr>
+  <tr><td>GS&#8209;R08</td><td>Signed TDMA schedule distribution</td><td>T7</td><td>Scheduling epoch handler</td></tr>
+  <tr><td>GS&#8209;R09</td><td>Out&#8209;of&#8209;window transmission detection</td><td>T7</td><td>ELL receive handler</td></tr>
+  <tr><td>GS&#8209;R10</td><td>Relay forwarding timeout detection</td><td>T3</td><td>DRMA relay monitor</td></tr>
+  <tr><td>GS&#8209;R11</td><td>Trajectory consistency monitoring</td><td>T3</td><td>Session state tracker</td></tr>
+  <tr><td>GS&#8209;R12</td><td>Dual&#8209;signature settlement requirement</td><td>T9</td><td>Settlement handler</td></tr>
+  <tr><td>GS&#8209;R13</td><td>ERPKI route origin validation</td><td>T10</td><td>EBGP UPDATE handler</td></tr>
+  <tr><td>GS&#8209;R14</td><td>Hardware profile consistency check</td><td>T8</td><td>Boot integrity verifier</td></tr>
+  <tr><td>GS&#8209;R15</td><td>Multi&#8209;modal sensor cross&#8209;validation</td><td>T11</td><td>BSL sensor fusion</td></tr>
+  <tr><td>GS&#8209;R16</td><td>Sensor absence treated as safety hazard</td><td>T11</td><td>BSL safety logic</td></tr>
+  <tr><td>GS&#8209;R17</td><td>Hardware&#8209;enforced beam cutoff</td><td>T11</td><td>BSL hardware circuit</td></tr>
+</table>
+
+<h2>Appendix C &mdash; Coverage Proof by Attack Path</h2>
+<p>For each threat T1&ndash;T11, the minimum set of Guardian Security rules that must be bypassed simultaneously to achieve the attack objective:</p>
+<table>
+  <tr><th>Threat</th><th>Rules That Must Be Simultaneously Bypassed</th></tr>
+  <tr><td>T1</td><td>GS&#8209;R03 AND GS&#8209;R15 AND GS&#8209;R16 AND GS&#8209;R17</td></tr>
+  <tr><td>T2</td><td>GS&#8209;R02 AND GS&#8209;R11</td></tr>
+  <tr><td>T3</td><td>GS&#8209;R01 AND GS&#8209;R10 AND GS&#8209;R11</td></tr>
+  <tr><td>T4</td><td>GS&#8209;R06 AND GS&#8209;R07</td></tr>
+  <tr><td>T5</td><td>GS&#8209;R01 AND GS&#8209;R05 AND GS&#8209;R14</td></tr>
+  <tr><td>T6</td><td>GS&#8209;R04 AND GS&#8209;R01 (confirmation signature)</td></tr>
+  <tr><td>T7</td><td>GS&#8209;R08 AND GS&#8209;R09</td></tr>
+  <tr><td>T8</td><td>GS&#8209;R14 AND physical tamper evidence</td></tr>
+  <tr><td>T9</td><td>GS&#8209;R12 AND GS&#8209;R13 AND sequence dedup</td></tr>
+  <tr><td>T10</td><td>GS&#8209;R13 AND topology cross&#8209;reference</td></tr>
+  <tr><td>T11</td><td>GS&#8209;R15 AND GS&#8209;R16 AND GS&#8209;R17 (hardware circuit)</td></tr>
+</table>
+<p>The minimum attack complexity for each threat is the AND of independent enforcement mechanisms. No single rule bypass suffices for any threat category.</p>
+
+<h2>Appendix D &mdash; Guardian Security at Three Operational Levels</h2>
+<table>
+  <tr><th>Level</th><th>Scope</th><th>Authentication</th><th>Key Management</th><th>Threat Coverage</th></tr>
+  <tr><td>L1 &mdash; Intra&#8209;mesh</td><td>Single EAS</td><td>Per&#8209;node PKI credential</td><td>Trust Layer EAS&#8209;delegated CA</td><td>T1&ndash;T8, T11</td></tr>
+  <tr><td>L2 &mdash; Inter&#8209;mesh</td><td>Multi&#8209;EAS, single EXP</td><td>EAS&#8209;level PKI credential</td><td>Trust Layer root&#8209;delegated EAS CA</td><td>T9&ndash;T10 + L1</td></tr>
+  <tr><td>L3 &mdash; Registry</td><td>Global</td><td>EIRA root credential</td><td>EIRA HSM, M&#8209;of&#8209;N threshold signing</td><td>EIRA operation integrity</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>References</h2>
+<ol start="35">
+  <li>IEEE 802.11i. (2004). <em>IEEE Standard for Information Technology &mdash; Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications: Security Enhancements.</em> IEEE.</li>
+  <li>3GPP TS 33.501. (2022). <em>Security Architecture and Procedures for 5G System.</em></li>
+  <li>Stouffer, K., Falco, J., &amp; Scarfone, K. (2011). <em>Guide to Industrial Control Systems (ICS) Security.</em> NIST SP 800&#8209;82.</li>
+  <li>Langner, R. (2011). &#8220;Stuxnet: Dissecting a Cyberweapon.&#8221; <em>IEEE Security and Privacy,</em> 9(3), 49&ndash;51.</li>
+  <li>MITRE. (2020). <em>ATT&amp;CK for Industrial Control Systems.</em> mitre.org/attackics</li>
+  <li>Lindsay, J.R. (2013). &#8220;Stuxnet and the Limits of Cyber Warfare.&#8221; <em>Security Studies,</em> 22(3), 365&ndash;404.</li>
+  <li>Mukherjee, A. (2015). &#8220;Physical&#8209;Layer Security in the Internet of Things.&#8221; <em>Proceedings of the IEEE,</em> 103(10), 1831&ndash;1843.</li>
+  <li>Liu, Y., Chen, H.H., &amp; Wang, L. (2017). &#8220;Physical Layer Security for Next Generation Wireless Networks.&#8221; <em>IEEE Wireless Communications,</em> 24(6), 110&ndash;117.</li>
+  <li>Cooper, D., et&nbsp;al. (2008). <em>Internet X.509 Public Key Infrastructure Certificate and CRL Profile.</em> RFC&nbsp;5280. IETF.</li>
+  <li>Lepinski, M., &amp; Kent, S. (2012). <em>An Infrastructure to Support Secure Internet Routing.</em> RFC&nbsp;6480. IETF.</li>
+  <li>Bassham, L., et&nbsp;al. (2009). <em>Recommendation for the Selection of Public&#8209;Key Cryptographic Algorithms.</em> NIST SP 800&#8209;131A.</li>
+  <li>Shostack, A. (2014). <em>Threat Modeling: Designing for Security.</em> Wiley.</li>
+  <li>Swiderski, F., &amp; Snyder, W. (2004). <em>Threat Modeling.</em> Microsoft Press.</li>
+  <li>Brown, W.C. (1984). &#8220;The History of Power Transmission by Radio Waves.&#8221; <em>IEEE Trans. Microwave Theory and Techniques,</em> 32(9), 1230&ndash;1242.</li>
+  <li>Zhang, Z., et&nbsp;al. (2019). &#8220;Wireless Power Transfer &mdash; An Overview.&#8221; <em>IEEE Trans. Industrial Electronics,</em> 66(2), 1044&ndash;1058.</li>
+</ol>
+<p style="margin-top: 0.15in;"><strong>Lume Ecosystem:</strong></p>
+<ol start="15">
+  <li>Andrews, J. (2026). <em>Lume Language Specification.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a></li>
+  <li>Andrews, J. (2026). <em>Trust Layer Ecosystem.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a></li>
+  <li>Andrews, J. (2026). <em>DAIGS Framework.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;V Verification Suite.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;X Multi&#8209;Agent Cognition.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a></li>
+  <li>Andrews, J. (2026). <em>Deterministic Dissolution.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a></li>
+  <li>Andrews, J. (2026). <em>Meridian Architecture.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Meridian as Synthetic Organism.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>The Energy Internet.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Deterministic Infrastructure.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+</ol>
+
+<div class="footnote" style="page-break-inside: avoid;">
+  <p>This paper discloses only the threat model and defense framework for deterministic wireless energy routing. No implementation details, source code, or proprietary algorithms are included. All examples use synthetic scenarios. Guardian Security is a commercial product of DarkWave Studios LLC (domain: TrustShield.tech).<br>
+  <strong>Patent Pending</strong> &mdash; &#8220;Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing Using Ambient Harvesting, Mesh Coordination, and Directional Transmission.&#8221; DarkWave Studios LLC.<br>
+  &copy; 2026 DarkWave Studios LLC. All rights reserved.<br>
+  Correspondence: Jason Andrews, DarkWave Studios LLC, Nashville, TN. Email: team@dwsc.io<br>
+  ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009-0007-5214-649X</a><br>
+  Website: <a href="https://lume-lang.org">lume-lang.org</a> &middot; <a href="https://trustshield.tech">TrustShield.tech</a> &middot; GitHub: <a href="https://github.com/cryptocreeper94-sudo">github.com/cryptocreeper94-sudo</a><br>
+  This preprint has not undergone peer review. It is submitted for early dissemination and to establish priority of invention.</p>
+</div>
+
+</body>
+</html>

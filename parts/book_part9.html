@@ -1,0 +1,137 @@
+<!-- PART SIX -->
+<div class="page-break"></div>
+<div class="part-header">
+  <h2>PART SIX</h2>
+  <div class="part-subtitle">The Vision: Where This All Leads</div>
+</div>
+
+<p>Every infrastructure revolution follows the same arc. First, the new technology is adopted at the edge &mdash; in the last mile, at the device. Then it propagates inward, displacing legacy infrastructure layer by layer. Meridian began as a last&#8209;mile architecture. Part Six asks what happens when the same routing principles propagate all the way to the generation source.</p>
+
+<div class="page-break"></div>
+
+<!-- CHAPTER EIGHT -->
+<h2 class="chapter-title">Chapter Eight<br>Beyond the Grid: Fusion, Long&#8209;Haul Beaming, and the End of Transmission Lines</h2>
+
+<div class="chapter-opening">
+<p>A $4 trillion infrastructure is not replaced quickly. But it can be made obsolete, and the process begins with specifying what replaces it &mdash; precisely enough that engineers, regulators, and investors can evaluate the specification and decide whether to build toward it.</p>
+</div>
+
+<h3>Abstract</h3>
+<p>I propose a <strong>two&#8209;tier wireless energy architecture</strong> that eliminates the physical transmission grid. Tier&nbsp;1 routes bulk energy from fusion generation hubs to district receiver arrays via directed microwave beams at 2.45&nbsp;GHz over 500&nbsp;m&ndash;5&nbsp;km. Tier&nbsp;2 is the Meridian last&#8209;mile mesh. The full thermal&#8209;to&#8209;device efficiency is approximately 15&ndash;19%, compared to ~33&ndash;37% for the wired grid. The arguments for the wireless architecture rest on infrastructure elimination, resilience, deployment flexibility, and fully deterministic governance from plasma to device.</p>
+
+<h3><span class="section-num">2.</span> The Transmission Infrastructure Problem</h3>
+<ul>
+  <li><strong>Expensive:</strong> $500K&ndash;$3M/km overhead; $3M&ndash;$15M/km underground</li>
+  <li><strong>Slow to deploy:</strong> 5&ndash;15 years from planning to energization</li>
+  <li><strong>Expensive to maintain:</strong> ~$30B annually in the U.S.</li>
+  <li><strong>Vulnerable:</strong> Ice storms, hurricanes, geomagnetic disturbances, physical attack</li>
+  <li><strong>Lossy:</strong> ~8&ndash;9% T&amp;D losses globally (~2,500&nbsp;TWh/year)</li>
+</ul>
+
+<h3><span class="section-num">3.</span> Physics of Long&#8209;Range Directed Energy Transfer</h3>
+
+<h4>The Fresnel Number</h4>
+<pre>
+N_F = (π² × D_t × D_r) / (4 × λ × d)
+
+  N_F >> 1  : Near-field — efficiency approaches 100%
+  N_F ≈ 1   : Fresnel transition — ~85–92% efficiency
+  N_F << 1  : Far-field — efficiency drops sharply
+</pre>
+
+<h4>Representative Configurations (2.45 GHz)</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>D_t</th><th>D_r</th><th>Distance</th><th>N_F</th><th>&eta;_collect</th></tr>
+  <tr><td>5 m</td><td>5 m</td><td>500 m</td><td>0.82</td><td>~87%</td></tr>
+  <tr><td>10 m</td><td>10 m</td><td>1 km</td><td>1.64</td><td>~95%</td></tr>
+  <tr><td>10 m</td><td>10 m</td><td>5 km</td><td>0.33</td><td>~72%</td></tr>
+  <tr><td>20 m</td><td>20 m</td><td>5 km</td><td>1.31</td><td>~93%</td></tr>
+  <tr><td>50 m</td><td>50 m</td><td>20 km</td><td>2.05</td><td>~96%</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">4.</span> Two&#8209;Tier Architecture</h3>
+<pre>
+Fusion Hub
+  └─ DC generation (thermal → turbine → generator → DC bus)
+       └─ RF transmitter array (DC → 2.45 GHz, η_rf ≈ 85%)
+            └─ [Tier 1 beam: 2.45 GHz, 500m–5km]
+                 └─ District rectenna array (2.45 GHz → DC, η_rect ≈ 82%)
+                      └─ DC bus → Meridian source nodes → [Tier 2 mesh]
+                           └─ Building relay nodes → device
+</pre>
+
+<h4>Tier 1 Node Types</h4>
+<ul>
+  <li><strong>T1&#8209;TX:</strong> Phased array at generation facility. Trust Layer registered. Lume&#8209;X governed.</li>
+  <li><strong>T1&#8209;RX:</strong> Rectenna array at district boundary. Pilot&#8209;tone transmitter. Delivery confirmation.</li>
+  <li><strong>T1&#8209;REL:</strong> Optional relay for obstructed line&#8209;of&#8209;sight. Avoided by siting whenever possible.</li>
+</ul>
+
+<h3><span class="section-num">5.</span> Fusion Integration</h3>
+<p>The Deterministic Fusion Control framework applies Lume&#8209;X invariant enforcement to magnetic confinement plasma with four invariants:</p>
+<div class="table-wrap">
+<table>
+  <tr><th>Invariant</th><th>Parameter</th><th>Description</th></tr>
+  <tr><td>INV&#8209;F1</td><td>&tau;_E &ge; &tau;_E,min</td><td>Energy confinement above ignition threshold</td></tr>
+  <tr><td>INV&#8209;F2</td><td>&beta; &le; &beta;_max</td><td>Plasma beta below MHD stability limit</td></tr>
+  <tr><td>INV&#8209;F3</td><td>n_e &le; n_G</td><td>Electron density below Greenwald limit</td></tr>
+  <tr><td>INV&#8209;F4</td><td>Q &ge; 1</td><td>Energy gain at or above breakeven</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">6.</span> Tier 1 Safety Architecture</h3>
+
+<h4>Retrodirective Pilot&#8209;Tone Locking</h4>
+<p>The T1&#8209;RX transmits a pilot tone; the T1&#8209;TX locks its beam to the direction from which the pilot arrives. Loss of pilot = beam stops within 100&nbsp;&mu;s via hardware gate. The beam is physically impossible to redirect without capturing the pilot transmitter.</p>
+
+<h4>Exclusion Zone</h4>
+<p>10&nbsp;MW beam, 10&nbsp;m aperture, 46&nbsp;dB Taylor taper: sidelobe power below ICNIRP limits at beam edge. Exclusion corridor ~70&nbsp;m wide (35&nbsp;m either side of centerline).</p>
+
+<h4>Intruder Detection (Three Independent Systems)</h4>
+<ol>
+  <li><strong>Radar:</strong> X&#8209;band surveillance; detection triggers beam cutoff within 100&nbsp;ms</li>
+  <li><strong>ADS&#8209;B:</strong> Aircraft transponder integration; auto&#8209;shutoff 60&nbsp;s before predicted corridor intersection</li>
+  <li><strong>Optical/Thermal:</strong> Ground&#8209;level camera array for human presence detection</li>
+</ol>
+
+<h3><span class="section-num">7.</span> Efficiency: An Honest Analysis</h3>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Stage</th><th>Wireless</th><th>Wired Grid</th></tr>
+  <tr><td>Fusion thermal &rarr; electrical</td><td>42%</td><td>42%</td></tr>
+  <tr><td>DC &rarr; RF (2.45 GHz)</td><td>85%</td><td>&mdash;</td></tr>
+  <tr><td>RF propagation + collection</td><td>75%</td><td>&mdash;</td></tr>
+  <tr><td>RF &rarr; DC (rectenna)</td><td>82%</td><td>&mdash;</td></tr>
+  <tr><td>HV transmission</td><td>&mdash;</td><td>94%</td></tr>
+  <tr><td>Substation + distribution</td><td>&mdash;</td><td>93%</td></tr>
+  <tr><td>DC &rarr; RF (60 GHz mesh)</td><td>70%</td><td>&mdash;</td></tr>
+  <tr><td>Mesh delivery (multi&#8209;hop)</td><td>80%</td><td>&mdash;</td></tr>
+  <tr><td>Device receiver / charger</td><td>75%</td><td>85%</td></tr>
+  <tr><td><strong>Total thermal&#8209;to&#8209;device</strong></td><td><strong>~14.6%</strong></td><td><strong>~30.5%</strong></td></tr>
+</table>
+</div>
+
+<div class="claim-box">
+<p>The wireless architecture is approximately half the thermal&#8209;to&#8209;device efficiency of the wired grid. This is the honest number. The architecture does not need to win on efficiency. It needs to win on total system cost, resilience, deployment speed, and flexibility.</p>
+</div>
+
+<h3><span class="section-num">10.</span> The Complete DI Stack</h3>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Identity</th><th>Invariants</th></tr>
+  <tr><td>Generation</td><td>Deterministic Fusion</td><td>Trust Layer T1&#8209;TX</td><td>INV&#8209;F1 to F4</td></tr>
+  <tr><td>Long&#8209;haul TX</td><td>Phased array</td><td>Pilot&#8209;tone auth</td><td>Pilot &ge; threshold</td></tr>
+  <tr><td>Long&#8209;haul RX</td><td>Rectenna array</td><td>Pilot transmitter</td><td>P &ge; P_min</td></tr>
+  <tr><td>District mesh</td><td>Meridian Tier 2</td><td>MC 64&#8209;bit</td><td>INV&#8209;1 to 5</td></tr>
+  <tr><td>Device</td><td>Leaf / SSD</td><td>Trust Layer endpoint</td><td>Delivery confirm</td></tr>
+</table>
+</div>
+
+<p>Every layer from plasma to device satisfies all four DI properties. No physical transmission conductor appears at any layer. Energy, addressed and routed from plasma to device, through air.</p>
+
+<h3><span class="section-num">13.</span> Conclusion</h3>
+<p>A world with fusion energy and a complete wireless routing architecture does not need transmission towers, high&#8209;voltage cables, or substations. The efficiency penalty is real. The regulatory path is long. The fusion source is not yet commercially available. These are the engineering and policy problems that Phase&nbsp;1&ndash;3 experimental work will address. The target is worth building toward. The routed world does not stop at the building boundary.</p>

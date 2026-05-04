@@ -1,0 +1,94 @@
+<h2><span class="section-num">5</span> The Five Void Types and Their Routing Detours</h2>
+
+<h3>5.1 Open Staircase</h3>
+<p>A floor opening connecting two or more levels with treads exposed to surrounding space. The void extends from the lowest connected floor to the ceiling of the highest. A horizontal beam at ceiling height traveling toward the opening has a downward projection that passes through the void, where persons on the stairs may be at any height.</p>
+<p><strong>AVM classification:</strong> All voxels within the staircase footprint, from z = floor<sub>N&#8209;1</sub> to z = ceiling<sub>N</sub>, classified VOID_STAIRCASE. 50&nbsp;cm buffer zone around the perimeter.</p>
+<p><strong>Routing detour:</strong> Horizontal circumnavigation at ceiling level around the VOID_STAIRCASE column. For a typical 1.2m wide staircase, the detour adds one or two relay hops.</p>
+
+<h3>5.2 Atrium</h3>
+<p>A multi&#8209;story open volume where multiple floor levels have been removed, spanning from ground floor to skylight. A beam departing horizontally from a node near the atrium edge passes into the volume where persons may be standing on balconies at any floor level.</p>
+<p><strong>AVM classification:</strong> All voxels within the atrium footprint and 50&nbsp;cm buffer, from z = ground to z = roof, classified VOID_ATRIUM regardless of floor level.</p>
+<p><strong>Routing detour:</strong> Perimeter routing strategy &mdash; relay nodes around the atrium perimeter at ceiling height on each floor, forming a ring. Energy never crosses the atrium volume; it travels around it.</p>
+<p><strong>Balcony sub&#8209;case:</strong> A balcony overlooking the atrium is handled by the VOID_ATRIUM boundary &mdash; any beam directed toward the atrium is blocked before reaching the balcony zone.</p>
+
+<h3>5.3 Elevator Shaft</h3>
+<p>An enclosed vertical void containing elevator cars, counterweights, and guide rails. Shaft walls are concrete or metal, providing effective RF attenuation at mmWave frequencies. The routing problem arises at shaft doors: an open door creates a temporary aperture connecting VOID_SHAFT to the adjacent corridor.</p>
+<p><strong>AVM classification:</strong> Shaft interior classified VOID_SHAFT. Floor&#8209;level area in front of each door classified FLOOR_OCCUPIED.</p>
+<p><strong>Dynamic handling:</strong> Door&#8209;open events extend VOID_SHAFT into the lobby temporarily via the dynamic occupancy overlay (Section&nbsp;7).</p>
+
+<h3>5.4 Balcony Overhang</h3>
+<p>A floor extension protruding beyond the main floor plate, creating reduced effective clearance below. Persons on the balcony above are at non&#8209;standard height &mdash; higher than floor&nbsp;N&#8217;s occupied zone, lower than floor&nbsp;N+1&#8217;s safe zone.</p>
+<p><strong>AVM classification:</strong> Balcony slab underside classified SOLID at actual height. Zone between slab underside and main ceiling re&#8209;classified based on actual clearance. If clearance &lt; 2.2m, classified FLOOR_OCCUPIED even if absolute height would normally be FLOOR_SAFE.</p>
+<p><strong>Routing detour:</strong> Relay nodes must not be positioned under overhangs with reduced clearance. Routing engine routes around affected zones.</p>
+
+<h3>5.5 Occupied Mezzanine</h3>
+<p>An intermediate floor level covering a portion of the main floor area. A relay node at the main ceiling (e.g., 6.0m) may have only 1.0m clearance above the mezzanine deck &mdash; well below z<sub>safe</sub> &mdash; with persons directly in the beam path.</p>
+<p><strong>AVM classification:</strong> Mezzanine deck classified SOLID. Zone above deck to z<sub>safe</sub> above mezzanine classified FLOOR_OCCUPIED. Zone above z<sub>safe</sub> above mezzanine classified FLOOR_SAFE. Zone below deck uses main floor classification. This produces a layered classification correctly representing multi&#8209;level occupancy.</p>
+<p><strong>Routing detour:</strong> Horizontal ceiling&#8209;plane routes above mezzanine must be at mezzanine_height + 2.2m or above. If main ceiling is insufficient, the routing engine falls through to a perimeter route around the mezzanine footprint.</p>
+
+<h2><span class="section-num">6</span> Floor&#8209;Transition Gateway Architecture</h2>
+
+<h3>6.1 The Inter&#8209;Floor Problem</h3>
+<p>Energy cannot be beamed through a concrete floor slab at useful power levels. At 60&nbsp;GHz, attenuation through a standard 20&nbsp;cm concrete slab exceeds 40&nbsp;dB &mdash; effectively a total block. Three inter&#8209;floor transfer mechanisms are available:</p>
+<p><strong>Mechanism&nbsp;1 &mdash; Open penetration.</strong> An existing aperture through the floor slab (conduit chase, pipe sleeve, or purpose&#8209;built RF window). A gateway node pair communicates through the aperture.</p>
+<p><strong>Mechanism&nbsp;2 &mdash; Enclosed stairwell.</strong> A continuous air volume connecting floor levels, bounded by solid walls. Gateway nodes at the top and bottom communicate through the stairwell volume. The most commonly available path in commercial buildings.</p>
+<p><strong>Mechanism&nbsp;3 &mdash; Dedicated RF conduit.</strong> A purpose&#8209;installed waveguide connecting gateway nodes on adjacent floors. Highest RF efficiency and simplest safety model, but requires planned installation.</p>
+
+<h3>6.2 Gateway Node Specification</h3>
+<p>A gateway relay node (GRN) extends the standard relay node specification with:</p>
+<ul>
+  <li><strong>Dual&#8209;face antenna array:</strong> Two phased array faces &mdash; one for the floor above, one for the floor below. Each face participates in its floor&#8217;s ceiling&#8209;plane mesh.</li>
+  <li><strong>Intermediate supercapacitor bank:</strong> 10&times; standard relay capacity for asynchronous inter&#8209;floor energy buffering.</li>
+  <li><strong>Directional isolation:</strong> Physical ground plane between faces prevents coupling.</li>
+  <li><strong>Shared identity:</strong> Single Trust Layer identity with GATEWAY capability profile, visible to both floor meshes.</li>
+</ul>
+
+<h3>6.3 Gateway Placement Rules</h3>
+<ul>
+  <li><strong>Continuous air path:</strong> Clear RF path between upper and lower faces. Minimum aperture: 30&nbsp;cm at 24&nbsp;GHz, 15&nbsp;cm at 60&nbsp;GHz.</li>
+  <li><strong>Accessible for maintenance:</strong> Enclosed stairwells, mechanical rooms, or above accessible ceiling tiles.</li>
+  <li><strong>Within 2m of the floor transition:</strong> Minimizes beam path in the transition zone.</li>
+  <li><strong>Clear of occupancy during transfer:</strong> Transfer volume must be unoccupied by design or BSL&#8209;monitored by both GRNs.</li>
+</ul>
+
+<h3>6.4 Multi&#8209;Floor Routing Example</h3>
+<pre>Device on floor 5 receiving energy from source on floor 2:
+  Source (floor 2, position A)
+  &rarr; ceiling relay nodes on floor 2 ceiling plane
+  &rarr; GRN-2/3 upper face (floor 2 ceiling zone)
+  &rarr; inter-floor transfer (enclosed stairwell)
+  &rarr; GRN-2/3 lower face (floor 3 ceiling zone)
+  &rarr; ceiling relay nodes on floor 3
+  &rarr; GRN-3/4 &rarr; transfer &rarr; GRN-3/4 (floor 4)
+  &rarr; GRN-4/5 &rarr; transfer &rarr; GRN-4/5 (floor 5)
+  &rarr; ceiling relay nodes on floor 5
+  &rarr; final-hop descent to device</pre>
+<p>Each intra&#8209;floor segment is ceiling&#8209;plane routing in FLOOR_SAFE voxels. Each inter&#8209;floor segment is through an enclosed stairwell or designated aperture. No beam traverses VOID or FLOOR_OCCUPIED voxels outside the controlled final&#8209;hop geometry.</p>
+
+<h2><span class="section-num">7</span> Dynamic Occupancy Overlay</h2>
+
+<h3>7.1 Static vs. Dynamic Constraints</h3>
+<p>The AVM encodes static physical geometry. Dynamic occupancy constraints layer on top: a person standing in a corridor, a maintenance technician on a scaffold, a crowd in a normally sparse atrium floor. The AVM says &#8220;this corridor is FLOOR_OCCUPIED&#8221;; the dynamic overlay says &#8220;and there is currently a person at position (12.3m, 8.1m, 4.2m).&#8221;</p>
+
+<h3>7.2 Occupancy Sensor Integration</h3>
+<p>BSL sensors serve dual function: safety monitoring and dynamic occupancy mapping. Each relay node reports BSL sensor readings at 73&nbsp;Hz through LUME_X_TELEMETRY, including biological_presence flag and estimated position. The routing engine maintains a dynamic occupancy map at AVM voxel resolution. Beam paths through dynamically OCCUPIED voxels are held until the voxel clears.</p>
+
+<h3>7.3 Occupancy Map Latency</h3>
+<p>Update latency is bounded by the Lume&#8209;X control cycle: 13.7&nbsp;ms maximum. A person walking at 1.5&nbsp;m/s travels 2&nbsp;cm in 13.7&nbsp;ms &mdash; less than one AVM voxel (25&nbsp;cm). The occupancy map is always current to within one voxel. The BSL hardware cutoff (independent of the control cycle, response time &le;1&nbsp;ms) further reduces any exposure window to physiologically insignificant levels.</p>
+
+<h3>7.4 Predictive Routing</h3>
+<p>For buildings with established occupancy patterns, historical data informs routing preferences as a soft cost in the routing function. Predictive routing does not override real&#8209;time detection &mdash; AVM constraints and dynamic occupancy map are both hard constraints.</p>
+
+<h2><span class="section-num">8</span> The Formal Multi&#8209;Story Safety Proof</h2>
+
+<h3>8.1 Claim</h3>
+<div class="claim-box"><strong>Safety Claim:</strong> The combined enforcement of AVM constraint enforcement, ceiling&#8209;plane routing with z<sub>safe</sub>, final&#8209;hop protocol, and BSL hardware cutoff makes physical harm from Meridian beam traversal impossible in a compliant multi&#8209;story deployment under all non&#8209;destructive conditions.</div>
+<p><strong>Non&#8209;destructive conditions:</strong> No building structural element physically removed or damaged, no BSL sensor hardware physically severed or destroyed, no AVM unilaterally overridden without commissioning authority.</p>
+
+<h3>8.2 Proof by Case Analysis</h3>
+<p><strong>Case&nbsp;1 &mdash; Horizontal beam through FLOOR_SAFE:</strong> By AVM constraint, beam paths in FLOOR_SAFE are at z &ge; z<sub>safe</sub> (&ge;2.2m above slab). No standing or seated person occupies this zone. Ceiling maintenance triggers dynamic occupancy marking. The horizontal ceiling&#8209;plane path is safe.</p>
+<p><strong>Case&nbsp;2 &mdash; Final&#8209;hop through FLOOR_OCCUPIED:</strong> Five&#8209;modality BSL consensus required before each burst. BSL hardware cutoff response &le;1&nbsp;ms. At final&#8209;hop power levels, 1&nbsp;ms exposure is physiologically insignificant (below ICNIRP limits by design margin).</p>
+<p><strong>Case&nbsp;3 &mdash; Void traversal attempt:</strong> Rejected by the beam path validation algorithm before authorization. Guardian Security&#8217;s pre&#8209;transmission route integrity check validates against the AVM. BSL provides the final backstop if both are simultaneously bypassed.</p>
+<p><strong>Case&nbsp;4 &mdash; Staircase/atrium perimeter grazing:</strong> The 50&nbsp;cm buffer zone ensures beam center lines stay &ge;50&nbsp;cm from any VOID boundary. At &le;18&deg; beam angle, the beam is physically incapable of grazing the VOID perimeter.</p>
+<p><strong>Case&nbsp;5 &mdash; Dynamic occupancy incursion:</strong> Maximum incursion window: 1&nbsp;ms at BSL hardware cutoff response time, not 13.7&nbsp;ms at control cycle latency.</p>
+<p><strong>Conclusion:</strong> In all five cases, biological contact is prevented by at least two independent mechanisms. No single mechanism failure produces physical harm. This is the defense&#8209;in&#8209;depth proof.</p>

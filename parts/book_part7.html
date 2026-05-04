@@ -1,0 +1,143 @@
+<!-- PART FOUR -->
+<div class="page-break"></div>
+<div class="part-header">
+  <h2>PART FOUR</h2>
+  <div class="part-subtitle">The Defense: How Meridian Is Protected</div>
+</div>
+
+<p>A failed attack on a wireless energy routing network is not a data breach. It is a beam of RF energy directed at an unintended target. The consequences are physical, not informational. Part Four specifies Guardian Security &mdash; the formal security architecture that prevents this.</p>
+
+<div class="page-break"></div>
+
+<!-- CHAPTER SIX -->
+<h2 class="chapter-title">Chapter Six<br>Guardian Security</h2>
+
+<div class="chapter-opening">
+<p>The security model cannot be primarily corrective. An RF beam that has already struck a biological target cannot be recalled. Guardian Security is designed around this requirement: its two&#8209;tier architecture &mdash; innate plus adaptive &mdash; operates <em>before</em> beam authorization, not after delivery.</p>
+</div>
+
+<h3>Abstract</h3>
+<p>I define the complete attack surface for a deterministic wireless energy routing system, derive <strong>eleven threat categories</strong> from first principles, and specify the <strong>Guardian Security</strong> defense framework (Guardian&#8209;E; commercial domain: TrustShield.tech). I prove coverage completeness: every attack path requires traversal of at least one enforcement boundary. Four formal security properties are satisfied: <strong>authenticity, integrity, availability, non&#8209;repudiation</strong>.</p>
+
+<h3><span class="section-num">3.</span> Attack Surface</h3>
+
+<h4>Physical Attack Interfaces</h4>
+<ul>
+  <li><strong>PAI&#8209;1:</strong> RF transmission medium</li>
+  <li><strong>PAI&#8209;2:</strong> Localization signal medium (UWB)</li>
+  <li><strong>PAI&#8209;3:</strong> Physical node access</li>
+  <li><strong>PAI&#8209;4:</strong> Supercapacitor / harvest circuitry</li>
+</ul>
+
+<h4>Network Attack Interfaces</h4>
+<ul>
+  <li><strong>NAI&#8209;1:</strong> Mesh control plane</li>
+  <li><strong>NAI&#8209;2:</strong> EBF message channel</li>
+  <li><strong>NAI&#8209;3:</strong> Delivery confirmation channel</li>
+  <li><strong>NAI&#8209;4:</strong> EDNS / inter&#8209;mesh routing (EBGP)</li>
+</ul>
+
+<h3><span class="section-num">4.</span> The Eleven Threat Categories</h3>
+
+<div class="table-wrap">
+<table>
+  <tr><th>ID</th><th>Name</th><th>Max Consequence</th><th>Defense Tier</th></tr>
+  <tr><td>T1</td><td>Localization Spoofing</td><td>Physical injury</td><td>Adaptive + BSL</td></tr>
+  <tr><td>T2</td><td>Routing Table Manipulation</td><td>All traffic hijacked</td><td>Adaptive</td></tr>
+  <tr><td>T3</td><td>Beam Hijacking</td><td>Critical device denied</td><td>Adaptive</td></tr>
+  <tr><td>T4</td><td>Denial&#8209;of&#8209;Power</td><td>Simultaneous blackout</td><td>Innate + Adaptive</td></tr>
+  <tr><td>T5</td><td>Node Impersonation</td><td>Mesh infiltration</td><td>Adaptive</td></tr>
+  <tr><td>T6</td><td>Delivery Confirm Falsification</td><td>Model corruption</td><td>Adaptive</td></tr>
+  <tr><td>T7</td><td>Timing Attacks</td><td>Effective DoP</td><td>Innate + Adaptive</td></tr>
+  <tr><td>T8</td><td>Physical Node Compromise</td><td>Insider access</td><td>Adaptive (limited)</td></tr>
+  <tr><td>T9</td><td>Energy Credit Fraud</td><td>Economic disruption</td><td>Adaptive</td></tr>
+  <tr><td>T10</td><td>EBGP Route Hijacking</td><td>EAS isolation/theft</td><td>Adaptive (L2)</td></tr>
+  <tr><td>T11</td><td>Safety System Bypass</td><td>Physical injury</td><td>BSL (hardware)</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">5.</span> The Guardian Security Framework</h3>
+
+<pre>
+┌──────────────────────────────────────────────────────┐
+│           Guardian Security Framework                │
+│                                                      │
+│  ┌─────────────────────────────────────────────┐    │
+│  │          Adaptive Tier (Guardian-E)          │    │
+│  │  • Threat classifier (T1–T11 mapping)        │    │
+│  │  • Learned threat patterns                   │    │
+│  │  • Node quarantine and isolation             │    │
+│  │  • Certificate chain audit                  │    │
+│  │  • ERPKI route origin validation            │    │
+│  └────────────────────┬────────────────────────┘    │
+│                       │                              │
+│  ┌────────────────────▼────────────────────────┐    │
+│  │          Innate Tier (SHDCL)                 │    │
+│  │  • Immediate anomaly detection (13.7ms)      │    │
+│  │  • Process recovery without classification   │    │
+│  │  • Beam hold on unresolved anomaly           │    │
+│  │  • Escalation to adaptive tier               │    │
+│  └────────────────────┬────────────────────────┘    │
+│                       │                              │
+│  ┌────────────────────▼────────────────────────┐    │
+│  │       Physical Safety Layer (BSL)            │    │
+│  │  • Hardware-enforced beam cutoff             │    │
+│  │  • Independent of software gate status       │    │
+│  │  • Biological presence detection             │    │
+│  │  • Cannot be bypassed by software attack     │    │
+│  └─────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────┘
+</pre>
+
+<h4>Pre&#8209;Transmission Authentication (4 Steps)</h4>
+<ol>
+  <li><strong>Node identity verification</strong> &mdash; Trust Layer PKI credential chain</li>
+  <li><strong>Capability authorization check</strong> &mdash; operation type, power level, target zone</li>
+  <li><strong>Route integrity check</strong> &mdash; all nodes on path verified, non&#8209;quarantined</li>
+  <li><strong>Temporal consistency check</strong> &mdash; timestamp window, transaction history, rate anomaly</li>
+</ol>
+
+<h3><span class="section-num">6.</span> Coverage Proof</h3>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Threat</th><th>Rules That Must Be Simultaneously Bypassed</th></tr>
+  <tr><td>T1</td><td>GS&#8209;R03 AND GS&#8209;R15 AND GS&#8209;R16 AND GS&#8209;R17</td></tr>
+  <tr><td>T2</td><td>GS&#8209;R02 AND GS&#8209;R11</td></tr>
+  <tr><td>T3</td><td>GS&#8209;R01 AND GS&#8209;R10 AND GS&#8209;R11</td></tr>
+  <tr><td>T4</td><td>GS&#8209;R06 AND GS&#8209;R07</td></tr>
+  <tr><td>T5</td><td>GS&#8209;R01 AND GS&#8209;R05 AND GS&#8209;R14</td></tr>
+  <tr><td>T6</td><td>GS&#8209;R04 AND GS&#8209;R01</td></tr>
+  <tr><td>T7</td><td>GS&#8209;R08 AND GS&#8209;R09</td></tr>
+  <tr><td>T8</td><td>GS&#8209;R14 AND physical tamper evidence</td></tr>
+  <tr><td>T9</td><td>GS&#8209;R12 AND GS&#8209;R13 AND sequence dedup</td></tr>
+  <tr><td>T10</td><td>GS&#8209;R13 AND topology cross&#8209;reference</td></tr>
+  <tr><td>T11</td><td>GS&#8209;R15 AND GS&#8209;R16 AND GS&#8209;R17 (hardware)</td></tr>
+</table>
+</div>
+
+<p>No single rule bypass suffices for any threat category. The minimum attack complexity is the AND of independent enforcement mechanisms.</p>
+
+<h3><span class="section-num">8.</span> The BSL Invariant</h3>
+
+<div class="claim-box">
+<pre>BSL_invariant: ∀t, ∀positions p:
+  biological_presence(p, t) = TRUE →
+  beam_active_at(p, t) = FALSE</pre>
+<p>This invariant is enforced by hardware physics, not by software logic. It holds even when every other security mechanism has failed simultaneously.</p>
+</div>
+
+<h3><span class="section-num">9.</span> Three Operational Levels</h3>
+<div class="table-wrap">
+<table>
+  <tr><th>Level</th><th>Scope</th><th>Authentication</th><th>Threats Covered</th></tr>
+  <tr><td>L1 &mdash; Intra&#8209;mesh</td><td>Single EAS</td><td>Per&#8209;node PKI</td><td>T1&ndash;T8, T11</td></tr>
+  <tr><td>L2 &mdash; Inter&#8209;mesh</td><td>Multi&#8209;EAS</td><td>EAS&#8209;level PKI</td><td>T9&ndash;T10 + L1</td></tr>
+  <tr><td>L3 &mdash; Registry</td><td>Global</td><td>EIRA root HSM</td><td>EIRA integrity</td></tr>
+</table>
+</div>
+
+<!-- Part Four Closing -->
+<h3>Part Four Closing</h3>
+<p>The principles underlying Guardian Security &mdash; verified identity before interaction, explicit routing with confirmed delivery, invariant enforcement at every layer, organism&#8209;like self&#8209;healing &mdash; are not specific to energy routing. They are the security consequences of a more general set of properties that define a class of systems much larger than Meridian.</p>
+<p>Part Five names that class.</p>

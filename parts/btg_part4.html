@@ -1,0 +1,43 @@
+<h2><span class="section-num">8</span> The Resilience Argument</h2>
+
+<h3>8.1 Grid Vulnerability Classes</h3>
+<p><strong>Class&nbsp;1 &mdash; Weather events.</strong> Ice storms, hurricanes, tornadoes, and wildfires damage physical infrastructure. The 2021 Texas winter storm left 4.5&nbsp;million households without power for up to four days, causing $80&ndash;130&nbsp;billion in damage. A wireless architecture has no overhead conductors to fail under ice loading.</p>
+<p><strong>Class&nbsp;2 &mdash; Geomagnetic disturbances.</strong> Severe solar coronal mass ejections induce currents in long transmission lines, potentially destroying high&#8209;voltage transformers (12&ndash;18 month replacement lead time). The 1989 Quebec blackout was caused by a geomagnetic storm. A 2012 near&#8209;miss CME could have caused $600B&ndash;$2.6T in damage (Lloyd&#8217;s estimate). A wireless system has no long conductors to accumulate geomagnetically induced currents.</p>
+<p><strong>Class&nbsp;3 &mdash; Physical attack.</strong> FERC warned in 2014 that coordinated attacks on a small number of critical substations could cause nationwide blackout. A wireless architecture has no substations to attack and no single points of failure &mdash; multiple T1&#8209;TX nodes serve each district.</p>
+<p><strong>Class&nbsp;4 &mdash; Cyber attacks on control systems.</strong> Grid SCADA systems are known attack targets. The Lume&#8209;X invariant enforcement and Trust Layer verification of the wireless architecture make beam misdirection via software commands impossible without physical compromise of the pilot&#8209;tone system.</p>
+
+<h3>8.2 Dynamic Rerouting</h3>
+<p>When a T1&#8209;TX fails, affected district receivers switch to alternative nodes within the T1 control cycle (100ms for beam switch, 1&ndash;10&nbsp;seconds for power ramp&#8209;up). The alternative may be a different fusion hub, a backup transmitter, or a battery&#8209;supplemented intermediate receiver. Energy routing is as dynamic as packet routing in the Energy Internet.</p>
+
+<h2><span class="section-num">9</span> Regulatory Pathway</h2>
+
+<h3>9.1 Spectrum Licensing</h3>
+<p>No specific FCC rule currently addresses terrestrial high&#8209;power microwave energy transmission at the proposed scale. The regulatory pathway proceeds through the experimental license mechanism (FCC Part&nbsp;5) while the permanent framework is developed &mdash; the same pathway early cellular and satellite technologies used. Parallel development of engineering data and regulatory engagement spans approximately 5&ndash;10 years before commercial deployment.</p>
+
+<h3>9.2 Aviation Coordination</h3>
+<p>FAA aeronautical study process (Form 7460&#8209;1) assesses impact on aeronautical operations. Beam paths entirely below 200&nbsp;ft AGL (~60m) require primarily notification&#8209;based coordination. Higher paths may require NOTAM publication. The retrodirective pilot&#8209;tone automatic shutoff &mdash; terminating the beam within 100ms of ADS&#8209;B detection &mdash; satisfies the fundamental aviation safety requirement.</p>
+
+<h3>9.3 ICNIRP Compliance</h3>
+<p>The exclusion zone design with 46&nbsp;dB sidelobe suppression ensures no public area exceeds 10&nbsp;W/m&sup2; at 2.45&nbsp;GHz. ICNIRP compliance documentation &mdash; power density maps demonstrating public area compliance &mdash; is the central component of regulatory submissions to the FCC and state public utilities commissions.</p>
+
+<h2><span class="section-num">10</span> The Complete Deterministic Infrastructure Stack</h2>
+
+<h3>10.1 The Full Stack Vision</h3>
+<p>I verify that each layer satisfies all four DI properties:</p>
+<table>
+  <tr><th>Layer</th><th>Identity</th><th>Routing</th><th>Invariants</th><th>Self&#8209;Maintenance</th></tr>
+  <tr><td>Fusion Control</td><td>Trust Layer T1&#8209;TX profile</td><td>Demand allocation via EI protocol</td><td>INV&#8209;F1 through INV&#8209;F4 (plasma)</td><td>Disruption avoidance + ramp sequences</td></tr>
+  <tr><td>Tier&nbsp;1 TX</td><td>Trust Layer + pilot&#8209;tone physical auth</td><td>Beam directed via pilot lock</td><td>Pilot &ge; threshold, P &le; P<sub>max</sub></td><td>Auto failover to backup T1&#8209;TX</td></tr>
+  <tr><td>Tier&nbsp;1 RX</td><td>Trust Layer + pilot transmitter</td><td>Passive receive</td><td>P<sub>received</sub> &ge; P<sub>min</sub></td><td>Alert and reroute on underpower</td></tr>
+  <tr><td>Tier&nbsp;2 Mesh</td><td>MC 64&#8209;bit address</td><td>DRMA multi&#8209;hop</td><td>INV&#8209;1 through INV&#8209;5</td><td>SHDCL self&#8209;healing</td></tr>
+  <tr><td>Device</td><td>Trust Layer endpoint</td><td>Addressed final&#8209;hop</td><td>Delivery confirmation</td><td>Self&#8209;report on failure</td></tr>
+</table>
+<p>Every layer from plasma to device satisfies all four DI properties. This is the first formally specified system spanning generation to device with no wired infrastructure at any layer above the device connection.</p>
+
+<h3>10.2 The DI Stack as an Ecosystem</h3>
+<p><strong>Lume&#8209;X</strong> operates at two timescales: fusion control (1&ndash;10ms) and Meridian mesh (13.7ms). Tier&nbsp;1 operates at 100ms. All use the same invariant enforcement model.</p>
+<p><strong>Trust Layer</strong> provides identity verification from the fusion reactor&#8217;s T1&#8209;TX capability profile through relay nodes to leaf devices. A device can cryptographically verify the provenance of its energy &mdash; that it originated from an authorized source, was transmitted through authorized relays, and was delivered by the authorized mesh.</p>
+<p><strong>Guardian Security</strong> extends into Tier&nbsp;1 with three additional threat categories: T12 (exclusion zone breach), T13 (pilot&#8209;tone spoofing), and T14 (regulatory fraudulent operation). The innate/adaptive defense structure applies at both layers.</p>
+
+<h3>10.3 The Stack in Three Sentences</h3>
+<blockquote>A fusion reactor, governed by deterministic plasma control and formally registered in the Trust Layer, converts thermal energy to electricity and feeds a phased array transmitter that locks its beam to a pilot tone transmitted from an authorized district receiver array, where the received microwave power is converted to DC and delivered to the Meridian mesh that routes it &mdash; addressed, authenticated, quality&#8209;of&#8209;service&#8209;guaranteed &mdash; to every device in the buildings the district serves. No transmission towers. No high&#8209;voltage cables. No substations. Energy, addressed and routed from plasma to device, through air.</blockquote>

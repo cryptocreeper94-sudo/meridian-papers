@@ -1,0 +1,167 @@
+<h2><span class="section-num">13</span> Related Work</h2>
+
+<h3>13.1 Indoor RF Propagation Modeling</h3>
+<p>The indoor RF propagation literature [67, 68] provides physical models for how RF signals propagate through building interiors. The 60&nbsp;GHz indoor propagation literature [69, 70] is particularly relevant, characterizing the strong material attenuation and limited penetration that make mmWave the preferred frequency for ceiling&#8209;plane containment.</p>
+
+<h3>13.2 Indoor Positioning Systems</h3>
+<p>The UWB positioning literature [71, 72] provides localization accuracy bounds for the Meridian MC coordinate system. Sub&#8209;10cm positioning accuracy is achievable with commercial UWB hardware (Qorvo DW1000 family), sufficient for the 25&nbsp;cm AVM voxel resolution. The BSL sensor fusion literature [73] provides multi&#8209;modal occupancy detection accuracy bounds.</p>
+
+<h3>13.3 BIM and Building Systems Integration</h3>
+<p>The BIM integration literature [74, 75] documents workflows and data exchange standards (IFC, COBie) for integrating building systems into BIM. The MEP coordination workflow is the precedent for the Meridian design&#8209;layer integration. The IFC standard [76] provides the entity schema for the Meridian BIM plugin.</p>
+
+<h3>13.4 Wireless Power in Built Environments</h3>
+<p>The emerging literature on wireless power deployment in built environments [77, 78] is thin &mdash; this paper is the first to propose a formal spatial safety framework for multi&#8209;story wireless energy routing. Prior work on room&#8209;scale wireless charging [79] addresses single&#8209;room scenarios without the multi&#8209;floor void routing problem.</p>
+
+<h2><span class="section-num">14</span> Limitations and Honest Boundaries</h2>
+<p><strong>The AVM assumes rigid geometry.</strong> Flexible architectural elements (retractable partitions, deployable barriers) require frequent AVM updates or conservative classification as FLOOR_OCCUPIED.</p>
+<p><strong>Void classification at irregular boundaries is imprecise.</strong> The 25&nbsp;cm voxel resolution approximates diagonal staircase edges and curved atrium walls. The conservative classification (partial overlap &rarr; void type) is intentional.</p>
+<p><strong>The safety proof assumes correct AVM construction.</strong> A misclassified VOID_STAIRCASE as FLOOR_SAFE invalidates the proof for that zone. The commissioning walk&#8209;through and BSL backstop are the mitigations.</p>
+<p><strong>60&nbsp;GHz range limitations constrain large spaces.</strong> Atmospheric attenuation may limit relay hops to 8&ndash;10m in warehouse or atrium scenarios, requiring denser node deployment.</p>
+<p><strong>No experimental validation exists.</strong> Beam containment in FLOOR_SAFE zones and BSL sensor coverage are based on manufacturer specifications, not measurements in actual buildings. Phase&nbsp;1 experimental work should include ceiling&#8209;plane routing validation.</p>
+<p><strong>BIM integration requires vendor cooperation.</strong> The Meridian BIM plugin is specified but not implemented. Development requires BIM platform API access.</p>
+
+<h2><span class="section-num">15</span> Conclusion</h2>
+<p>The six preceding papers define what Meridian is. This paper defines where Meridian goes.</p>
+<p>A routing protocol that cannot be safely deployed in a real building is not a product. Real buildings have open staircases, atriums, elevator shafts, balconies, and mezzanines. Every one of these features creates a geometric condition under which a naive energy routing implementation would create beam paths through occupied space.</p>
+<p>The Architectural Voxel Map prevents this. By encoding the building&#8217;s physical geometry as a hard constraint on every beam path computation, the AVM ensures the routing engine cannot authorize a beam path that traverses a void. Ceiling&#8209;plane routing keeps beam energy above the occupied zone. Floor&#8209;transition gateways solve inter&#8209;floor transfer without occupied&#8209;space beam traversal. The BSL provides the safety backstop.</p>
+<p>The result is a formal safety proof: physical harm from Meridian beam traversal is impossible in a compliant multi&#8209;story deployment under non&#8209;destructive conditions. This proof rests on four independent mechanisms &mdash; no single failure produces harm. This is the safety standard wireless energy routing requires for deployment in occupied buildings.</p>
+<p>The BIM integration pathway closes the loop between engineering specification and architectural practice. When Meridian deployment is designed as a native BIM layer &mdash; alongside HVAC, electrical, and structural &mdash; the coordination problems that plague retrofit installations are resolved before construction.</p>
+<p>The ceiling&#8209;plane routing model is, at its core, a simple idea: keep the beam where no person can be, and govern the descent to where people are with maximum care. That idea, formalized through the AVM, the gateway architecture, the dynamic occupancy overlay, and the multi&#8209;story safety proof, is what makes Meridian a real product &mdash; not a laboratory demonstration, but an energy infrastructure system that can be installed in the buildings where people live and work.</p>
+
+<div class="page-break"></div>
+
+<h2>Appendix A &mdash; AVM Voxel Classification Specification</h2>
+<table>
+  <tr><th>Class</th><th>ID</th><th>Definition</th><th>Beam Traversal</th></tr>
+  <tr><td>SOLID</td><td>0</td><td>Structural material: concrete, masonry, steel, timber, glass</td><td>Beam terminates (physical boundary)</td></tr>
+  <tr><td>FLOOR_SAFE</td><td>1</td><td>Above z<sub>safe</sub> (floor_slab + 2.2m) and below ceiling slab</td><td>Permitted (preferred routing zone)</td></tr>
+  <tr><td>FLOOR_OCCUPIED</td><td>2</td><td>Between floor_slab and z<sub>safe</sub></td><td>Final&#8209;hop geometry only</td></tr>
+  <tr><td>VOID_STAIRCASE</td><td>3</td><td>Open staircase air volume + 50&nbsp;cm buffer, all floors spanned</td><td>PROHIBITED</td></tr>
+  <tr><td>VOID_ATRIUM</td><td>4</td><td>Atrium air volume + 50&nbsp;cm buffer, all floors spanned</td><td>PROHIBITED</td></tr>
+  <tr><td>VOID_SHAFT</td><td>5</td><td>Elevator, mechanical, or other enclosed shaft</td><td>PROHIBITED</td></tr>
+  <tr><td>GATEWAY_ZONE</td><td>6</td><td>Designated inter&#8209;floor handoff position</td><td>Beam termination and handoff</td></tr>
+</table>
+<p>Classification priority (overlapping zones): SOLID &gt; VOID_STAIRCASE = VOID_ATRIUM = VOID_SHAFT &gt; FLOOR_OCCUPIED &gt; GATEWAY_ZONE &gt; FLOOR_SAFE. Any ambiguous voxel is assigned the more restrictive class.</p>
+
+<h2>Appendix B &mdash; Floor&#8209;Transition Gateway Node Specification</h2>
+<table>
+  <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
+  <tr><td>Antenna faces</td><td>2 (upper + lower)</td><td>One per floor</td></tr>
+  <tr><td>Frequency</td><td>60&nbsp;GHz (primary)</td><td>5.8&nbsp;GHz optional</td></tr>
+  <tr><td>Array aperture</td><td>10&nbsp;cm per face</td><td>Each face independent</td></tr>
+  <tr><td>Beamwidth per face</td><td>&le;5&deg; full angle</td><td>60&nbsp;GHz at 10&nbsp;cm</td></tr>
+  <tr><td>Supercapacitor capacity</td><td>10&times; standard relay</td><td>Inter&#8209;floor buffer</td></tr>
+  <tr><td>BSL sensors</td><td>2 sets (one per face)</td><td>Full 5&#8209;modality each</td></tr>
+  <tr><td>Aperture requirement</td><td>&ge;15&nbsp;cm clear path</td><td>Between faces</td></tr>
+  <tr><td>Mounting clearance</td><td>&le;2m from transition</td><td>Close to transition</td></tr>
+  <tr><td>Identity</td><td>Single Trust Layer ID</td><td>Capability: GATEWAY</td></tr>
+  <tr><td>Maintenance access</td><td>Required</td><td>Replacement without occupancy disruption</td></tr>
+</table>
+
+<h2>Appendix C &mdash; AVM&#8209;DRMA Integration: Beam Path Validation Algorithm</h2>
+<pre>FUNCTION validate_path(candidate_path, AVM, occupancy_map) &rarr; VALID | REJECTED
+  FOR each hop (node_i, node_j) in candidate_path:
+    swept_volume &larr; compute_swept_volume(node_i.position, node_j.position,
+                                        beam_width_at(node_i, node_j))
+
+    FOR each voxel v in swept_volume:
+      voxel_class &larr; AVM.classify(v)
+
+      IF voxel_class IN {VOID_STAIRCASE, VOID_ATRIUM, VOID_SHAFT}:
+        RETURN REJECTED (reason: VOID_TRAVERSAL, voxel: v, hop: (i,j))
+
+      IF voxel_class == FLOOR_OCCUPIED:
+        IF (node_i, node_j) is NOT final_hop(candidate_path):
+          RETURN REJECTED (reason: NON_FINAL_OCCUPIED_TRAVERSAL, hop: (i,j))
+        ELSE:
+          IF NOT final_hop_protocol_satisfied(node_i, node_j):
+            RETURN REJECTED (reason: FINAL_HOP_PROTOCOL_VIOLATION)
+
+      IF occupancy_map.is_occupied(v):
+        RETURN REJECTED (reason: DYNAMIC_OCCUPANCY, voxel: v, hop: (i,j))
+
+  RETURN VALID</pre>
+<p>The validation function runs for every candidate path before beam authorization by Guardian&#8209;E, within the Lume&#8209;X 13.7&nbsp;ms control cycle budget.</p>
+
+<h2>Appendix D &mdash; BIM Export Format Specification (Meridian Layer)</h2>
+<pre>Meridian AVM binary format (.mav extension):
+
+Header (64 bytes):
+  magic          : 4 bytes  ("MAVM")
+  version        : 2 bytes  (currently 0x0001)
+  building_id    : 16 bytes (UUID)
+  avm_version    : 4 bytes  (incremental version counter)
+  origin_x/y/z   : 24 bytes (double precision, meters)
+  voxel_size     : 4 bytes  (float, meters, default 0.25)
+  grid_dims_i/j/k: 12 bytes (uint32 each)
+  timestamp      : 8 bytes  (Unix epoch, milliseconds)
+  author_key_id  : 8 bytes  (Trust Layer identity of BIM author)
+  signature      : 64 bytes (Ed25519 signature over header + voxel data)
+
+Voxel data:
+  [grid_dims_i &times; grid_dims_j &times; grid_dims_k bytes]
+  Each byte: voxel class (0&ndash;6 as specified in Appendix A)
+  Order: (i=0,j=0,k=0), (i=1,j=0,k=0), ..., row-major in i, then j, then k</pre>
+<p>The signature covers the full voxel data array and the header (excluding the signature field). The commissioning tool verifies the signature against the author&#8217;s Trust Layer public key before importing any AVM.</p>
+
+<div class="page-break"></div>
+
+<h2>References</h2>
+<p><strong>Indoor RF Propagation:</strong></p>
+<ol start="67">
+  <li>Rappaport, T.S., et&nbsp;al. (2013). &#8220;Millimeter Wave Mobile Communications for 5G Cellular.&#8221; <em>IEEE Access,</em> 1, 335&ndash;349.</li>
+  <li>Serafimovski, N., et&nbsp;al. (2012). &#8220;Practical Implementation of Visible Light Communications.&#8221; <em>IEEE Trans. Consumer Electronics,</em> 58(1), 21&ndash;28.</li>
+  <li>Maltsev, A., et&nbsp;al. (2010). &#8220;Experimental Investigations of 60&nbsp;GHz WLAN Systems in Office Environment.&#8221; <em>IEEE JSAC,</em> 27(8), 1488&ndash;1499.</li>
+  <li>Jacob, M., et&nbsp;al. (2012). &#8220;Influence of Furniture on a 60&nbsp;GHz Indoor Channel.&#8221; <em>IEEE Antennas and Wireless Propagation Letters,</em> 11, 1412&ndash;1416.</li>
+</ol>
+<p><strong>Indoor Positioning:</strong></p>
+<ol start="71">
+  <li>Alarifi, A., et&nbsp;al. (2016). &#8220;Ultra Wideband Indoor Positioning Technologies.&#8221; <em>Sensors,</em> 16(5), 707.</li>
+  <li>Gezici, S., et&nbsp;al. (2005). &#8220;Localization via Ultra&#8209;Wideband Radios.&#8221; <em>IEEE Signal Processing Magazine,</em> 22(4), 70&ndash;84.</li>
+</ol>
+<p><strong>Occupancy Sensing:</strong></p>
+<ol start="73">
+  <li>Chen, Z., et&nbsp;al. (2012). &#8220;Sensor&#8209;Based Activity Recognition.&#8221; <em>IEEE Trans. Systems, Man, and Cybernetics,</em> 42(6), 790&ndash;808.</li>
+</ol>
+<p><strong>BIM and Building Systems:</strong></p>
+<ol start="74">
+  <li>Eastman, C., et&nbsp;al. (2011). <em>BIM Handbook: A Guide to Building Information Modeling.</em> Wiley.</li>
+  <li>BuildingSMART International. (2020). <em>Industry Foundation Classes (IFC) &mdash; IFC4 ADD2 TC1 Standard.</em> ISO 16739&#8209;1:2018.</li>
+  <li>Autodesk Inc. (2023). <em>Revit API Developer&#8217;s Guide.</em> Autodesk Developer Network.</li>
+</ol>
+<p><strong>Wireless Power in Buildings:</strong></p>
+<ol start="77">
+  <li>Sample, A.P., et&nbsp;al. (2013). &#8220;Enabling Seamless Wireless Power Delivery in Dynamic Environments.&#8221; <em>Proceedings of the IEEE,</em> 101(6), 1343&ndash;1358.</li>
+  <li>Talla, V., et&nbsp;al. (2015). &#8220;Powering the Next Billion Devices with Wi&#8209;Fi.&#8221; <em>ACM CoNEXT,</em> 1&ndash;13.</li>
+  <li>Ossia Inc. (2022). <em>Cota Real Wireless Power: Technical Overview.</em> Ossia Technical Report.</li>
+</ol>
+<p><strong>Lume Ecosystem:</strong></p>
+<ol start="15">
+  <li>Andrews, J. (2026). <em>Lume Language Specification.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a></li>
+  <li>Andrews, J. (2026). <em>Trust Layer Ecosystem.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a></li>
+  <li>Andrews, J. (2026). <em>DAIGS Framework.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;V Verification Suite.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;X Multi&#8209;Agent Cognition.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a></li>
+  <li>Andrews, J. (2026). <em>Deterministic Dissolution.</em> DOI: <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a></li>
+  <li>Andrews, J. (2026). <em>Meridian Architecture.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Meridian as Synthetic Organism.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>The Energy Internet.</em> [DOI to be assigned]</li>
+  <li value="50">Andrews, J. (2026). <em>Deterministic Infrastructure.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Guardian Security.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Unified Energy&#8209;Data Mesh.</em> [DOI to be assigned]</li>
+</ol>
+
+<div class="footnote" style="page-break-inside: avoid;">
+  <p>This paper discloses only the physical deployment architecture for Meridian. No proprietary hardware designs, source code, or manufacturing specifications are included.<br>
+  <strong>Patent Pending</strong> &mdash; &#8220;Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing Using Ambient Harvesting, Mesh Coordination, and Directional Transmission.&#8221; DarkWave Studios LLC.<br>
+  <strong>Lume&#8209;X:</strong> Provisionally patented deterministic control runtime.<br>
+  <strong>Guardian Security (Guardian&#8209;E):</strong> Security and safety enforcement layer. Domain: TrustShield.tech<br>
+  &copy; 2026 DarkWave Studios LLC. All rights reserved.<br>
+  Correspondence: Jason Andrews, DarkWave Studios LLC, Nashville, TN. Email: team@dwsc.io<br>
+  ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009-0007-5214-649X</a><br>
+  Website: <a href="https://lume-lang.org">lume-lang.org</a> &middot; <a href="https://trustshield.tech">TrustShield.tech</a> &middot; GitHub: <a href="https://github.com/cryptocreeper94-sudo">github.com/cryptocreeper94-sudo</a><br>
+  This preprint has not undergone peer review. It is submitted for early dissemination and to establish priority of invention.</p>
+</div>
+
+</body>
+</html>

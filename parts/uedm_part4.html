@@ -1,0 +1,166 @@
+<h2><span class="section-num">10</span> Applications and Deployment Scenarios</h2>
+
+<h3>10.1 Smart Building Infrastructure</h3>
+<p>A building equipped with UEDM infrastructure requires no per&#8209;device wiring. Every device &mdash; occupancy sensors, air quality monitors, HVAC controls, lighting dimmers, door access readers, security cameras, fire detectors &mdash; is an SSD. Installation is physical mounting only; there is no wiring. The UEDM mesh provides power, data communication, identity verification, and self&#8209;healing simultaneously.</p>
+
+<h3>10.2 Industrial IoT at Scale</h3>
+<p>A manufacturing facility with thousands of sensors faces two infrastructure challenges: powering all sensors and connecting them all. The UEDM addresses both simultaneously. Sensors are SSDs &mdash; powered and connected through the mesh. Actuators receive high&#8209;priority energy delivery and accept control commands through the same mesh. The manufacturing DPI described in [DI Theory, 2026 &sect;9.2] uses the UEDM as its resource routing fabric.</p>
+
+<h3>10.3 Emergency Response Networks</h3>
+<p>Portable UEDM anchor nodes deployed by emergency responders create instant infrastructure &mdash; no wiring, no separate communication setup. Medical monitoring devices provide continuous telemetry through the same mesh that powers them. The Emergency Priority Override mechanism [Energy Internet, 2026 &sect;6.4] and Guardian Security Emergency Authority Credentials [Guardian Security, 2026 &sect;7.3] protect CRITICAL sessions under high load.</p>
+
+<h3>10.4 Agricultural Sensor Networks</h3>
+<p>Dense sensor deployment over large agricultural areas &mdash; soil moisture, microclimate, pest detection, irrigation control &mdash; is enabled through solar&#8209;powered anchor nodes on fence posts or poles. SSD relay nodes extend range through DRMA multi&#8209;hop topology, providing power and connectivity across agricultural areas without battery replacement.</p>
+
+<h2><span class="section-num">11</span> Related Work</h2>
+
+<h3>11.1 Simultaneous Wireless Information and Power Transfer</h3>
+<p>The SWIPT literature [58, 59] is the primary academic foundation for the UEDM&#8217;s physical layer duality. Varshney [58] first formulated the theoretical tradeoff between information rate and energy harvesting. The UEDM advances SWIPT in two directions: multi&#8209;hop routed networking (introducing the co&#8209;routing arbitration problem not addressed in SWIPT literature), and treating the physical layer tradeoff as one parameter in a broader routing and governance problem.</p>
+
+<h3>11.2 Wireless Powered Communication Networks</h3>
+<p>WPCNs [62, 63] use separate beacons and access points for power and communication. The UEDM&#8217;s SSD model achieves the same device independence through a unified mesh architecture that eliminates separate infrastructure.</p>
+
+<h3>11.3 Integrated Sensing and Communication</h3>
+<p>ISAC [64, 65] uses shared RF waveforms for both radar sensing and communication. The UEDM&#8217;s localization subsystem (UWB ranging) already performs a sensing function. Extending this to general environmental sensing is a natural future extension.</p>
+
+<h3>11.4 Named Data Networking</h3>
+<p>NDN [66] proposes content&#8209;centric rather than host&#8209;centric addressing. The UEDM&#8217;s anycast addressing is a limited form of NDN content routing: route to the nearest instance of a service rather than to a specific host.</p>
+
+<h3>11.5 The Lume Ecosystem</h3>
+<p>The UEDM is the convergence of two Lume ecosystem trajectories: the energy routing trajectory (Meridian, Energy Internet) and the identity and communication trajectory (Trust Layer, DAIGS). The UEDM is the physical instantiation of the cross&#8209;domain interoperability model described in [DI Theory, 2026 &sect;8].</p>
+
+<h2><span class="section-num">12</span> Limitations and Honest Boundaries</h2>
+<p><strong>No hardware validation exists.</strong> The UEDM is an architectural specification. The co&#8209;routing arbitration rules, UEDM frame format, and DTCP protocol have not been implemented or tested in hardware.</p>
+<p><strong>The TDMA capacity model is simplified.</strong> Channel capacity varies with distance, interference, frequency, and hardware configuration. The arbitration rules are correct in structure but require empirical measurements for specific deployments.</p>
+<p><strong>Mode&nbsp;2 requires unspecified hardware.</strong> The Meridian MTL specification does not include a SWIPT&#8209;capable receiver design. Mode&nbsp;1 requires no hardware changes.</p>
+<p><strong>Self&#8209;sustaining device viability depends on deployment density.</strong> An SSD in a sparse UEDM mesh may not receive sufficient energy for continuous operation.</p>
+<p><strong>Data latency is higher than dedicated data networks.</strong> A five&#8209;hop data path with 13.7&nbsp;ms control cycles has ~70&nbsp;ms minimum latency &mdash; adequate for sensor telemetry but not for real&#8209;time control or streaming.</p>
+<p><strong>The billing model is unvalidated.</strong> The energy&#8209;credit&#8209;denominated data billing model has no economic validation.</p>
+
+<h2><span class="section-num">13</span> Conclusion</h2>
+<p>The Meridian mesh was designed to route energy. It already routes data. That was inevitable &mdash; a deterministic routing network that governs energy delivery through addressed nodes, authenticated sessions, and confirmed receipts cannot route energy without also routing the information that governs it. The control plane is a communication layer. The UEDM formalizes it.</p>
+<p>The formal recognition of the Meridian mesh as a dual&#8209;traffic fabric has three significant implications.</p>
+<p><strong>First,</strong> it resolves the most persistent practical obstacle to large&#8209;scale IoT deployment: the dual infrastructure problem. Every deployed IoT device currently needs two connections &mdash; one for power, one for communication. The UEDM reduces two infrastructure problems to one.</p>
+<p><strong>Second,</strong> it validates the convergence thesis at the infrastructure level. Power and communication, the two fundamental infrastructure resources, converge toward a single fabric when both are designed on deterministic routing principles.</p>
+<p><strong>Third,</strong> it completes the Energy Internet architecture. The Energy Internet defined inter&#8209;mesh routing but deferred the access layer. The UEDM is that access layer. Together, they provide the complete architecture from global routing to self&#8209;sustaining device connection.</p>
+<p>When both the power and the packet travel through the same fabric, governed by the same addresses, the same routes, and the same governance framework, the infrastructure needed to support a world of trillions of autonomous devices becomes not two separate global systems but one. That is what the UEDM makes possible.</p>
+
+<div class="page-break"></div>
+
+<h2>Appendix A &mdash; UEDM Protocol Stack</h2>
+<table>
+  <tr><th>Layer</th><th>Name</th><th>Energy Function</th><th>Data Function</th><th>Protocol</th></tr>
+  <tr><td>5</td><td>UAL</td><td>EaaS energy profiles</td><td>Application services</td><td>EaaS + custom</td></tr>
+  <tr><td>4</td><td>UTL</td><td>ETCP energy sessions</td><td>DTCP data sessions</td><td>ETCP / DTCP</td></tr>
+  <tr><td>3</td><td>UNL</td><td>EIP routing, EBGP</td><td>Same (unified address)</td><td>EIP / EBGP</td></tr>
+  <tr><td>2</td><td>ULL</td><td>Energy burst framing, TDMA</td><td>Data packet framing, co&#8209;routing</td><td>UEDM Frame</td></tr>
+  <tr><td>1</td><td>UPL</td><td>High&#8209;power focused beam</td><td>Modulated low&#8209;power signal</td><td>RF (time&#8209;switched)</td></tr>
+</table>
+
+<h2>Appendix B &mdash; Co&#8209;Routing Arbitration Rules</h2>
+<table>
+  <tr><th>Rule</th><th>Description</th><th>Priority Impact</th></tr>
+  <tr><td>AR&#8209;01</td><td>GEC reserved exclusively for CRITICAL + HIGH energy</td><td>Energy &Gt; data in GEC</td></tr>
+  <tr><td>AR&#8209;02</td><td>GCDC reserved for essential control&#8209;plane data</td><td>Control data &Gt; application data</td></tr>
+  <tr><td>AR&#8209;03</td><td>NORMAL energy priority over all data in FSC</td><td>Energy &gt; data in FSC</td></tr>
+  <tr><td>AR&#8209;04</td><td>BACKGROUND energy yields to NORMAL data in FSC</td><td>Data &gt; background energy</td></tr>
+  <tr><td>AR&#8209;05</td><td>CRITICAL data served from GCDC, not FSC</td><td>Data CRITICAL protected</td></tr>
+  <tr><td>AR&#8209;06</td><td>FSC allocated in TDMA slot increments</td><td>Minimum granularity: 1 slot</td></tr>
+  <tr><td>AR&#8209;07</td><td>Mode&nbsp;2 (SWIPT) used when paths overlap</td><td>Efficiency optimization</td></tr>
+  <tr><td>AR&#8209;08</td><td>Large data payloads fragmented across FSC slots</td><td>No monopolization of FSC</td></tr>
+</table>
+
+<h2>Appendix C &mdash; UEDM Addressing Specification</h2>
+<pre>UEDM Address Format (128 bits):
+  Same as EIP address format [Energy Internet, 2026, Appendix B]
+  with Node Type 0x06 = DATA_ONLY added
+
+Service Endpoint Format:
+  [UEDM Address : 128 bits] + [Service Port : 16 bits] = 144 bits total
+
+Reserved Ports:
+  0x0001 : Energy delivery (EaaS endpoint)
+  0x0002 : Guardian Security authentication
+  0x0003 : Lume-X telemetry
+  0x0004 : SHDCL recovery messaging
+  0x0005 : EDNS query/response
+  0x0006 : EBGP peering session
+  0x0007 : DTCP session establishment
+  0x0008 : Multicast group management
+  0x0009 : Service discovery
+  0x000A : Energy credit settlement
+  0x000B&ndash;0x00FF : Reserved for future system services
+  0x0100&ndash;0xFFFF : Application-defined services</pre>
+
+<h2>Appendix D &mdash; Self&#8209;Sustaining Device Profile</h2>
+<table>
+  <tr><th>Parameter</th><th>Minimum</th><th>Typical</th><th>High&#8209;Performance</th></tr>
+  <tr><td>Received power (P<sub>min</sub>)</td><td>1&nbsp;mW</td><td>10&nbsp;mW</td><td>100&nbsp;mW</td></tr>
+  <tr><td>Computation</td><td>Ultra&#8209;low&#8209;power MCU, 1&nbsp;MHz</td><td>Cortex&#8209;M4, 4&nbsp;MHz</td><td>Cortex&#8209;M33, 64&nbsp;MHz</td></tr>
+  <tr><td>Sensor duty cycle</td><td>0.1&nbsp;Hz</td><td>1&nbsp;Hz</td><td>10&nbsp;Hz</td></tr>
+  <tr><td>Data rate (uplink)</td><td>100&nbsp;bps</td><td>2.5&nbsp;kbps</td><td>25&nbsp;kbps</td></tr>
+  <tr><td>Supercapacitor capacity</td><td>1&nbsp;mF</td><td>10&nbsp;mF</td><td>100&nbsp;mF</td></tr>
+  <tr><td>Recovery time after blackout</td><td>60&nbsp;s</td><td>10&nbsp;s</td><td>2&nbsp;s</td></tr>
+  <tr><td>Organism type</td><td>Type&nbsp;2</td><td>Type&nbsp;3</td><td>Type&nbsp;3+</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>References</h2>
+<p><strong>Converged Infrastructure:</strong></p>
+<ol start="53">
+  <li>Ferreira, H.C., et&nbsp;al. (2010). <em>Power Line Communications: Theory and Applications.</em> Wiley.</li>
+  <li>IEEE 1901. (2010). <em>Standard for Broadband over Power Line Networks.</em> IEEE.</li>
+  <li>Berger, L.T., &amp; Schwager, A. (2014). <em>MIMO Power Line Communications.</em> CRC Press.</li>
+</ol>
+<p><strong>IAB:</strong></p>
+<ol start="57">
+  <li>3GPP TR 38.874. (2018). <em>Study on Integrated Access and Backhaul.</em> 3GPP.</li>
+</ol>
+<p><strong>SWIPT:</strong></p>
+<ol start="58">
+  <li>Varshney, L.R. (2008). &#8220;Transporting Information and Energy Simultaneously.&#8221; <em>IEEE ISIT,</em> 1612&ndash;1616.</li>
+  <li>Grover, P., &amp; Sahai, A. (2010). &#8220;Shannon meets Tesla: Wireless Information and Power Transfer.&#8221; <em>IEEE ISIT,</em> 2363&ndash;2367.</li>
+  <li>Zhou, X., Zhang, R., &amp; Ho, C.K. (2013). &#8220;Wireless Information and Power Transfer: Architecture Design and Rate&#8209;Energy Tradeoff.&#8221; <em>IEEE Trans. Communications,</em> 61(11), 4754&ndash;4767.</li>
+</ol>
+<p><strong>WPCN:</strong></p>
+<ol start="61">
+  <li>Bi, S., Ho, C.K., &amp; Zhang, R. (2015). &#8220;Wireless Powered Communication: Opportunities and Challenges.&#8221; <em>IEEE Communications Magazine,</em> 53(4), 117&ndash;125.</li>
+  <li>Ju, H., &amp; Zhang, R. (2014). &#8220;Throughput Maximization in Wireless Powered Communication Networks.&#8221; <em>IEEE Trans. Wireless Communications,</em> 13(1), 418&ndash;428.</li>
+</ol>
+<p><strong>ISAC:</strong></p>
+<ol start="63">
+  <li>Liu, F., et&nbsp;al. (2022). &#8220;Integrated Sensing and Communications.&#8221; <em>IEEE JSAC,</em> 40(6), 1728&ndash;1767.</li>
+  <li>Zhang, J.A., et&nbsp;al. (2021). &#8220;Signal Processing Techniques for Joint Communication and Radar Sensing.&#8221; <em>IEEE JSTSP,</em> 15(6), 1295&ndash;1315.</li>
+</ol>
+<p><strong>Named Data Networking:</strong></p>
+<ol start="65">
+  <li>Zhang, L., et&nbsp;al. (2014). &#8220;Named Data Networking.&#8221; <em>ACM SIGCOMM CCR,</em> 44(3), 66&ndash;73.</li>
+</ol>
+<p><strong>Lume Ecosystem:</strong></p>
+<ol start="15">
+  <li>Andrews, J. (2026). <em>Lume Language Specification.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a></li>
+  <li>Andrews, J. (2026). <em>Trust Layer Ecosystem.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a></li>
+  <li>Andrews, J. (2026). <em>DAIGS Framework.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;V Verification Suite.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;X Multi&#8209;Agent Cognition.</em> DOI: <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a></li>
+  <li>Andrews, J. (2026). <em>Deterministic Dissolution.</em> DOI: <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a></li>
+  <li>Andrews, J. (2026). <em>Meridian Architecture.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Meridian as Synthetic Organism.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>The Energy Internet.</em> [DOI to be assigned]</li>
+  <li value="50">Andrews, J. (2026). <em>Deterministic Infrastructure.</em> [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Guardian Security.</em> [DOI to be assigned]</li>
+</ol>
+
+<div class="footnote" style="page-break-inside: avoid;">
+  <p>This paper discloses only the architectural specification of the Unified Energy&#8209;Data Mesh. No implementation details, source code, or proprietary algorithms are included.<br>
+  <strong>Patent Pending</strong> &mdash; &#8220;Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing Using Ambient Harvesting, Mesh Coordination, and Directional Transmission.&#8221; DarkWave Studios LLC.<br>
+  &copy; 2026 DarkWave Studios LLC. All rights reserved.<br>
+  Correspondence: Jason Andrews, DarkWave Studios LLC, Nashville, TN. Email: team@dwsc.io<br>
+  ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009-0007-5214-649X</a><br>
+  Website: <a href="https://lume-lang.org">lume-lang.org</a> &middot; GitHub: <a href="https://github.com/cryptocreeper94-sudo">github.com/cryptocreeper94-sudo</a><br>
+  This preprint has not undergone peer review. It is submitted for early dissemination and to establish priority of invention.</p>
+</div>
+
+</body>
+</html>

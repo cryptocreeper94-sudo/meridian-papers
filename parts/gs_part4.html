@@ -1,0 +1,99 @@
+<h2><span class="section-num">6</span> Formal Security Properties and Coverage Proof</h2>
+
+<h3>6.1 Security Properties</h3>
+<p>Guardian Security is designed to satisfy four formal security properties:</p>
+<p><strong>Authenticity:</strong> Every participant N in a Guardian Security&#8209;protected mesh can be verified as the entity it claims to be. Formally: &forall;N, &forall;interactions I(N, *): Guardian&#8209;E verifies PKI_cert(N) before I is permitted. A participant that cannot be verified is not permitted to interact.</p>
+<p><strong>Integrity:</strong> No resource flow is modified in transit without detection. Formally: for any delivered burst B from source s to destination d, if P<sub>received</sub>(d) &ne; P<sub>transmitted</sub>(s) &times; path_efficiency(s,d) within the tolerance &plusmn;&epsilon;<sub>phys</sub>, Guardian&#8209;E flags the discrepancy within one control cycle.</p>
+<p><strong>Availability:</strong> The mesh continues delivering energy at bounded degraded service under attack. Formally: under any attack that does not involve physical destruction of nodes or physical access to BSL hardware, at least all CRITICAL&#8209;priority sessions continue at P<sub>min</sub> for the duration of the attack.</p>
+<p><strong>Non&#8209;repudiation:</strong> Every resource delivery event is attributable to a specific authenticated participant. Formally: for every EBF delivery, the certificate chain contains signed records from the authorizing source node, all relay nodes, and the receiving node, with timestamps, power measurements, and authentication proofs.</p>
+
+<h3>6.2 Coverage Proof</h3>
+<p>I prove coverage by attack path enumeration: for every threat category T1&ndash;T11, I show that achieving the attack objective requires traversing at least one Guardian Security enforcement boundary.</p>
+<table>
+  <tr><th>Threat</th><th>Attack Objective</th><th>Guardian&#8209;E Enforcement Boundary Crossed</th></tr>
+  <tr><td>T1</td><td>Beam misdirection via false position</td><td>Multi&#8209;source position consistency check (Step&nbsp;1 of beam authorization)</td></tr>
+  <tr><td>T2</td><td>Routing table corruption</td><td>Signed routing update verification; rate&#8209;limited route replacement</td></tr>
+  <tr><td>T3</td><td>Beam redirected to attacker</td><td>Trajectory consistency monitoring; relay forwarding timeout detection</td></tr>
+  <tr><td>T4</td><td>Legitimate devices denied energy</td><td>Per&#8209;node rate limits; CRITICAL priority reservation</td></tr>
+  <tr><td>T5</td><td>Attacker device receives legitimate allocation</td><td>One&#8209;credential&#8209;one&#8209;node enforcement; hardware profile consistency</td></tr>
+  <tr><td>T6</td><td>False delivery accounting</td><td>Physics&#8209;model cross&#8209;validation; dual&#8209;signature requirement</td></tr>
+  <tr><td>T7</td><td>Transmission collision or denial</td><td>Signed TDMA schedule; out&#8209;of&#8209;window detection; clock sync protection</td></tr>
+  <tr><td>T8</td><td>Insider access via physical compromise</td><td>Blast radius limitation; firmware integrity check; hardware profile binding</td></tr>
+  <tr><td>T9</td><td>Energy credit fraud</td><td>Dual&#8209;signature settlement; ERPKI attestation; sequence number dedup</td></tr>
+  <tr><td>T10</td><td>EBGP route hijacking</td><td>ERPKI prefix validation; topology cross&#8209;reference</td></tr>
+  <tr><td>T11</td><td>Safety system disabled</td><td>Hardware&#8209;enforced BSL; multi&#8209;modal sensor cross&#8209;validation; watchdog</td></tr>
+</table>
+<p>For T11 specifically, I note that the coverage guarantee has a physical limit: an attacker with physical access to the BSL hardware circuitry who can sever the hardware cutoff connection cannot be stopped by software means. This is the residual risk acknowledged in Section&nbsp;11 (Limitations). The defense against T11 physical hardware attack is physical security of node deployment locations, not Guardian Security.</p>
+
+<h2><span class="section-num">7</span> Guardian Security at Energy Internet Scale</h2>
+<p>The Energy Internet [Energy Internet, 2026] introduces three new threat surfaces beyond the single&#8209;mesh Meridian architecture: the inter&#8209;mesh EBGP routing infrastructure, the EDNS resolution infrastructure, and the energy credit settlement system.</p>
+
+<h3>7.1 Three&#8209;Level Architecture</h3>
+<p>Guardian Security operates at three levels in the Energy Internet:</p>
+<p><strong>Level&nbsp;1 &mdash; Intra&#8209;mesh security.</strong> The single&#8209;mesh Guardian Security implementation specified in Sections&nbsp;5 and&nbsp;6. Unchanged from the single&#8209;mesh architecture.</p>
+<p><strong>Level&nbsp;2 &mdash; Inter&#8209;mesh security (Energy TLS).</strong> Every EBGP peering session between gateway nodes is authenticated using EAS&#8209;level PKI managed through the Trust Layer. EBGP route updates are signed by the originating gateway; receiving gateways verify the signature and the ERPKI prefix authorization before accepting. The session uses forward&#8209;secret key exchange (ephemeral Diffie&#8209;Hellman) so that compromise of a long&#8209;term key does not expose past session traffic.</p>
+<p><strong>Level&nbsp;3 &mdash; Registry security (EIRA&#8209;level).</strong> All EIRA operations &mdash; EAS Number assignment, EIP prefix delegation, Emergency Authority Credential issuance &mdash; are signed by the EIRA root credential and published in a transparency log. Any Energy Internet participant can verify any EIRA action independently.</p>
+
+<h3>7.2 ERPKI Implementation</h3>
+<p>Energy Resource Public Key Infrastructure (ERPKI) provides route origin validation for EBGP. The implementation follows the structure of RPKI for data internet BGP [RFC&nbsp;6480]:</p>
+<ul>
+  <li>The EIRA maintains the ERPKI root and delegates EAS&#8209;level signing authorities to each EAS operator.</li>
+  <li>Each EAS operator issues Route Origin Authorizations (ROAs) for its delegated EIP prefixes.</li>
+  <li>ENL routers validate EBGP route origins against the ERPKI repository. Invalid origins are rejected.</li>
+  <li>The ERPKI repository is published as a distributed, signed database with full history.</li>
+</ul>
+
+<h3>7.3 Emergency Authority Credential Security</h3>
+<p>Emergency Authority Credentials (EAC) enable Emergency Priority Override (EPO). EAC security measures:</p>
+<ul>
+  <li>EAC private keys are stored in hardware security modules (HSMs) requiring multi&#8209;party authorization (M&#8209;of&#8209;N threshold signing)</li>
+  <li>EPO commands must include a valid timestamp within &plusmn;60 seconds of network time (prevents replay)</li>
+  <li>Each EAC has a maximum EPO duration &mdash; commands without a finite duration are rejected</li>
+  <li>EPO commands are logged in the certificate chain and are publicly auditable</li>
+  <li>EIRA can revoke any EAC within one propagation cycle if compromise is detected</li>
+</ul>
+
+<h2><span class="section-num">8</span> The Biological Safety Layer as Physical Security Invariant</h2>
+
+<h3>8.1 The BSL as the Security Invariant of Last Resort</h3>
+<p>Guardian Security is a software and protocol framework. A sufficiently sophisticated attacker who can compromise the software stack may be able to bypass Guardian Security&#8217;s protocol&#8209;level defenses.</p>
+<p>The Biological Safety Layer (BSL) is the security mechanism that operates below the software stack. It is implemented in hardware circuitry independent of the node&#8217;s microcontroller, firmware, and software gate logic. The BSL&#8217;s biological presence detection and beam cutoff circuit operates whether the software is running correctly, is crashed, is compromised, or has been replaced.</p>
+<p>Formally, the BSL enforces a physical security invariant:</p>
+<div class="invariant-box"><strong>BSL_invariant:</strong> &forall;t, &forall;positions p: biological_presence(p, t) = TRUE &rarr; beam_active_at(p, t) = FALSE</div>
+<p>This invariant is enforced by hardware physics, not by software logic. It is the security invariant of last resort &mdash; the property that holds even when every other security mechanism has failed.</p>
+
+<h3>8.2 BSL Tamper Resistance</h3>
+<p>For the BSL_invariant to be a genuine security guarantee, the BSL hardware must be tamper&#8209;resistant:</p>
+<ul>
+  <li><strong>Sensor diversity:</strong> Biological presence detection uses at least two independent sensor modalities (e.g., radar + thermal). An attacker who blocks one modality does not defeat detection.</li>
+  <li><strong>Anomalous&#8209;absence detection:</strong> Sensors that go offline or produce anomalous &#8220;all&#8209;clear&#8221; readings when other sensors indicate uncertainty trigger a SENSOR_INTEGRITY_FAILURE event that forces beam hold.</li>
+  <li><strong>Hardware cutoff independence:</strong> The beam cutoff circuit receives power and control signals independent of the main microcontroller.</li>
+  <li><strong>Tamper evidence:</strong> The BSL housing includes tamper&#8209;evident sealing. A node whose BSL housing has been opened fails the physical inspection at maintenance intervals.</li>
+</ul>
+
+<h3>8.3 The Residual Risk Statement</h3>
+<p>No security system provides zero residual risk. The BSL&#8217;s residual risk is a T11c attack: an attacker with sustained physical access who surgically modifies the BSL hardware circuitry itself. This attack requires: physical access to a deployed node; technical knowledge of the specific BSL circuit implementation; time to perform hardware modification without detection; tolerance for detection at the next physical inspection. This residual risk is accepted as the irreducible physical security baseline.</p>
+
+<h2><span class="section-num">9</span> Operational Security: Deployment and Audit</h2>
+
+<h3>9.1 Secure Provisioning</h3>
+<p>Guardian Security specifies a five&#8209;step secure provisioning process:</p>
+<p><strong>Step&nbsp;1 &mdash; Factory key injection:</strong> The node&#8217;s Trust Layer public/private key pair is generated in the factory inside a hardware security module. The private key never leaves the HSM.</p>
+<p><strong>Step&nbsp;2 &mdash; Identity credential signing:</strong> The factory generates a Certificate Signing Request using the node&#8217;s public key and identity parameters. The CSR is submitted to the Trust Layer PKI for signing.</p>
+<p><strong>Step&nbsp;3 &mdash; Hardware profile binding:</strong> The Trust Layer credential includes a hardware profile hash &mdash; a signed measurement of the node&#8217;s hardware characteristics. A credential used on different hardware will fail the hardware profile consistency check.</p>
+<p><strong>Step&nbsp;4 &mdash; Provisioning receipt:</strong> The provisioned node signs a provisioning receipt confirming that it successfully received and stored its credential. The receipt is logged in the certificate chain.</p>
+<p><strong>Step&nbsp;5 &mdash; First&#8209;contact verification:</strong> On first network contact, the node presents its credential and the provisioning receipt. Guardian&#8209;E verifies both before accepting the node as VERIFIED.</p>
+
+<h3>9.2 The Certificate Chain as Audit Substrate</h3>
+<p>Every Guardian Security event is logged in the certificate chain with a signed entry from the Lume&#8209;X control loop. The certificate chain is: append&#8209;only (entries cannot be deleted or modified once written); signed (each entry is signed by the Lume&#8209;X runtime); timestamped (verifiable against distributed time consensus); and cross&#8209;referenced (each entry references EBF sequence numbers and session IDs). This produces a complete, auditable history for regulatory compliance, insurance liability attribution, and forensic investigation.</p>
+
+<h3>9.3 Incident Response Protocol</h3>
+<p>When Guardian&#8209;E detects a suspected attack:</p>
+<ol>
+  <li><strong>Immediate containment:</strong> The suspect node or path is QUARANTINED within one control cycle.</li>
+  <li><strong>Evidence preservation:</strong> All certificate chain entries related to the suspect node&#8217;s recent activity are cryptographically sealed.</li>
+  <li><strong>Affected session recovery:</strong> All sessions routing through the quarantined node are rerouted through verified alternate paths. CRITICAL sessions receive priority.</li>
+  <li><strong>Threat classification:</strong> Guardian&#8209;E classifies the anomaly against the T1&ndash;T11 taxonomy and logs the classification.</li>
+  <li><strong>Administrator notification:</strong> A signed alert is transmitted to the designated administrator endpoint.</li>
+  <li><strong>Quarantine review:</strong> The administrator reviews the evidence and either lifts the quarantine or initiates physical inspection and credential revocation.</li>
+</ol>

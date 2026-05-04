@@ -1,0 +1,113 @@
+<h2><span class="section-num">5</span> Co&#8209;Routing Arbitration</h2>
+
+<h3>5.1 The Arbitration Problem</h3>
+<p>The UEDM shares a fixed TDMA frame capacity between energy delivery and data communication. The arbitration is constrained by two requirements that can conflict:</p>
+<ul>
+  <li><strong>Energy delivery requirement:</strong> CRITICAL and HIGH priority energy sessions have guaranteed capacity and cannot be preempted regardless of data load.</li>
+  <li><strong>Data communication requirement:</strong> Some data traffic (Guardian Security authentication, SHDCL recovery events, emergency alerts) must be delivered within bounded latency regardless of energy load.</li>
+</ul>
+
+<h3>5.2 Capacity Allocation Framework</h3>
+<p>The UEDM TDMA frame is divided into three capacity pools:</p>
+<p><strong>Pool&nbsp;A &mdash; Guaranteed Energy Capacity (GEC):</strong> Reserved exclusively for CRITICAL and HIGH priority energy sessions. Minimum: 60% of total frame capacity. Maximum: 90%.</p>
+<p><strong>Pool&nbsp;B &mdash; Guaranteed Control Data Capacity (GCDC):</strong> Reserved for essential control&#8209;plane data. Fixed at 5&ndash;10% of total frame capacity.</p>
+<p><strong>Pool&nbsp;C &mdash; Flexible Shared Capacity (FSC):</strong> Remaining capacity shared between NORMAL/BACKGROUND energy and all application data.</p>
+<pre>Total Frame Capacity = GEC + GCDC + FSC
+Minimum allocation: GEC &ge; 60%, GCDC = 5&ndash;10%, FSC = remainder</pre>
+
+<h3>5.3 Flexible Shared Capacity Arbitration Policy</h3>
+<p><strong>Rule&nbsp;1 &mdash; Energy priority within FSC:</strong> NORMAL energy sessions take priority over all data communication sessions in FSC.</p>
+<p><strong>Rule&nbsp;2 &mdash; Application data priority classes:</strong> Data sessions in FSC use the same four&#8209;level QoS system (CRITICAL, HIGH, NORMAL, BACKGROUND).</p>
+<p><strong>Rule&nbsp;3 &mdash; Burst accommodation:</strong> Large data payloads are fragmented across multiple FSC slots.</p>
+<p><strong>Rule&nbsp;4 &mdash; BACKGROUND energy yields to NORMAL data:</strong> BACKGROUND energy sessions have the lowest priority in FSC.</p>
+<p><strong>Rule&nbsp;5 &mdash; Combined throughput optimization:</strong> The co&#8209;routing scheduler seeks slots where beam path overlaps with communication path, enabling Mode&nbsp;2 (SWIPT&#8209;integrated) transmission. This optimization is opportunistic, not guaranteed.</p>
+
+<h2><span class="section-num">6</span> UEDM Addressing</h2>
+
+<h3>6.1 Unified Address Space</h3>
+<p>The UEDM uses the EIP 128&#8209;bit address structure as the universal address for both energy delivery and data communication. There is no separate data networking address.</p>
+<pre>UEDM Address (128 bits, EIP format):
+  [Global Registry ID : 16 bits]
+  [EAS Number        : 24 bits]
+  [Zone ID           : 16 bits]
+  [Node Type         : 8 bits]   &mdash; extended: 0x06 = DATA_ONLY
+  [Node Serial       : 40 bits]
+  [Checksum          : 24 bits]</pre>
+<p>The Node Type byte is extended by one value: <code>0x06 = DATA_ONLY</code>. A DATA_ONLY node participates in data communication but cannot serve as an energy relay or source &mdash; e.g., a battery&#8209;powered gateway that routes data to the wider internet.</p>
+
+<h3>6.2 Service Endpoint Addressing</h3>
+<p>Services running on a UEDM node are addressed using a service port:</p>
+<pre>UEDM Service Endpoint:
+  [UEDM Address : 128 bits]
+  [Service Port : 16 bits]
+Reserved service ports:
+  0x0001 : Energy delivery (EaaS)
+  0x0002 : Guardian Security authentication
+  0x0003 : Lume-X telemetry
+  0x0004 : SHDCL recovery messaging
+  0x0005 : EDNS query/response
+  0x0006 : EBGP peering
+  0x0100&ndash;0xFFFF : Application-defined services</pre>
+
+<h3>6.3 Multicast and Anycast in the UEDM</h3>
+<p><strong>UEDM Multicast:</strong> A multicast address identifies a group of nodes. Multicast is DATA&#8209;only &mdash; energy cannot be delivered to a multicast address, since energy delivery requires per&#8209;recipient power level and position validation.</p>
+<p><strong>UEDM Anycast:</strong> An anycast address identifies the nearest member of a group. Anycast is supported for both energy and data: an energy request addressed to an anycast source&#8209;node address is routed to the nearest available source node with sufficient charge state.</p>
+
+<h2><span class="section-num">7</span> The Self&#8209;Sustaining Device Model</h2>
+
+<h3>7.1 Definition</h3>
+<p>A self&#8209;sustaining device (SSD) is a UEDM participant that: receives all of its operating power from the UEDM (no battery, no wired power), conducts all of its data communication through the UEDM (no separate wireless radio), and has no external infrastructure dependency beyond UEDM mesh coverage.</p>
+
+<h3>7.2 SSD Power&#8209;Communication Budget</h3>
+<pre>SSD Operating Budget (10 mW received power example):
+  Microcontroller (Cortex-M4 at 4 MHz)    : 1.2 mW
+  Sensor (temperature + humidity, 1 Hz)   : 0.8 mW
+  RF transceiver (receive mode)           : 2.0 mW
+  RF transceiver (transmit mode, 1% duty) : 0.5 mW avg
+  Energy management circuit               : 0.3 mW
+  Margin for supercapacitor charging      : 5.2 mW
+  ---------------------------------------------------
+  Total                                   : 10.0 mW</pre>
+<p>At this budget, the SSD operates continuously with a 52% supercapacitor charging margin. Communication capacity: ~2.5&nbsp;kbits per second of application data at 1% transmit duty cycle.</p>
+
+<h3>7.3 SSD Lifecycle</h3>
+<p><strong>BOOTSTRAPPING:</strong> The SSD broadcasts a NODE_ANNOUNCE with a provisioning credential. A source node initiates Guardian Security provisioning. Once the SSD receives its Trust Layer credential, it transitions to OPERATIONAL.</p>
+<p><strong>OPERATIONAL:</strong> Full UEDM participation &mdash; receiving energy, routing control messages, conducting application data communication.</p>
+<p><strong>CONSERVATION:</strong> Supercapacitor below V<sub>min</sub>. All non&#8209;essential processes suspended. The SSD waits for UEDM energy delivery to restore charge.</p>
+
+<h3>7.4 SSD Failure and Recovery</h3>
+<p>An SSD that drops out is treated as a failed node. Mesh routing tables are updated. When the SSD recovers and re&#8209;announces, it is re&#8209;integrated through the standard verification process. This is identical to wound healing in the Meridian Synthetic Organism model [Meridian Organism, 2026 &sect;5.4].</p>
+
+<h2><span class="section-num">8</span> UEDM and the Energy Internet</h2>
+
+<h3>8.1 The UEDM as the Energy Internet&#8217;s Access Layer</h3>
+<p>The Energy Internet [Energy Internet, 2026] defines inter&#8209;mesh routing. The UEDM is its access layer &mdash; the technology connecting end devices to the Energy Internet infrastructure. End devices register using UEDM addresses (EIP format), connect through gateway nodes, and route energy and data requests across the Energy Internet to their destination.</p>
+
+<h3>8.2 UEDM Gateway Function</h3>
+<p>A UEDM gateway node implements the full Energy Internet Protocol Stack. It translates between UEDM frame format and Energy Internet ELL frame format, runs EBGP, and advertises the UEDM&#8217;s EAS prefix. From the Energy Internet&#8217;s perspective, the UEDM is an EAS &mdash; an independently administered network.</p>
+
+<h3>8.3 Data at Energy Internet Scale</h3>
+<p>The UEDM enables data communication at internet scale through the energy routing infrastructure. An SSD&#8217;s sensor data, routed through the UEDM to the gateway and across the Energy Internet, travels on the same infrastructure as the energy that powers the SSD. This convergence is the natural consequence of unified addressing and routing.</p>
+
+<h2><span class="section-num">9</span> The UEDM Control Plane</h2>
+
+<h3>9.1 Unified Control Plane Architecture</h3>
+<p>The UEDM control plane extends the Meridian control plane (MMF + MFE + Lume&#8209;X) with data&#8209;specific functions:</p>
+<p><strong>Energy control (existing):</strong> DRMA topology management, MFE burst scheduling, SHDCL failure detection, Guardian&#8209;E energy security.</p>
+<p><strong>Data control (new):</strong> DTCP session management, multicast group management, application service registration, data security integration.</p>
+<p><strong>Unified control (shared):</strong> Co&#8209;routing arbitration, UEDM address management, gateway function management, certificate chain logging.</p>
+
+<h3>9.2 Data Transport Control Protocol (DTCP)</h3>
+<p>DTCP is the data&#8209;domain equivalent of ETCP. Where ETCP guarantees energy delivery (P<sub>min</sub>, &sigma;&sup2;, retransmission budget), DTCP guarantees data delivery (packet loss rate, latency bound, retransmission limit).</p>
+<pre>DTCP Session:
+  source_UEDM     : 128-bit address + 16-bit port
+  destination_UEDM: 128-bit address + 16-bit port
+  priority_class  : CRITICAL / HIGH / NORMAL / BACKGROUND
+  max_latency_ms  : maximum acceptable end-to-end latency
+  max_loss_pct    : maximum acceptable packet loss rate (%)
+  session_type    : STREAM / DATAGRAM / MULTICAST
+  billing_account : energy credit account</pre>
+<p>DTCP retransmission costs data capacity but not energy. RF transmission power for data packets is orders of magnitude lower than for energy bursts. DTCP can therefore be more aggressive in retransmission than ETCP.</p>
+
+<h3>9.3 Billing Integration</h3>
+<p>The energy credit accounting system is extended to cover both energy delivery and data communication: energy billed per milliwatt&#8209;hour delivered; data billed per kilobyte delivered, using the same energy credit denomination. An SSD receiving both energy and data has a single account debited for both services.</p>

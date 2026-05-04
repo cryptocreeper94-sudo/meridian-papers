@@ -1,0 +1,76 @@
+<h2><span class="section-num">1</span> Introduction</h2>
+
+<h3>1.1 A Security Gap With Physical Consequences</h3>
+<p>The wireless power transfer industry has, until this paper, produced no formal security framework. This is not oversight &mdash; it reflects the history of the field. Wireless power has been framed as an efficiency and range problem, not a security problem. The threat model for a Qi charging pad is limited: an attacker who places a foreign object on the charging surface triggers a foreign object detection circuit. The consequence of a failed attack is a failed charge. The security model needs only to prevent this one failure.</p>
+<p>Wireless energy routing at mesh scale is a different threat environment entirely. When a system routes watt&#8209;level energy through addressed nodes across a distributed network, the attack surface expands in every dimension: the range is no longer centimeters but meters; the nodes are addressable over a network rather than physically accessible only; the power levels are sufficient to cause harm; and the routing infrastructure itself becomes a target &mdash; not just the delivery endpoint.</p>
+<p>I enumerate the consequences of specific attack classes that a wireless energy routing system without a formal security framework cannot prevent:</p>
+<p><strong>Localization spoofing:</strong> An attacker feeds false position data to the routing system. The beam steers toward the false position &mdash; which may be occupied by a biological target. Physical injury results.</p>
+<p><strong>Beam hijacking:</strong> An attacker intercepts a delivery route and redirects the beam. An unauthorized device receives energy it was not allocated, and the intended recipient is denied it. If the intended recipient is a medical device, the denial is life&#8209;safety critical.</p>
+<p><strong>Denial&#8209;of&#8209;power:</strong> An attacker generates synthetic energy requests that saturate the mesh&#8217;s routing capacity. Legitimate devices are denied service. A network of critical sensors loses power simultaneously.</p>
+<p><strong>Routing table manipulation:</strong> An attacker injects false routing table entries. Energy flows through attacker&#8209;controlled relay nodes, enabling interception, denial, or misdirection of all traffic on the poisoned route.</p>
+<p><strong>Node impersonation:</strong> An attacker deploys a device claiming a legitimate node&#8217;s identity. It receives energy intended for the legitimate device and may serve as a relay that the attacker controls.</p>
+<p>None of these attacks require proximity to a single charging pad. All of them require a wireless energy routing system without a formal security architecture. Guardian Security is that architecture.</p>
+
+<h3>1.2 The Security Architecture Problem</h3>
+<p>Building a security architecture for wireless energy routing presents three challenges that do not exist in data network security:</p>
+<p><strong>The physics cannot be patched.</strong> A data network that discovers a security vulnerability can be updated with a software patch. An RF beam that strikes a biological target cannot be recalled. Security must be preventive, not corrective. The Guardian Security framework is designed to make the class of physically harmful attacks impossible to execute, not merely detectable after the fact.</p>
+<p><strong>The delivery confirmation is the attack surface.</strong> In data networking, delivery confirmation (TCP ACK) is a control&#8209;plane message that is separated from the data payload. In wireless energy routing, the delivery confirmation is the physical measurement of received power &mdash; it is feedback from the physical world, not a protocol message. An attacker who can spoof the physical measurement (false received&#8209;power telemetry) can deceive the routing system about whether energy was delivered, to whom, and how much.</p>
+<p><strong>Identity must be verified before the first joule flows.</strong> In data networking, an unverified connection attempt is a mild nuisance &mdash; the worst case is a SYN flood. In wireless energy routing, an unverified node that successfully masquerades as a legitimate source node can aim a beam before identity is checked. Identity verification must be enforced at the routing level, before any physical transmission occurs.</p>
+
+<h3>1.3 Contributions</h3>
+<p>I make five contributions:</p>
+<ol>
+  <li>The first formal definition of the attack surface for a deterministic wireless energy routing system, derived from first principles rather than from enumerated known attacks.</li>
+  <li>A taxonomy of eleven threat categories covering the complete attack surface, each with formal definition, attack vector, and consequence characterization.</li>
+  <li>The Guardian Security framework &mdash; a two&#8209;tier (innate + adaptive) security architecture that provides coverage of all eleven threat categories with formally defined enforcement boundaries.</li>
+  <li>A coverage proof demonstrating that every attack path from adversary to system compromise requires traversal of at least one Guardian Security enforcement boundary.</li>
+  <li>An extension of the Guardian Security framework to Energy Internet scale, addressing the additional threat surface introduced by inter&#8209;mesh federation, EBGP routing, and multi&#8209;operator deployments.</li>
+</ol>
+
+<h3>1.4 Paper Organization</h3>
+<p>Section&nbsp;2 characterizes why energy security differs fundamentally from data security. Section&nbsp;3 defines the attack surface from first principles. Section&nbsp;4 presents the eleven threat categories. Section&nbsp;5 specifies the Guardian Security framework. Section&nbsp;6 proves formal security properties. Section&nbsp;7 extends the framework to Energy Internet scale. Section&nbsp;8 analyzes the Biological Safety Layer as a physical security invariant. Section&nbsp;9 addresses operational security. Section&nbsp;10 situates this in related literature. Section&nbsp;11 states limitations. Section&nbsp;12 concludes.</p>
+
+<h2><span class="section-num">2</span> Background: Why Energy Security Is Different</h2>
+
+<h3>2.1 The Consequence Asymmetry</h3>
+<p>Security analysis begins with the consequence model: what is the worst realistic outcome of a successful attack? The consequence model determines how much defense investment is justified and what failure modes are acceptable.</p>
+<p>For a data network, the consequence model ranges from service disruption (DoS) to data breach (confidentiality loss) to data corruption (integrity loss). These are serious consequences &mdash; financial damage, reputational harm, privacy violations, regulatory penalties. They are not, in the general case, physical injury.</p>
+<p>For a wireless energy routing network, the consequence model includes physical injury. An RF beam at the power densities required for useful energy delivery &mdash; even at the conservative power levels of Phase&nbsp;1 Meridian deployment &mdash; can cause tissue heating if directed at a biological target at close range. At higher power levels, the consequence is burns. A localization spoofing attack that redirects a high&#8209;power beam toward a person is not a data breach &mdash; it is a physical assault.</p>
+<p>This consequence asymmetry means that some attack classes that are &#8220;acceptable&#8221; in data network security &mdash; where &#8220;acceptable&#8221; means &#8220;detectable and recoverable&#8221; &mdash; are not acceptable in energy routing security. An attack that results in physical injury cannot be recovered from. The security architecture must prevent these attacks, not detect them post&#8209;hoc.</p>
+<p>The Biological Safety Layer (BSL) in the Meridian architecture [Meridian Architecture, 2026 &sect;8] is the primary mechanism for enforcing this preventive requirement. Section&nbsp;8 of this paper analyzes the BSL as a physical security invariant &mdash; the mechanism that ensures physical harm is impossible even when all other security mechanisms fail simultaneously.</p>
+
+<h3>2.2 The Physical Delivery Confirmation Problem</h3>
+<p>In data networking, the control plane (routing decisions) and the data plane (packet forwarding) are conceptually separate, even when they share physical infrastructure. A routing decision is made based on control&#8209;plane information (routing tables, OSPF state, BGP updates) that is separate from the data being routed.</p>
+<p>In wireless energy routing, the control plane and the physical plane are coupled at the measurement layer: the routing system&#8217;s view of the physical world comes from physical measurements (received power telemetry, UWB localization returns, supercapacitor voltage readings). If these measurements can be falsified, the routing system&#8217;s model of the physical world can be corrupted.</p>
+<p>This coupling creates attack vectors that have no data networking analog:</p>
+<ul>
+  <li><strong>False localization returns:</strong> An attacker that can transmit UWB localization signals can cause a node to believe a receiver is at a different position than its actual position.</li>
+  <li><strong>False received&#8209;power telemetry:</strong> An attacker that can generate false EBF confirmation messages can cause the routing system to believe energy was successfully delivered when it was not, or to believe energy was not delivered when it was.</li>
+  <li><strong>False supercapacitor readings:</strong> An attacker that can inject false charge&#8209;state data can cause the routing system to make incorrect routing decisions &mdash; routing energy to a node that is actually fully charged, or denying supplementation to a node that is actually depleted.</li>
+</ul>
+<p>Each of these attacks targets the measurement layer that the control plane depends on. Guardian Security must protect not just the protocol layer but the physical measurement layer.</p>
+
+<h3>2.3 The Pre&#8209;Transmission Identity Requirement</h3>
+<p>In data networking, authentication can happen after the first packet. TCP SYN packets are unauthenticated. TLS handshakes happen after TCP connection establishment. The worst case of unauthenticated early traffic is a SYN flood, which is annoying but recoverable.</p>
+<p>In wireless energy routing, the first packet IS the physical beam. There is no unauthenticated &#8220;handshake packet&#8221; that precedes the physical action &mdash; the physical action itself is the delivery. A node that successfully triggers beam transmission without completing authentication has already received energy it was not entitled to, and the beam has already existed as a physical field in space.</p>
+<p>Guardian Security must enforce complete authentication before any beam authorization is issued. The authentication must be completed at the routing layer, not at the application layer after delivery begins. This is the pre&#8209;transmission identity requirement: no beam command is issued to MTL unless the source, relay chain, and destination have all completed Guardian Security authentication for the current session.</p>
+
+<h2><span class="section-num">3</span> Attack Surface Definition</h2>
+<p>I define the attack surface of a wireless energy routing system from first principles, without reference to specific known attacks. The attack surface is the set of all interfaces through which an adversary can influence system behavior.</p>
+
+<h3>3.1 Physical Attack Interfaces</h3>
+<p><strong>PAI&#8209;1: RF transmission medium.</strong> The air through which RF energy travels. Accessible to any attacker within RF range. Enables: beam interception (passive &mdash; measure transmitted power without detection), beam interference (active &mdash; transmit RF that degrades received power), physical obstruction (place absorbing material in beam path).</p>
+<p><strong>PAI&#8209;2: Localization signal medium.</strong> The UWB localization signal environment. Accessible to any attacker with UWB transmission capability within localization range. Enables: position spoofing, replay attacks on localization signals, localization jamming.</p>
+<p><strong>PAI&#8209;3: Physical node access.</strong> Direct physical access to a deployed node. Accessible to any attacker who can physically reach a node. Enables: hardware modification, credential extraction, firmware replacement, physical destruction.</p>
+<p><strong>PAI&#8209;4: Supercapacitor and harvest circuitry.</strong> The energy storage and harvest subsystems accessible through physical proximity. Enables: power injection (force a node to false charge state), power drain (force a node to depletion), harvest signal manipulation.</p>
+
+<h3>3.2 Network Attack Interfaces</h3>
+<p><strong>NAI&#8209;1: Mesh control plane.</strong> The LINK_STATE_UPDATE, NODE_ANNOUNCE, and routing protocol messages that maintain the mesh topology. Accessible to any node participating in the mesh, authenticated or not (before authentication is enforced). Enables: topology poisoning, routing table manipulation, false node announcements.</p>
+<p><strong>NAI&#8209;2: EBF message channel.</strong> The Energy Burst Frame messages carrying delivery instructions and confirmations. Accessible to any node in the communication range of transmitting nodes. Enables: EBF replay, EBF modification, false delivery confirmations.</p>
+<p><strong>NAI&#8209;3: Delivery confirmation channel.</strong> The telemetry messages from receiving nodes confirming energy receipt. Accessible to any node within communication range. Enables: false received&#8209;power claims, false spatial accuracy claims.</p>
+<p><strong>NAI&#8209;4: EDNS and inter&#8209;mesh routing.</strong> At Energy Internet scale: the EDNS resolution infrastructure and EBGP routing advertisements. Accessible to any participant in the inter&#8209;mesh routing system. Enables: EDNS poisoning (route energy requests to wrong EAS), EBGP hijacking (advertise routes to destinations the attacker doesn&#8217;t control).</p>
+
+<h3>3.3 Identity Attack Interfaces</h3>
+<p><strong>IAI&#8209;1: Node identity credentials.</strong> The cryptographic credentials that establish node identity in the Trust Layer PKI. Accessible to an attacker who can compromise the provisioning process or extract credentials from a deployed node. Enables: node impersonation, credential replay.</p>
+<p><strong>IAI&#8209;2: Trust Layer PKI infrastructure.</strong> The certificate authority infrastructure that signs node credentials. Accessible to a sophisticated attacker who can compromise CA infrastructure. Enables: fraudulent credential issuance, certificate chain forgery.</p>
+<p><strong>IAI&#8209;3: Provisioning process.</strong> The process by which new nodes receive their identity credentials. Accessible to an attacker who can intercept or hijack provisioning. Enables: identity substitution during provisioning, credential interception.</p>

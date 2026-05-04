@@ -1,0 +1,584 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardian Security: A Formal Threat Model and Defense Framework &mdash; DarkWave Studios LLC</title>
+<style>
+  @page {
+    size: letter; margin: 1in 1in 1.2in 1in;
+    @bottom-center { content: counter(page); font-family: 'Times New Roman', Georgia, serif; font-size: 10pt; color: #333; }
+  }
+  .page-break { display: none; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; overflow: visible !important; }
+    .page-break { display: block; page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    .title-page { min-height: auto !important; padding-top: 2.5in; page-break-after: always; }
+    h2 { page-break-after: avoid; } h3 { page-break-after: avoid; }
+    table { page-break-inside: avoid; } .claim-box { page-break-inside: avoid; }
+    .footnote { page-break-inside: avoid; } pre { page-break-inside: avoid; }
+    p { orphans: 3; widows: 3; }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Times New Roman', Georgia, 'Computer Modern', serif; font-size: 11pt; line-height: 1.5; color: #111; max-width: 7.5in; margin: 0 auto; padding: 0.5in; }
+  .title-page { text-align: center; padding-top: 0.3in; }
+  .title-page h1 { font-size: 17pt; font-weight: 700; line-height: 1.3; margin-bottom: 0.3in; }
+  .title-page .subtitle { font-size: 13pt; font-style: italic; color: #333; margin-bottom: 0.5in; }
+  .title-page .authors { font-size: 13pt; margin-bottom: 0.15in; }
+  .title-page .affiliation { font-size: 11pt; color: #444; font-style: italic; margin-bottom: 0.4in; }
+  .title-page .preprint-note { font-size: 9.5pt; color: #666; border: 1px solid #ccc; display: inline-block; padding: 6px 18px; border-radius: 3px; margin-top: 0.3in; }
+  h2 { font-size: 14pt; font-weight: 700; margin-top: 0.25in; margin-bottom: 0.15in; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  h3 { font-size: 12pt; font-weight: 700; margin-top: 0.25in; margin-bottom: 0.1in; }
+  h4 { font-size: 11pt; font-weight: 700; margin-top: 0.15in; margin-bottom: 0.05in; }
+  p { margin-bottom: 0.1in; text-align: justify; hyphens: none; -webkit-hyphens: none; overflow-wrap: break-word; }
+  .abstract { margin: 0.3in 0.4in; padding: 0.15in 0; }
+  .abstract h2 { text-align: center; border: none; font-size: 13pt; }
+  .abstract p { font-size: 10.5pt; }
+  .keywords { font-size: 10pt; color: #333; margin-top: 0.1in; }
+  .keywords strong { font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; margin: 0.15in 0 0.2in 0; font-size: 10pt; }
+  th, td { border: 1px solid #aaa; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #f0f0f0; font-weight: 700; }
+  code { font-family: 'Courier New', Courier, monospace; font-size: 9.5pt; background: #f5f5f5; padding: 1px 4px; border-radius: 2px; }
+  pre { font-family: 'Courier New', Courier, monospace; font-size: 9pt; background: #f7f7f7; border: 1px solid #ddd; padding: 10px 14px; margin: 0.1in 0 0.15in 0; overflow-x: auto; line-height: 1.4; border-radius: 3px; white-space: pre; }
+  ul, ol { margin: 0.05in 0 0.1in 0.3in; font-size: 11pt; }
+  li { margin-bottom: 3px; }
+  .section-num { color: #555; margin-right: 6px; }
+  blockquote { border-left: 3px solid #bbb; margin: 0.1in 0 0.1in 0.15in; padding: 4px 12px; color: #333; font-style: italic; font-size: 10.5pt; }
+  .claim-box { border: 1px solid #999; background: #fafafa; padding: 10px 14px; margin: 0.08in 0; border-radius: 3px; }
+  .diagram-box { font-family: 'Courier New', Courier, monospace; font-size: 9pt; background: #fcfcfc; border: 1px solid #ccc; padding: 14px 18px; margin: 0.15in 0; line-height: 1.35; border-radius: 3px; white-space: pre; }
+  .invariant-box { border-left: 3px solid #c00; background: #fef8f8; padding: 8px 14px; margin: 0.08in 0; border-radius: 0 3px 3px 0; }
+  .footnote { font-size: 9pt; color: #555; margin-top: 0.3in; border-top: 1px solid #ccc; padding-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="title-page">
+  <h1>Guardian Security: A Formal Threat Model and Defense Framework for Deterministic Wireless Energy Routing</h1>
+  <div class="subtitle">The First Complete Security Architecture for Identity&#8209;Governed, Invariant&#8209;Enforced Wireless Power Delivery</div>
+  <div class="authors">Ronald &#8220;Jason&#8221; Andrews</div>
+  <div class="affiliation">DarkWave Studios LLC<br/>Nashville, Tennessee, United States<br/>ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009&#8209;0007&#8209;5214&#8209;649X</a></div>
+  <div style="font-size: 10pt; color: #444; margin-bottom: 0.15in;">Version 1.0 &mdash; May 2026</div>
+  <div style="font-size: 10pt; color: #444; margin-bottom: 0.15in;">
+    Companion Papers: Meridian Architecture [DOI to be assigned] &middot; Meridian Organism [DOI to be assigned] &middot; Energy Internet [DOI to be assigned]<br/>
+    Related: Lume <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a> &middot;
+    Trust Layer <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a> &middot;
+    DAIGS <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a><br/>
+    Lume&#8209;V <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a> &middot;
+    Lume&#8209;X <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a> &middot;
+    Dissolution <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a>
+  </div>
+  <div style="font-size: 10pt; color: #c00; font-weight: bold; margin-bottom: 0.2in;">Patent Pending &mdash; Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing<br/>Lume&#8209;X: Provisionally patented deterministic control runtime<br/>Guardian Security: Commercial security enforcement product. Domain: TrustShield.tech</div>
+  <div class="preprint-note">Preprint v1 &mdash; Not peer&#8209;reviewed. Submitted for early dissemination.</div>
+</div>
+
+<!-- ABSTRACT -->
+<div class="abstract">
+  <h2>Abstract</h2>
+  <p>Wireless energy routing introduces a class of security vulnerabilities that has no analog in data networking: a successful attack on a wireless power system does not corrupt data &mdash; it corrupts physics. Beam hijacking misdirects RF energy to unintended targets. Denial&#8209;of&#8209;power attacks starve critical devices. Localization spoofing causes a beam to strike a biological target rather than an electronic one. The consequences of these attacks are not data loss or service disruption &mdash; they are equipment damage, fire, and physical injury.</p>
+  <p>No formal security framework for wireless energy routing has previously been published. This paper provides one.</p>
+  <p>I define the complete attack surface for a deterministic wireless energy routing system, derive eleven threat categories from first principles, and specify the Guardian Security defense framework &mdash; the security enforcement layer implemented in the Meridian architecture &mdash; as a formal, auditable response to each threat. Guardian Security (energy&#8209;domain designation: Guardian&#8209;E; commercial product domain: TrustShield.tech) implements two&#8209;tier defense: an innate tier providing immediate, non&#8209;specific response to anomalous conditions, and an adaptive tier providing learned, specific response to classified threat patterns.</p>
+  <p>I derive the Guardian Security rule set from the formal attack surface definition rather than from enumerated known attacks, ensuring that the defense covers the complete threat space rather than only previously observed threats. I prove coverage completeness by demonstrating that every path from attacker to system compromise requires traversal of at least one Guardian Security enforcement boundary. I show that Guardian Security satisfies four formal security properties: authenticity (every participant is who they claim to be), integrity (no resource flow is modified in transit without detection), availability (the system continues operating under attack, with degraded but bounded service), and non&#8209;repudiation (every resource delivery event is attributable to a specific authenticated participant).</p>
+  <p>This paper establishes the security foundation for both the single&#8209;mesh Meridian architecture and the multi&#8209;mesh Energy Internet. It proposes Guardian Security as the reference security architecture for all future Deterministic Infrastructure deployments.</p>
+  <div class="keywords"><strong>Keywords:</strong> wireless energy security, threat model, formal security analysis, Guardian Security, denial&#8209;of&#8209;power, beam hijacking, localization spoofing, Meridian, TrustShield, deterministic infrastructure security, wireless power transfer security</div>
+</div>
+
+<h2><span class="section-num">1</span> Introduction</h2>
+
+<h3>1.1 A Security Gap With Physical Consequences</h3>
+<p>The wireless power transfer industry has, until this paper, produced no formal security framework. This is not oversight &mdash; it reflects the history of the field. Wireless power has been framed as an efficiency and range problem, not a security problem. The threat model for a Qi charging pad is limited: an attacker who places a foreign object on the charging surface triggers a foreign object detection circuit. The consequence of a failed attack is a failed charge. The security model needs only to prevent this one failure.</p>
+<p>Wireless energy routing at mesh scale is a different threat environment entirely. When a system routes watt&#8209;level energy through addressed nodes across a distributed network, the attack surface expands in every dimension: the range is no longer centimeters but meters; the nodes are addressable over a network rather than physically accessible only; the power levels are sufficient to cause harm; and the routing infrastructure itself becomes a target &mdash; not just the delivery endpoint.</p>
+<p>I enumerate the consequences of specific attack classes that a wireless energy routing system without a formal security framework cannot prevent:</p>
+<p><strong>Localization spoofing:</strong> An attacker feeds false position data to the routing system. The beam steers toward the false position &mdash; which may be occupied by a biological target. Physical injury results.</p>
+<p><strong>Beam hijacking:</strong> An attacker intercepts a delivery route and redirects the beam. An unauthorized device receives energy it was not allocated, and the intended recipient is denied it. If the intended recipient is a medical device, the denial is life&#8209;safety critical.</p>
+<p><strong>Denial&#8209;of&#8209;power:</strong> An attacker generates synthetic energy requests that saturate the mesh&#8217;s routing capacity. Legitimate devices are denied service. A network of critical sensors loses power simultaneously.</p>
+<p><strong>Routing table manipulation:</strong> An attacker injects false routing table entries. Energy flows through attacker&#8209;controlled relay nodes, enabling interception, denial, or misdirection of all traffic on the poisoned route.</p>
+<p><strong>Node impersonation:</strong> An attacker deploys a device claiming a legitimate node&#8217;s identity. It receives energy intended for the legitimate device and may serve as a relay that the attacker controls.</p>
+<p>None of these attacks require proximity to a single charging pad. All of them require a wireless energy routing system without a formal security architecture. Guardian Security is that architecture.</p>
+
+<h3>1.2 The Security Architecture Problem</h3>
+<p>Building a security architecture for wireless energy routing presents three challenges that do not exist in data network security:</p>
+<p><strong>The physics cannot be patched.</strong> A data network that discovers a security vulnerability can be updated with a software patch. An RF beam that strikes a biological target cannot be recalled. Security must be preventive, not corrective. The Guardian Security framework is designed to make the class of physically harmful attacks impossible to execute, not merely detectable after the fact.</p>
+<p><strong>The delivery confirmation is the attack surface.</strong> In data networking, delivery confirmation (TCP ACK) is a control&#8209;plane message that is separated from the data payload. In wireless energy routing, the delivery confirmation is the physical measurement of received power &mdash; it is feedback from the physical world, not a protocol message. An attacker who can spoof the physical measurement (false received&#8209;power telemetry) can deceive the routing system about whether energy was delivered, to whom, and how much.</p>
+<p><strong>Identity must be verified before the first joule flows.</strong> In data networking, an unverified connection attempt is a mild nuisance &mdash; the worst case is a SYN flood. In wireless energy routing, an unverified node that successfully masquerades as a legitimate source node can aim a beam before identity is checked. Identity verification must be enforced at the routing level, before any physical transmission occurs.</p>
+
+<h3>1.3 Contributions</h3>
+<p>I make five contributions:</p>
+<ol>
+  <li>The first formal definition of the attack surface for a deterministic wireless energy routing system, derived from first principles rather than from enumerated known attacks.</li>
+  <li>A taxonomy of eleven threat categories covering the complete attack surface, each with formal definition, attack vector, and consequence characterization.</li>
+  <li>The Guardian Security framework &mdash; a two&#8209;tier (innate + adaptive) security architecture that provides coverage of all eleven threat categories with formally defined enforcement boundaries.</li>
+  <li>A coverage proof demonstrating that every attack path from adversary to system compromise requires traversal of at least one Guardian Security enforcement boundary.</li>
+  <li>An extension of the Guardian Security framework to Energy Internet scale, addressing the additional threat surface introduced by inter&#8209;mesh federation, EBGP routing, and multi&#8209;operator deployments.</li>
+</ol>
+
+<h3>1.4 Paper Organization</h3>
+<p>Section&nbsp;2 characterizes why energy security differs fundamentally from data security. Section&nbsp;3 defines the attack surface from first principles. Section&nbsp;4 presents the eleven threat categories. Section&nbsp;5 specifies the Guardian Security framework. Section&nbsp;6 proves formal security properties. Section&nbsp;7 extends the framework to Energy Internet scale. Section&nbsp;8 analyzes the Biological Safety Layer as a physical security invariant. Section&nbsp;9 addresses operational security. Section&nbsp;10 situates this in related literature. Section&nbsp;11 states limitations. Section&nbsp;12 concludes.</p>
+
+<h2><span class="section-num">2</span> Background: Why Energy Security Is Different</h2>
+
+<h3>2.1 The Consequence Asymmetry</h3>
+<p>Security analysis begins with the consequence model: what is the worst realistic outcome of a successful attack? The consequence model determines how much defense investment is justified and what failure modes are acceptable.</p>
+<p>For a data network, the consequence model ranges from service disruption (DoS) to data breach (confidentiality loss) to data corruption (integrity loss). These are serious consequences &mdash; financial damage, reputational harm, privacy violations, regulatory penalties. They are not, in the general case, physical injury.</p>
+<p>For a wireless energy routing network, the consequence model includes physical injury. An RF beam at the power densities required for useful energy delivery &mdash; even at the conservative power levels of Phase&nbsp;1 Meridian deployment &mdash; can cause tissue heating if directed at a biological target at close range. At higher power levels, the consequence is burns. A localization spoofing attack that redirects a high&#8209;power beam toward a person is not a data breach &mdash; it is a physical assault.</p>
+<p>This consequence asymmetry means that some attack classes that are &#8220;acceptable&#8221; in data network security &mdash; where &#8220;acceptable&#8221; means &#8220;detectable and recoverable&#8221; &mdash; are not acceptable in energy routing security. An attack that results in physical injury cannot be recovered from. The security architecture must prevent these attacks, not detect them post&#8209;hoc.</p>
+<p>The Biological Safety Layer (BSL) in the Meridian architecture [Meridian Architecture, 2026 &sect;8] is the primary mechanism for enforcing this preventive requirement. Section&nbsp;8 of this paper analyzes the BSL as a physical security invariant &mdash; the mechanism that ensures physical harm is impossible even when all other security mechanisms fail simultaneously.</p>
+
+<h3>2.2 The Physical Delivery Confirmation Problem</h3>
+<p>In data networking, the control plane (routing decisions) and the data plane (packet forwarding) are conceptually separate, even when they share physical infrastructure. A routing decision is made based on control&#8209;plane information (routing tables, OSPF state, BGP updates) that is separate from the data being routed.</p>
+<p>In wireless energy routing, the control plane and the physical plane are coupled at the measurement layer: the routing system&#8217;s view of the physical world comes from physical measurements (received power telemetry, UWB localization returns, supercapacitor voltage readings). If these measurements can be falsified, the routing system&#8217;s model of the physical world can be corrupted.</p>
+<p>This coupling creates attack vectors that have no data networking analog:</p>
+<ul>
+  <li><strong>False localization returns:</strong> An attacker that can transmit UWB localization signals can cause a node to believe a receiver is at a different position than its actual position.</li>
+  <li><strong>False received&#8209;power telemetry:</strong> An attacker that can generate false EBF confirmation messages can cause the routing system to believe energy was successfully delivered when it was not, or to believe energy was not delivered when it was.</li>
+  <li><strong>False supercapacitor readings:</strong> An attacker that can inject false charge&#8209;state data can cause the routing system to make incorrect routing decisions &mdash; routing energy to a node that is actually fully charged, or denying supplementation to a node that is actually depleted.</li>
+</ul>
+<p>Each of these attacks targets the measurement layer that the control plane depends on. Guardian Security must protect not just the protocol layer but the physical measurement layer.</p>
+
+<h3>2.3 The Pre&#8209;Transmission Identity Requirement</h3>
+<p>In data networking, authentication can happen after the first packet. TCP SYN packets are unauthenticated. TLS handshakes happen after TCP connection establishment. The worst case of unauthenticated early traffic is a SYN flood, which is annoying but recoverable.</p>
+<p>In wireless energy routing, the first packet IS the physical beam. There is no unauthenticated &#8220;handshake packet&#8221; that precedes the physical action &mdash; the physical action itself is the delivery. A node that successfully triggers beam transmission without completing authentication has already received energy it was not entitled to, and the beam has already existed as a physical field in space.</p>
+<p>Guardian Security must enforce complete authentication before any beam authorization is issued. The authentication must be completed at the routing layer, not at the application layer after delivery begins. This is the pre&#8209;transmission identity requirement: no beam command is issued to MTL unless the source, relay chain, and destination have all completed Guardian Security authentication for the current session.</p>
+
+<h2><span class="section-num">3</span> Attack Surface Definition</h2>
+<p>I define the attack surface of a wireless energy routing system from first principles, without reference to specific known attacks. The attack surface is the set of all interfaces through which an adversary can influence system behavior.</p>
+
+<h3>3.1 Physical Attack Interfaces</h3>
+<p><strong>PAI&#8209;1: RF transmission medium.</strong> The air through which RF energy travels. Accessible to any attacker within RF range. Enables: beam interception (passive &mdash; measure transmitted power without detection), beam interference (active &mdash; transmit RF that degrades received power), physical obstruction (place absorbing material in beam path).</p>
+<p><strong>PAI&#8209;2: Localization signal medium.</strong> The UWB localization signal environment. Accessible to any attacker with UWB transmission capability within localization range. Enables: position spoofing, replay attacks on localization signals, localization jamming.</p>
+<p><strong>PAI&#8209;3: Physical node access.</strong> Direct physical access to a deployed node. Accessible to any attacker who can physically reach a node. Enables: hardware modification, credential extraction, firmware replacement, physical destruction.</p>
+<p><strong>PAI&#8209;4: Supercapacitor and harvest circuitry.</strong> The energy storage and harvest subsystems accessible through physical proximity. Enables: power injection (force a node to false charge state), power drain (force a node to depletion), harvest signal manipulation.</p>
+
+<h3>3.2 Network Attack Interfaces</h3>
+<p><strong>NAI&#8209;1: Mesh control plane.</strong> The LINK_STATE_UPDATE, NODE_ANNOUNCE, and routing protocol messages that maintain the mesh topology. Accessible to any node participating in the mesh, authenticated or not (before authentication is enforced). Enables: topology poisoning, routing table manipulation, false node announcements.</p>
+<p><strong>NAI&#8209;2: EBF message channel.</strong> The Energy Burst Frame messages carrying delivery instructions and confirmations. Accessible to any node in the communication range of transmitting nodes. Enables: EBF replay, EBF modification, false delivery confirmations.</p>
+<p><strong>NAI&#8209;3: Delivery confirmation channel.</strong> The telemetry messages from receiving nodes confirming energy receipt. Accessible to any node within communication range. Enables: false received&#8209;power claims, false spatial accuracy claims.</p>
+<p><strong>NAI&#8209;4: EDNS and inter&#8209;mesh routing.</strong> At Energy Internet scale: the EDNS resolution infrastructure and EBGP routing advertisements. Accessible to any participant in the inter&#8209;mesh routing system. Enables: EDNS poisoning (route energy requests to wrong EAS), EBGP hijacking (advertise routes to destinations the attacker doesn&#8217;t control).</p>
+
+<h3>3.3 Identity Attack Interfaces</h3>
+<p><strong>IAI&#8209;1: Node identity credentials.</strong> The cryptographic credentials that establish node identity in the Trust Layer PKI. Accessible to an attacker who can compromise the provisioning process or extract credentials from a deployed node. Enables: node impersonation, credential replay.</p>
+<p><strong>IAI&#8209;2: Trust Layer PKI infrastructure.</strong> The certificate authority infrastructure that signs node credentials. Accessible to a sophisticated attacker who can compromise CA infrastructure. Enables: fraudulent credential issuance, certificate chain forgery.</p>
+<p><strong>IAI&#8209;3: Provisioning process.</strong> The process by which new nodes receive their identity credentials. Accessible to an attacker who can intercept or hijack provisioning. Enables: identity substitution during provisioning, credential interception.</p>
+
+<h2><span class="section-num">4</span> The Eleven Threat Categories</h2>
+<p>From the attack surface definition in Section&nbsp;3, I derive eleven threat categories by enumerating the distinct attack objectives and the attack interfaces through which each can be pursued. A threat category is a class of attacks sharing the same objective &mdash; the specific attack technique may vary, but the defense must cover the objective class.</p>
+
+<h3>4.1 T1 &mdash; Localization Spoofing</h3>
+<p><strong>Objective:</strong> Cause the routing system to believe a node is at a false position, resulting in beam misdirection.</p>
+<p><strong>Attack interfaces:</strong> PAI&#8209;2 (localization signal medium), NAI&#8209;2 (EBF position fields).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T1a &mdash; UWB signal forgery:</strong> Transmit false UWB ranging signals that cause the localization system to compute a false position for a target node. Requires UWB transmission capability within localization range.</li>
+  <li><strong>T1b &mdash; Position field injection:</strong> Modify the position field in EBF messages (NAI&#8209;2) to report false position data to the routing system.</li>
+  <li><strong>T1c &mdash; Replay attack:</strong> Capture and replay a legitimate node&#8217;s localization signals from a different physical position, causing the system to compute a false location based on authentic signals.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Beam directed at a biological target at the spoofed position. Physical injury.</p>
+
+<h3>4.2 T2 &mdash; Routing Table Manipulation</h3>
+<p><strong>Objective:</strong> Corrupt the mesh routing table to redirect energy flows through attacker&#8209;controlled nodes or to unintended destinations.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;1 (mesh control plane).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T2a &mdash; False LINK_STATE_UPDATE injection:</strong> Transmit false link&#8209;state updates advertising nonexistent links or false link quality metrics, causing routing algorithms to select attacker&#8209;preferred paths.</li>
+  <li><strong>T2b &mdash; Route withdrawal attack:</strong> Transmit false link&#8209;state updates withdrawing legitimate routes, forcing traffic through attacker&#8209;controlled alternatives.</li>
+  <li><strong>T2c &mdash; Metric manipulation:</strong> Modify link quality metrics to make attacker&#8209;controlled paths appear preferred over legitimate paths.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> All energy traffic routed through attacker&#8209;controlled nodes, enabling interception, denial, or misdirection of all delivered energy.</p>
+
+<h3>4.3 T3 &mdash; Beam Hijacking</h3>
+<p><strong>Objective:</strong> Redirect an authorized beam from its intended target to an attacker&#8209;controlled receiver.</p>
+<p><strong>Attack interfaces:</strong> PAI&#8209;1 (RF medium), NAI&#8209;2 (EBF messages), IAI&#8209;1 (credentials).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T3a &mdash; Relay impersonation:</strong> Compromise a relay node position in a multi&#8209;hop path and redirect the beam at that hop rather than forwarding it.</li>
+  <li><strong>T3b &mdash; BeamCommand injection:</strong> Inject false BeamCommand messages that override the legitimate steering parameters before MTL executes them.</li>
+  <li><strong>T3c &mdash; Path substitution:</strong> Using a compromised routing table (T2), route the beam through an attacker&#8209;controlled relay that performs mid&#8209;path redirection.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> High&#8209;priority device (medical monitor, emergency communication) denied energy while attacker device receives it.</p>
+
+<h3>4.4 T4 &mdash; Denial&#8209;of&#8209;Power Attack</h3>
+<p><strong>Objective:</strong> Starve legitimate devices of energy by exhausting routing capacity, depleting source nodes, or blocking delivery paths.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;1, NAI&#8209;2, PAI&#8209;1.</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T4a &mdash; Request flooding:</strong> Generate high volumes of synthetic energy requests that saturate the mesh&#8217;s routing computation capacity.</li>
+  <li><strong>T4b &mdash; Source depletion:</strong> Cause source nodes to repeatedly transmit energy to false destinations (exploiting T3 or T1), depleting their supercapacitors.</li>
+  <li><strong>T4c &mdash; Path blocking:</strong> Physically obstruct beam paths or use RF jamming to degrade link quality until routing fails to find viable paths.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Simultaneous power loss to all devices in the mesh during an emergency condition.</p>
+
+<h3>4.5 T5 &mdash; Node Impersonation</h3>
+<p><strong>Objective:</strong> Deploy a device that successfully claims a legitimate node&#8217;s identity, receiving its energy allocation and potentially serving as a relay the attacker controls.</p>
+<p><strong>Attack interfaces:</strong> IAI&#8209;1 (credentials), NAI&#8209;1 (NODE_ANNOUNCE).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T5a &mdash; Credential cloning:</strong> Extract a legitimate node&#8217;s cryptographic credentials (via PAI&#8209;3 physical access) and deploy a second device using those credentials.</li>
+  <li><strong>T5b &mdash; Credential replay:</strong> Capture credential exchange messages and replay them from a different device.</li>
+  <li><strong>T5c &mdash; Provisioning interception:</strong> Intercept credentials during the provisioning process (IAI&#8209;3) before they are securely stored on the legitimate device.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Legitimate device denied its energy allocation; attacker device serving as a controllable relay inside the trusted mesh.</p>
+
+<h3>4.6 T6 &mdash; Delivery Confirmation Falsification</h3>
+<p><strong>Objective:</strong> Deceive the routing system about whether energy was successfully delivered, enabling false accounting, route selection corruption, and ETCP session manipulation.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;3 (delivery confirmation channel).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T6a &mdash; False positive confirmation:</strong> Transmit a delivery confirmation claiming successful receipt when no energy was received.</li>
+  <li><strong>T6b &mdash; False negative confirmation:</strong> Transmit a delivery failure message when energy was successfully received. Triggers SHDCL recovery and unnecessary retransmission.</li>
+  <li><strong>T6c &mdash; Power level falsification:</strong> Report a false received power level, causing MFE to misadjust burst power levels.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Systematic false accounting across all deliveries, creating a gap between the routing system&#8217;s model and physical reality.</p>
+
+<h3>4.7 T7 &mdash; Timing Attacks</h3>
+<p><strong>Objective:</strong> Disrupt TDMA scheduling to cause simultaneous transmissions (collision), scheduling gaps (denial), or predictable transmission windows (enabling interception).</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;1, NAI&#8209;2.</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T7a &mdash; TDMA schedule manipulation:</strong> Inject false scheduling information that causes two nodes to transmit simultaneously.</li>
+  <li><strong>T7b &mdash; Clock desynchronization:</strong> Introduce timing errors in network time synchronization, causing scheduling drift.</li>
+  <li><strong>T7c &mdash; Transmission window prediction:</strong> Exploit deterministic TDMA scheduling to predict exactly when a given node will transmit.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Systematic collision of all high&#8209;priority transmissions, effectively implementing a denial&#8209;of&#8209;power attack through timing manipulation.</p>
+
+<h3>4.8 T8 &mdash; Physical Node Compromise</h3>
+<p><strong>Objective:</strong> Gain control of a deployed node through physical access, enabling all attacks from a trusted insider position.</p>
+<p><strong>Attack interfaces:</strong> PAI&#8209;3 (physical node access).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T8a &mdash; Credential extraction:</strong> Extract cryptographic keys from secure storage on a captured node and deploy a cloned device.</li>
+  <li><strong>T8b &mdash; Firmware replacement:</strong> Replace legitimate firmware with attacker&#8209;controlled firmware.</li>
+  <li><strong>T8c &mdash; Hardware backdoor installation:</strong> Modify node hardware to include a covert communication channel.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Full insider access to the mesh with trust&#8209;level credentials, enabling all other attacks with legitimate authentication.</p>
+
+<h3>4.9 T9 &mdash; Energy Credit Fraud (Energy Internet Scale)</h3>
+<p><strong>Objective:</strong> Manipulate the energy credit settlement system to receive energy without paying or to receive payment for energy not delivered.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;2 (EBF confirmation records), IAI&#8209;2 (PKI infrastructure).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T9a &mdash; Confirmation record falsification:</strong> Generate false EBF confirmation records that overstate delivered energy.</li>
+  <li><strong>T9b &mdash; Settlement signature forgery:</strong> Forge the signature on energy credit transfer records.</li>
+  <li><strong>T9c &mdash; Replay of settlement records:</strong> Replay legitimate settlement records from prior periods to claim credits multiple times.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Financial fraud at Energy Internet scale; systematic undercharging that discourages legitimate ESP participation.</p>
+
+<h3>4.10 T10 &mdash; EBGP Route Hijacking (Energy Internet Scale)</h3>
+<p><strong>Objective:</strong> Announce false EBGP routes that redirect energy traffic from its intended EAS to an attacker&#8209;controlled EAS.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;4 (inter&#8209;mesh routing).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T10a &mdash; Prefix hijacking:</strong> Announce an EBGP route for an EIP address prefix the attacker does not control.</li>
+  <li><strong>T10b &mdash; AS path manipulation:</strong> Manipulate AS path attributes to make attacker&#8209;controlled routes appear preferred.</li>
+  <li><strong>T10c &mdash; Route withdrawal:</strong> Withdraw legitimate EBGP routes to isolate an EAS from the wider Energy Internet.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> All energy traffic destined for a legitimate EAS redirected to an attacker, enabling large&#8209;scale energy theft or denial.</p>
+
+<h3>4.11 T11 &mdash; Safety System Bypass</h3>
+<p><strong>Objective:</strong> Disable or circumvent the Biological Safety Layer, enabling beam transmission where BSL would normally prevent it.</p>
+<p><strong>Attack interfaces:</strong> PAI&#8209;3 (physical access to BSL sensor hardware), NAI&#8209;2 (safety status flags).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T11a &mdash; Sensor spoofing:</strong> Feed false data to the biological presence detection sensors.</li>
+  <li><strong>T11b &mdash; Safety flag manipulation:</strong> Modify the safety_flags field in EBF headers to falsely report all safety conditions met.</li>
+  <li><strong>T11c &mdash; Software gate bypass:</strong> Exploit a vulnerability in the software implementation of the five&#8209;condition MTL gate.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Beam transmission directed at a biological target with no safety mitigation. This is the highest severity threat in the taxonomy.</p>
+
+<h2><span class="section-num">5</span> The Guardian Security Framework</h2>
+<p>Guardian Security (energy&#8209;domain designation: Guardian&#8209;E; commercial product domain: TrustShield.tech) is the security enforcement layer of the Meridian architecture. It operates as a two&#8209;tier system: the innate tier provides immediate, non&#8209;specific response to anomalous conditions; the adaptive tier provides learned, specific response to classified threat patterns.</p>
+
+<h3>5.1 Architecture Overview</h3>
+<div class="diagram-box">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;           Guardian Security Framework                &#9474;
+&#9474;                                                      &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;    &#9474;
+&#9474;  &#9474;          Adaptive Tier (Guardian-E)          &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Threat classifier (T1&#8211;T11 mapping)        &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Learned threat patterns (11 categories)   &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Node quarantine and isolation             &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Certificate chain audit                  &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; ERPKI route origin validation (inter-mesh)&#9474;    &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;    &#9474;
+&#9474;                       &#9474;                              &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;    &#9474;
+&#9474;  &#9474;          Innate Tier (SHDCL)                 &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Immediate anomaly detection (13.7ms)      &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Process recovery without classification   &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Beam hold on unresolved anomaly           &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Escalation to adaptive tier               &#9474;    &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;    &#9474;
+&#9474;                       &#9474;                              &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;    &#9474;
+&#9474;  &#9474;       Physical Safety Layer (BSL)            &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Hardware-enforced beam cutoff             &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Independent of software gate status       &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Biological presence detection             &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Cannot be bypassed by software attack     &#9474;    &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;    &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</div>
+<p>The three&#8209;tier architecture provides defense in depth. No single tier is a single point of failure. If the adaptive tier fails to classify a threat, the innate tier holds the beam. If the innate tier is compromised, the BSL provides hardware&#8209;level enforcement. If the BSL sensor is spoofed (T11a), the adaptive tier&#8217;s sensor integrity monitoring detects the anomaly. Defense in depth means that an attacker must compromise multiple independent tiers simultaneously to achieve physical harm.</p>
+
+<h3>5.2 Pre&#8209;Transmission Authentication Protocol</h3>
+<p>Before any beam authorization is issued, Guardian Security enforces a four&#8209;step pre&#8209;transmission authentication protocol:</p>
+<p><strong>Step&nbsp;1 &mdash; Node identity verification.</strong> The requesting node presents its Trust Layer PKI credential. Guardian&#8209;E verifies the signature chain from the credential to the Trust Layer root CA. If verification fails: request rejected, anomaly logged, node flagged as UNVERIFIED.</p>
+<p><strong>Step&nbsp;2 &mdash; Capability authorization check.</strong> Guardian&#8209;E verifies that the requesting node&#8217;s capability profile includes the requested operation type, power level, and target zone. If unauthorized: request rejected, anomaly logged.</p>
+<p><strong>Step&nbsp;3 &mdash; Route integrity check.</strong> Guardian&#8209;E verifies that the proposed routing path consists entirely of verified, non&#8209;quarantined nodes, and that the path&#8217;s safety envelope is within bounds. If any relay node is UNVERIFIED or QUARANTINED: path rejected, alternate path computation requested.</p>
+<p><strong>Step&nbsp;4 &mdash; Temporal consistency check.</strong> Guardian&#8209;E verifies that the request&#8217;s timestamp is within the acceptable window (&plusmn;2 TDMA slots), that the requesting node&#8217;s last confirmed transaction matches the routing system&#8217;s record, and that no anomalous request rate is detected. If consistency check fails: request held for review.</p>
+<p>Only after all four steps pass does Guardian&#8209;E issue beam authorization to the Lume&#8209;X control loop, which then validates the five MTL gate conditions before issuing the BeamCommand. The security check (Guardian&#8209;E) and the safety check (MTL gate) are independent &mdash; both must pass.</p>
+
+<h3>5.3 Defenses Against Each Threat Category</h3>
+<p><strong>T1 &mdash; Localization Spoofing:</strong> Guardian&#8209;E enforces multi&#8209;source localization consistency: position reported by UWB must be consistent with position inferred from signal strength, TDMA timing, and mesh topology. A position report inconsistent across these sources is flagged as a potential T1 attack. Threshold: if position variance across sources exceeds r<sub>threshold</sub> (50&nbsp;cm) for three consecutive measurements, the node is QUARANTINED. The BSL exclusion zone provides the ultimate backstop.</p>
+<p><strong>T2 &mdash; Routing Table Manipulation:</strong> All LINK_STATE_UPDATE messages are signed by the originating node. Receiving nodes verify the signature before applying the update. Guardian&#8209;E applies consistency checks: a link quality metric that changes by more than &Delta;q<sub>max</sub> in one cycle without a corresponding physical event is flagged. Route selection is rate&#8209;limited: no node&#8217;s routes can be completely replaced within a single control cycle.</p>
+<p><strong>T3 &mdash; Beam Hijacking:</strong> Guardian&#8209;E tracks expected position of the beam target throughout the session. Relay nodes must confirm receipt and forward within their TDMA window &mdash; a relay that receives but does not forward is detected by the downstream node&#8217;s missing receipt confirmation within T<sub>relay_max</sub>.</p>
+<p><strong>T4 &mdash; Denial&#8209;of&#8209;Power:</strong> Guardian&#8209;E applies per&#8209;node and per&#8209;EAS request rate limits. CRITICAL&#8209;priority sessions receive dedicated capacity reservation that cannot be displaced by NORMAL or BACKGROUND traffic &mdash; even under attack.</p>
+<p><strong>T5 &mdash; Node Impersonation:</strong> Guardian&#8209;E enforces one&#8209;credential&#8209;one&#8209;node: a credential reported as active from two different positions is immediately flagged. Credentials are bound to physical hardware characteristics at provisioning.</p>
+<p><strong>T6 &mdash; Delivery Confirmation Falsification:</strong> Guardian&#8209;E cross&#8209;validates confirmations against the mesh&#8217;s physics model. P<sub>received</sub> higher than P<sub>transmitted</sub> &times; maximum_path_efficiency is flagged. All confirmation messages are signed; unsigned confirmations are rejected.</p>
+<p><strong>T7 &mdash; Timing Attacks:</strong> TDMA schedule assignments are cryptographically sealed. Out&#8209;of&#8209;window transmissions are detected by all nodes that receive them. Clock synchronization is protected by signed time&#8209;sync messages with maximum accepted drift of &plusmn;T<sub>drift</sub>.</p>
+<p><strong>T8 &mdash; Physical Node Compromise:</strong> Credentials are stored in secure elements with anti&#8209;tamper protection. Firmware integrity is verified at boot using a signed firmware hash. A node with modified firmware fails the boot integrity check and does not receive credentials.</p>
+<p><strong>T9 &mdash; Energy Credit Fraud:</strong> All settlement records require dual signatures (delivering + receiving node). Settlement records include EBF sequence numbers &mdash; replay of prior records is detected by duplicate checking. ERPKI validates signing authority.</p>
+<p><strong>T10 &mdash; EBGP Route Hijacking:</strong> ERPKI validates all EBGP route origins. Route announcements without valid attestation are rejected. AS path manipulation is detected by cross&#8209;referencing against known topology.</p>
+<p><strong>T11 &mdash; Safety System Bypass:</strong> BSL is hardware&#8209;enforced and cannot be disabled by software attack. Sensor integrity is monitored by cross&#8209;validating across multiple sensor modalities. The five&#8209;condition MTL gate is implemented in firmware with a hardware watchdog.</p>
+
+<h2><span class="section-num">6</span> Formal Security Properties and Coverage Proof</h2>
+
+<h3>6.1 Security Properties</h3>
+<p>Guardian Security is designed to satisfy four formal security properties:</p>
+<p><strong>Authenticity:</strong> Every participant N in a Guardian Security&#8209;protected mesh can be verified as the entity it claims to be. Formally: &forall;N, &forall;interactions I(N, *): Guardian&#8209;E verifies PKI_cert(N) before I is permitted. A participant that cannot be verified is not permitted to interact.</p>
+<p><strong>Integrity:</strong> No resource flow is modified in transit without detection. Formally: for any delivered burst B from source s to destination d, if P<sub>received</sub>(d) &ne; P<sub>transmitted</sub>(s) &times; path_efficiency(s,d) within the tolerance &plusmn;&epsilon;<sub>phys</sub>, Guardian&#8209;E flags the discrepancy within one control cycle.</p>
+<p><strong>Availability:</strong> The mesh continues delivering energy at bounded degraded service under attack. Formally: under any attack that does not involve physical destruction of nodes or physical access to BSL hardware, at least all CRITICAL&#8209;priority sessions continue at P<sub>min</sub> for the duration of the attack.</p>
+<p><strong>Non&#8209;repudiation:</strong> Every resource delivery event is attributable to a specific authenticated participant. Formally: for every EBF delivery, the certificate chain contains signed records from the authorizing source node, all relay nodes, and the receiving node, with timestamps, power measurements, and authentication proofs.</p>
+
+<h3>6.2 Coverage Proof</h3>
+<p>I prove coverage by attack path enumeration: for every threat category T1&ndash;T11, I show that achieving the attack objective requires traversing at least one Guardian Security enforcement boundary.</p>
+<table>
+  <tr><th>Threat</th><th>Attack Objective</th><th>Guardian&#8209;E Enforcement Boundary Crossed</th></tr>
+  <tr><td>T1</td><td>Beam misdirection via false position</td><td>Multi&#8209;source position consistency check (Step&nbsp;1 of beam authorization)</td></tr>
+  <tr><td>T2</td><td>Routing table corruption</td><td>Signed routing update verification; rate&#8209;limited route replacement</td></tr>
+  <tr><td>T3</td><td>Beam redirected to attacker</td><td>Trajectory consistency monitoring; relay forwarding timeout detection</td></tr>
+  <tr><td>T4</td><td>Legitimate devices denied energy</td><td>Per&#8209;node rate limits; CRITICAL priority reservation</td></tr>
+  <tr><td>T5</td><td>Attacker device receives legitimate allocation</td><td>One&#8209;credential&#8209;one&#8209;node enforcement; hardware profile consistency</td></tr>
+  <tr><td>T6</td><td>False delivery accounting</td><td>Physics&#8209;model cross&#8209;validation; dual&#8209;signature requirement</td></tr>
+  <tr><td>T7</td><td>Transmission collision or denial</td><td>Signed TDMA schedule; out&#8209;of&#8209;window detection; clock sync protection</td></tr>
+  <tr><td>T8</td><td>Insider access via physical compromise</td><td>Blast radius limitation; firmware integrity check; hardware profile binding</td></tr>
+  <tr><td>T9</td><td>Energy credit fraud</td><td>Dual&#8209;signature settlement; ERPKI attestation; sequence number dedup</td></tr>
+  <tr><td>T10</td><td>EBGP route hijacking</td><td>ERPKI prefix validation; topology cross&#8209;reference</td></tr>
+  <tr><td>T11</td><td>Safety system disabled</td><td>Hardware&#8209;enforced BSL; multi&#8209;modal sensor cross&#8209;validation; watchdog</td></tr>
+</table>
+<p>For T11 specifically, I note that the coverage guarantee has a physical limit: an attacker with physical access to the BSL hardware circuitry who can sever the hardware cutoff connection cannot be stopped by software means. This is the residual risk acknowledged in Section&nbsp;11 (Limitations). The defense against T11 physical hardware attack is physical security of node deployment locations, not Guardian Security.</p>
+
+<h2><span class="section-num">7</span> Guardian Security at Energy Internet Scale</h2>
+<p>The Energy Internet [Energy Internet, 2026] introduces three new threat surfaces beyond the single&#8209;mesh Meridian architecture: the inter&#8209;mesh EBGP routing infrastructure, the EDNS resolution infrastructure, and the energy credit settlement system.</p>
+
+<h3>7.1 Three&#8209;Level Architecture</h3>
+<p>Guardian Security operates at three levels in the Energy Internet:</p>
+<p><strong>Level&nbsp;1 &mdash; Intra&#8209;mesh security.</strong> The single&#8209;mesh Guardian Security implementation specified in Sections&nbsp;5 and&nbsp;6. Unchanged from the single&#8209;mesh architecture.</p>
+<p><strong>Level&nbsp;2 &mdash; Inter&#8209;mesh security (Energy TLS).</strong> Every EBGP peering session between gateway nodes is authenticated using EAS&#8209;level PKI managed through the Trust Layer. EBGP route updates are signed by the originating gateway; receiving gateways verify the signature and the ERPKI prefix authorization before accepting. The session uses forward&#8209;secret key exchange (ephemeral Diffie&#8209;Hellman) so that compromise of a long&#8209;term key does not expose past session traffic.</p>
+<p><strong>Level&nbsp;3 &mdash; Registry security (EIRA&#8209;level).</strong> All EIRA operations &mdash; EAS Number assignment, EIP prefix delegation, Emergency Authority Credential issuance &mdash; are signed by the EIRA root credential and published in a transparency log. Any Energy Internet participant can verify any EIRA action independently.</p>
+
+<h3>7.2 ERPKI Implementation</h3>
+<p>Energy Resource Public Key Infrastructure (ERPKI) provides route origin validation for EBGP. The implementation follows the structure of RPKI for data internet BGP [RFC&nbsp;6480]:</p>
+<ul>
+  <li>The EIRA maintains the ERPKI root and delegates EAS&#8209;level signing authorities to each EAS operator.</li>
+  <li>Each EAS operator issues Route Origin Authorizations (ROAs) for its delegated EIP prefixes.</li>
+  <li>ENL routers validate EBGP route origins against the ERPKI repository. Invalid origins are rejected.</li>
+  <li>The ERPKI repository is published as a distributed, signed database with full history.</li>
+</ul>
+
+<h3>7.3 Emergency Authority Credential Security</h3>
+<p>Emergency Authority Credentials (EAC) enable Emergency Priority Override (EPO). EAC security measures:</p>
+<ul>
+  <li>EAC private keys are stored in hardware security modules (HSMs) requiring multi&#8209;party authorization (M&#8209;of&#8209;N threshold signing)</li>
+  <li>EPO commands must include a valid timestamp within &plusmn;60 seconds of network time (prevents replay)</li>
+  <li>Each EAC has a maximum EPO duration &mdash; commands without a finite duration are rejected</li>
+  <li>EPO commands are logged in the certificate chain and are publicly auditable</li>
+  <li>EIRA can revoke any EAC within one propagation cycle if compromise is detected</li>
+</ul>
+
+<h2><span class="section-num">8</span> The Biological Safety Layer as Physical Security Invariant</h2>
+
+<h3>8.1 The BSL as the Security Invariant of Last Resort</h3>
+<p>Guardian Security is a software and protocol framework. A sufficiently sophisticated attacker who can compromise the software stack may be able to bypass Guardian Security&#8217;s protocol&#8209;level defenses.</p>
+<p>The Biological Safety Layer (BSL) is the security mechanism that operates below the software stack. It is implemented in hardware circuitry independent of the node&#8217;s microcontroller, firmware, and software gate logic. The BSL&#8217;s biological presence detection and beam cutoff circuit operates whether the software is running correctly, is crashed, is compromised, or has been replaced.</p>
+<p>Formally, the BSL enforces a physical security invariant:</p>
+<div class="invariant-box"><strong>BSL_invariant:</strong> &forall;t, &forall;positions p: biological_presence(p, t) = TRUE &rarr; beam_active_at(p, t) = FALSE</div>
+<p>This invariant is enforced by hardware physics, not by software logic. It is the security invariant of last resort &mdash; the property that holds even when every other security mechanism has failed.</p>
+
+<h3>8.2 BSL Tamper Resistance</h3>
+<p>For the BSL_invariant to be a genuine security guarantee, the BSL hardware must be tamper&#8209;resistant:</p>
+<ul>
+  <li><strong>Sensor diversity:</strong> Biological presence detection uses at least two independent sensor modalities (e.g., radar + thermal). An attacker who blocks one modality does not defeat detection.</li>
+  <li><strong>Anomalous&#8209;absence detection:</strong> Sensors that go offline or produce anomalous &#8220;all&#8209;clear&#8221; readings when other sensors indicate uncertainty trigger a SENSOR_INTEGRITY_FAILURE event that forces beam hold.</li>
+  <li><strong>Hardware cutoff independence:</strong> The beam cutoff circuit receives power and control signals independent of the main microcontroller.</li>
+  <li><strong>Tamper evidence:</strong> The BSL housing includes tamper&#8209;evident sealing. A node whose BSL housing has been opened fails the physical inspection at maintenance intervals.</li>
+</ul>
+
+<h3>8.3 The Residual Risk Statement</h3>
+<p>No security system provides zero residual risk. The BSL&#8217;s residual risk is a T11c attack: an attacker with sustained physical access who surgically modifies the BSL hardware circuitry itself. This attack requires: physical access to a deployed node; technical knowledge of the specific BSL circuit implementation; time to perform hardware modification without detection; tolerance for detection at the next physical inspection. This residual risk is accepted as the irreducible physical security baseline.</p>
+
+<h2><span class="section-num">9</span> Operational Security: Deployment and Audit</h2>
+
+<h3>9.1 Secure Provisioning</h3>
+<p>Guardian Security specifies a five&#8209;step secure provisioning process:</p>
+<p><strong>Step&nbsp;1 &mdash; Factory key injection:</strong> The node&#8217;s Trust Layer public/private key pair is generated in the factory inside a hardware security module. The private key never leaves the HSM.</p>
+<p><strong>Step&nbsp;2 &mdash; Identity credential signing:</strong> The factory generates a Certificate Signing Request using the node&#8217;s public key and identity parameters. The CSR is submitted to the Trust Layer PKI for signing.</p>
+<p><strong>Step&nbsp;3 &mdash; Hardware profile binding:</strong> The Trust Layer credential includes a hardware profile hash &mdash; a signed measurement of the node&#8217;s hardware characteristics. A credential used on different hardware will fail the hardware profile consistency check.</p>
+<p><strong>Step&nbsp;4 &mdash; Provisioning receipt:</strong> The provisioned node signs a provisioning receipt confirming that it successfully received and stored its credential. The receipt is logged in the certificate chain.</p>
+<p><strong>Step&nbsp;5 &mdash; First&#8209;contact verification:</strong> On first network contact, the node presents its credential and the provisioning receipt. Guardian&#8209;E verifies both before accepting the node as VERIFIED.</p>
+
+<h3>9.2 The Certificate Chain as Audit Substrate</h3>
+<p>Every Guardian Security event is logged in the certificate chain with a signed entry from the Lume&#8209;X control loop. The certificate chain is: append&#8209;only (entries cannot be deleted or modified once written); signed (each entry is signed by the Lume&#8209;X runtime); timestamped (verifiable against distributed time consensus); and cross&#8209;referenced (each entry references EBF sequence numbers and session IDs). This produces a complete, auditable history for regulatory compliance, insurance liability attribution, and forensic investigation.</p>
+
+<h3>9.3 Incident Response Protocol</h3>
+<p>When Guardian&#8209;E detects a suspected attack:</p>
+<ol>
+  <li><strong>Immediate containment:</strong> The suspect node or path is QUARANTINED within one control cycle.</li>
+  <li><strong>Evidence preservation:</strong> All certificate chain entries related to the suspect node&#8217;s recent activity are cryptographically sealed.</li>
+  <li><strong>Affected session recovery:</strong> All sessions routing through the quarantined node are rerouted through verified alternate paths. CRITICAL sessions receive priority.</li>
+  <li><strong>Threat classification:</strong> Guardian&#8209;E classifies the anomaly against the T1&ndash;T11 taxonomy and logs the classification.</li>
+  <li><strong>Administrator notification:</strong> A signed alert is transmitted to the designated administrator endpoint.</li>
+  <li><strong>Quarantine review:</strong> The administrator reviews the evidence and either lifts the quarantine or initiates physical inspection and credential revocation.</li>
+</ol>
+
+<h2><span class="section-num">10</span> Related Work</h2>
+
+<h3>10.1 Wireless Network Security</h3>
+<p>The wireless data network security literature is extensive and directly relevant. IEEE 802.11i (WPA2/3) [35] provides the reference architecture for wireless network authentication and key management. The 5G security architecture [36] provides the reference for subscriber identity management at scale. Guardian Security&#8217;s pre&#8209;transmission authentication protocol draws on both, adapted for the energy delivery context where the &#8220;data&#8221; being protected is joules rather than bits.</p>
+<p>The critical distinction is that wireless network security assumes a stable separation between the control plane and the data plane. Guardian Security operates in an environment where the control plane measurement is also a physical measurement of the data plane output. This coupling is the source of T6 and T1, which have no analog in wireless data network security.</p>
+
+<h3>10.2 Industrial Control System Security</h3>
+<p>ICS security [37, 38] addresses security for systems where cyber&#8209;physical coupling creates physical consequences for security failures &mdash; exactly the challenge Guardian Security addresses. The MITRE ATT&amp;CK for ICS framework [39] informed the development of the T1&ndash;T11 threat taxonomy. The Stuxnet case [40] is the canonical demonstration that cyber attacks on physical control systems can produce physical damage.</p>
+<p>The key distinction from ICS security is that Guardian Security operates on a wireless, distributed, autonomously administered mesh rather than a fixed, wired, centrally administered control network. ICS security assumes network perimeter control; Guardian Security cannot assume perimeter control because the RF transmission medium is inherently accessible to any attacker within range.</p>
+
+<h3>10.3 Physical Layer Security</h3>
+<p>Physical layer security research [41, 42] exploits the physical properties of wireless channels to provide security guarantees that cannot be bypassed by higher&#8209;layer attacks. This approach is complementary to Guardian Security&#8217;s protocol&#8209;layer defenses. The localization integrity verification in Guardian Security (multi&#8209;source position consistency checking) draws on physical layer security principles.</p>
+
+<h3>10.4 The Lume Ecosystem Security Framework</h3>
+<p>The Trust Layer [16] provides the identity foundation that Guardian Security builds on. Guardian&#8209;E is the energy&#8209;domain specialization that adds the physical&#8209;layer defenses specific to the energy routing context. Guardian Security is the first published formal specification of a Guardian deployment in a physical domain. The security architecture defined in this paper is the reference for future Guardian deployments in the transportation, manufacturing, and ambient computation domains described in [DI Theory, 2026].</p>
+
+<h2><span class="section-num">11</span> Limitations and Honest Boundaries</h2>
+<p><strong>The threat taxonomy covers the current architecture, not all future attacks.</strong> The T1&ndash;T11 taxonomy is derived from the attack surface of the current Meridian architecture. Novel attack techniques not anticipated in this analysis may find gaps. The ERFC process includes a vulnerability disclosure process and a taxonomy update mechanism for new threat categories.</p>
+<p><strong>Physical node compromise (T8) has limited software&#8209;layer defenses.</strong> An attacker with sustained physical access and sufficient technical knowledge can defeat the BSL hardware safeguards. This is the irreducible residual risk of any physically deployed system.</p>
+<p><strong>Coverage proof assumes correct implementation.</strong> The coverage proof demonstrates that every attack path crosses at least one enforcement boundary. It does not prove that the implementation of those boundaries is correct. Implementation vulnerabilities can create gaps not present in the specification. Lume&#8209;V formal verification [18] of the Guardian Security implementation is the mitigation; it has not yet been completed for all components.</p>
+<p><strong>Multi&#8209;party compromise is not addressed.</strong> The framework assumes that the Trust Layer PKI root is not compromised. A compromise of the root credential would defeat every cryptographic defense simultaneously.</p>
+<p><strong>No experimental validation exists.</strong> Guardian Security has been formally specified but not deployed in a physical mesh. All quantitative claims are based on architectural analysis of the Meridian specification.</p>
+
+<h2><span class="section-num">12</span> Conclusion</h2>
+<p>Wireless energy routing is not a data routing problem with a different payload. It is a fundamentally different security domain &mdash; one where successful attacks produce physical consequences, where the control plane is coupled to physical measurements, and where identity must be verified before the first joule flows rather than after the first packet arrives.</p>
+<p>No formal security framework for this domain previously existed. This paper provides one.</p>
+<p>The Guardian Security framework &mdash; two&#8209;tier innate&#8209;plus&#8209;adaptive defense, pre&#8209;transmission authentication, eleven&#8209;category threat coverage, BSL physical invariant, and certificate chain audit &mdash; addresses the complete attack surface of a deterministic wireless energy routing system. It provides four formal security guarantees: authenticity, integrity, availability, and non&#8209;repudiation. The coverage proof demonstrates that every attack path requires traversal of at least one enforcement boundary.</p>
+<p>The most important security property of the Guardian Security framework is the one that cannot be improved through protocol design: the Biological Safety Layer invariant. The BSL guarantees that no beam strikes a biological target regardless of the state of every software and protocol defense. This guarantee is the irreducible physical security baseline of wireless energy routing &mdash; the property that makes the difference between a security failure that damages data and a security failure that damages people.</p>
+<p>The Energy Internet cannot be built without this foundation. Guardian Security is the security foundation that the Energy Internet needs to be built on, stated now, so that it is built in from the first deployment rather than retrofitted from the last breach.</p>
+
+<div class="page-break"></div>
+
+<h2>Appendix A &mdash; Complete Threat Taxonomy</h2>
+<table>
+  <tr><th>ID</th><th>Name</th><th>Attack Interface</th><th>Objective</th><th>Max Consequence</th><th>Guardian&#8209;E Tier</th></tr>
+  <tr><td>T1</td><td>Localization Spoofing</td><td>PAI&#8209;2, NAI&#8209;2</td><td>Beam misdirection</td><td>Physical injury</td><td>Adaptive + BSL</td></tr>
+  <tr><td>T2</td><td>Routing Table Manipulation</td><td>NAI&#8209;1</td><td>Traffic redirection</td><td>All traffic hijacked</td><td>Adaptive</td></tr>
+  <tr><td>T3</td><td>Beam Hijacking</td><td>PAI&#8209;1, NAI&#8209;2, IAI&#8209;1</td><td>Attacker receives beam</td><td>Critical device denied</td><td>Adaptive</td></tr>
+  <tr><td>T4</td><td>Denial&#8209;of&#8209;Power</td><td>NAI&#8209;1, NAI&#8209;2, PAI&#8209;1</td><td>Devices denied service</td><td>Mesh blackout</td><td>Innate + Adaptive</td></tr>
+  <tr><td>T5</td><td>Node Impersonation</td><td>IAI&#8209;1, NAI&#8209;1</td><td>Attacker receives allocation</td><td>Mesh infiltration</td><td>Adaptive</td></tr>
+  <tr><td>T6</td><td>Delivery Confirmation Falsification</td><td>NAI&#8209;3</td><td>False accounting</td><td>Model corruption</td><td>Adaptive</td></tr>
+  <tr><td>T7</td><td>Timing Attacks</td><td>NAI&#8209;1, NAI&#8209;2</td><td>Scheduling disruption</td><td>Effective denial&#8209;of&#8209;power</td><td>Innate + Adaptive</td></tr>
+  <tr><td>T8</td><td>Physical Node Compromise</td><td>PAI&#8209;3</td><td>Insider access</td><td>All attacks from trusted position</td><td>Adaptive (limited)</td></tr>
+  <tr><td>T9</td><td>Energy Credit Fraud</td><td>NAI&#8209;2, IAI&#8209;2</td><td>Financial fraud</td><td>ESP economic disruption</td><td>Adaptive</td></tr>
+  <tr><td>T10</td><td>EBGP Route Hijacking</td><td>NAI&#8209;4</td><td>Internet&#8209;scale redirection</td><td>EAS isolation or theft</td><td>Adaptive (L2)</td></tr>
+  <tr><td>T11</td><td>Safety System Bypass</td><td>PAI&#8209;3, NAI&#8209;2</td><td>BSL disabled</td><td>Physical injury (worst case)</td><td>BSL (hardware)</td></tr>
+</table>
+
+<h2>Appendix B &mdash; Guardian Security Rule Set (Summary)</h2>
+<table>
+  <tr><th>Rule ID</th><th>Description</th><th>Threat</th><th>Enforcement Point</th></tr>
+  <tr><td>GS&#8209;R01</td><td>All participants verify PKI credential before interaction</td><td>T5</td><td>Pre&#8209;transmission auth Step&nbsp;1</td></tr>
+  <tr><td>GS&#8209;R02</td><td>All routing updates require valid signature</td><td>T2</td><td>NAI&#8209;1 input validation</td></tr>
+  <tr><td>GS&#8209;R03</td><td>Position consistency check across &ge;2 sources</td><td>T1</td><td>Pre&#8209;transmission auth position check</td></tr>
+  <tr><td>GS&#8209;R04</td><td>Delivery confirmation physics cross&#8209;validation</td><td>T6</td><td>Post&#8209;delivery confirmation handler</td></tr>
+  <tr><td>GS&#8209;R05</td><td>One&#8209;credential&#8209;one&#8209;position enforcement</td><td>T5</td><td>NODE_ANNOUNCE handler</td></tr>
+  <tr><td>GS&#8209;R06</td><td>Per&#8209;node request rate limiting</td><td>T4</td><td>ENL request scheduler</td></tr>
+  <tr><td>GS&#8209;R07</td><td>CRITICAL priority capacity reservation</td><td>T4</td><td>ETL QoS enforcer</td></tr>
+  <tr><td>GS&#8209;R08</td><td>Signed TDMA schedule distribution</td><td>T7</td><td>Scheduling epoch handler</td></tr>
+  <tr><td>GS&#8209;R09</td><td>Out&#8209;of&#8209;window transmission detection</td><td>T7</td><td>ELL receive handler</td></tr>
+  <tr><td>GS&#8209;R10</td><td>Relay forwarding timeout detection</td><td>T3</td><td>DRMA relay monitor</td></tr>
+  <tr><td>GS&#8209;R11</td><td>Trajectory consistency monitoring</td><td>T3</td><td>Session state tracker</td></tr>
+  <tr><td>GS&#8209;R12</td><td>Dual&#8209;signature settlement requirement</td><td>T9</td><td>Settlement handler</td></tr>
+  <tr><td>GS&#8209;R13</td><td>ERPKI route origin validation</td><td>T10</td><td>EBGP UPDATE handler</td></tr>
+  <tr><td>GS&#8209;R14</td><td>Hardware profile consistency check</td><td>T8</td><td>Boot integrity verifier</td></tr>
+  <tr><td>GS&#8209;R15</td><td>Multi&#8209;modal sensor cross&#8209;validation</td><td>T11</td><td>BSL sensor fusion</td></tr>
+  <tr><td>GS&#8209;R16</td><td>Sensor absence treated as safety hazard</td><td>T11</td><td>BSL safety logic</td></tr>
+  <tr><td>GS&#8209;R17</td><td>Hardware&#8209;enforced beam cutoff</td><td>T11</td><td>BSL hardware circuit</td></tr>
+</table>
+
+<h2>Appendix C &mdash; Coverage Proof by Attack Path</h2>
+<p>For each threat T1&ndash;T11, the minimum set of Guardian Security rules that must be bypassed simultaneously to achieve the attack objective:</p>
+<table>
+  <tr><th>Threat</th><th>Rules That Must Be Simultaneously Bypassed</th></tr>
+  <tr><td>T1</td><td>GS&#8209;R03 AND GS&#8209;R15 AND GS&#8209;R16 AND GS&#8209;R17</td></tr>
+  <tr><td>T2</td><td>GS&#8209;R02 AND GS&#8209;R11</td></tr>
+  <tr><td>T3</td><td>GS&#8209;R01 AND GS&#8209;R10 AND GS&#8209;R11</td></tr>
+  <tr><td>T4</td><td>GS&#8209;R06 AND GS&#8209;R07</td></tr>
+  <tr><td>T5</td><td>GS&#8209;R01 AND GS&#8209;R05 AND GS&#8209;R14</td></tr>
+  <tr><td>T6</td><td>GS&#8209;R04 AND GS&#8209;R01 (confirmation signature)</td></tr>
+  <tr><td>T7</td><td>GS&#8209;R08 AND GS&#8209;R09</td></tr>
+  <tr><td>T8</td><td>GS&#8209;R14 AND physical tamper evidence</td></tr>
+  <tr><td>T9</td><td>GS&#8209;R12 AND GS&#8209;R13 AND sequence dedup</td></tr>
+  <tr><td>T10</td><td>GS&#8209;R13 AND topology cross&#8209;reference</td></tr>
+  <tr><td>T11</td><td>GS&#8209;R15 AND GS&#8209;R16 AND GS&#8209;R17 (hardware circuit)</td></tr>
+</table>
+<p>The minimum attack complexity for each threat is the AND of independent enforcement mechanisms. No single rule bypass suffices for any threat category.</p>
+
+<h2>Appendix D &mdash; Guardian Security at Three Operational Levels</h2>
+<table>
+  <tr><th>Level</th><th>Scope</th><th>Authentication</th><th>Key Management</th><th>Threat Coverage</th></tr>
+  <tr><td>L1 &mdash; Intra&#8209;mesh</td><td>Single EAS</td><td>Per&#8209;node PKI credential</td><td>Trust Layer EAS&#8209;delegated CA</td><td>T1&ndash;T8, T11</td></tr>
+  <tr><td>L2 &mdash; Inter&#8209;mesh</td><td>Multi&#8209;EAS, single EXP</td><td>EAS&#8209;level PKI credential</td><td>Trust Layer root&#8209;delegated EAS CA</td><td>T9&ndash;T10 + L1</td></tr>
+  <tr><td>L3 &mdash; Registry</td><td>Global</td><td>EIRA root credential</td><td>EIRA HSM, M&#8209;of&#8209;N threshold signing</td><td>EIRA operation integrity</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>References</h2>
+<ol start="35">
+  <li>IEEE 802.11i. (2004). <em>IEEE Standard for Information Technology &mdash; Wireless LAN Medium Access Control (MAC) and Physical Layer (PHY) Specifications: Security Enhancements.</em> IEEE.</li>
+  <li>3GPP TS 33.501. (2022). <em>Security Architecture and Procedures for 5G System.</em></li>
+  <li>Stouffer, K., Falco, J., &amp; Scarfone, K. (2011). <em>Guide to Industrial Control Systems (ICS) Security.</em> NIST SP 800&#8209;82.</li>
+  <li>Langner, R. (2011). &#8220;Stuxnet: Dissecting a Cyberweapon.&#8221; <em>IEEE Security and Privacy,</em> 9(3), 49&ndash;51.</li>
+  <li>MITRE. (2020). <em>ATT&amp;CK for Industrial Control Systems.</em> mitre.org/attackics</li>
+  <li>Lindsay, J.R. (2013). &#8220;Stuxnet and the Limits of Cyber Warfare.&#8221; <em>Security Studies,</em> 22(3), 365&ndash;404.</li>
+  <li>Mukherjee, A. (2015). &#8220;Physical&#8209;Layer Security in the Internet of Things.&#8221; <em>Proceedings of the IEEE,</em> 103(10), 1831&ndash;1843.</li>
+  <li>Liu, Y., Chen, H.H., &amp; Wang, L. (2017). &#8220;Physical Layer Security for Next Generation Wireless Networks.&#8221; <em>IEEE Wireless Communications,</em> 24(6), 110&ndash;117.</li>
+  <li>Cooper, D., et&nbsp;al. (2008). <em>Internet X.509 Public Key Infrastructure Certificate and CRL Profile.</em> RFC&nbsp;5280. IETF.</li>
+  <li>Lepinski, M., &amp; Kent, S. (2012). <em>An Infrastructure to Support Secure Internet Routing.</em> RFC&nbsp;6480. IETF.</li>
+  <li>Bassham, L., et&nbsp;al. (2009). <em>Recommendation for the Selection of Public&#8209;Key Cryptographic Algorithms.</em> NIST SP 800&#8209;131A.</li>
+  <li>Shostack, A. (2014). <em>Threat Modeling: Designing for Security.</em> Wiley.</li>
+  <li>Swiderski, F., &amp; Snyder, W. (2004). <em>Threat Modeling.</em> Microsoft Press.</li>
+  <li>Brown, W.C. (1984). &#8220;The History of Power Transmission by Radio Waves.&#8221; <em>IEEE Trans. Microwave Theory and Techniques,</em> 32(9), 1230&ndash;1242.</li>
+  <li>Zhang, Z., et&nbsp;al. (2019). &#8220;Wireless Power Transfer &mdash; An Overview.&#8221; <em>IEEE Trans. Industrial Electronics,</em> 66(2), 1044&ndash;1058.</li>
+</ol>
+<p style="margin-top: 0.15in;"><strong>Lume Ecosystem:</strong></p>
+<ol start="15">
+  <li>Andrews, J. (2026). <em>Lume Language Specification.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19382282">10.5281/zenodo.19382282</a></li>
+  <li>Andrews, J. (2026). <em>Trust Layer Ecosystem.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19560674">10.5281/zenodo.19560674</a></li>
+  <li>Andrews, J. (2026). <em>DAIGS Framework.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19491784">10.5281/zenodo.19491784</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;V Verification Suite.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19645097">10.5281/zenodo.19645097</a></li>
+  <li>Andrews, J. (2026). <em>Lume&#8209;X Multi&#8209;Agent Cognition.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.19443968">10.5281/zenodo.19443968</a></li>
+  <li>Andrews, J. (2026). <em>Deterministic Dissolution.</em> DarkWave Studios LLC. DOI: <a href="https://doi.org/10.5281/zenodo.15065493">10.5281/zenodo.15065493</a></li>
+  <li>Andrews, J. (2026). <em>Meridian Architecture.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Meridian as Synthetic Organism.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>The Energy Internet.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+  <li>Andrews, J. (2026). <em>Deterministic Infrastructure.</em> DarkWave Studios LLC. [DOI to be assigned]</li>
+</ol>
+
+<div class="footnote" style="page-break-inside: avoid;">
+  <p>This paper discloses only the threat model and defense framework for deterministic wireless energy routing. No implementation details, source code, or proprietary algorithms are included. All examples use synthetic scenarios. Guardian Security is a commercial product of DarkWave Studios LLC (domain: TrustShield.tech).<br>
+  <strong>Patent Pending</strong> &mdash; &#8220;Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing Using Ambient Harvesting, Mesh Coordination, and Directional Transmission.&#8221; DarkWave Studios LLC.<br>
+  &copy; 2026 DarkWave Studios LLC. All rights reserved.<br>
+  Correspondence: Jason Andrews, DarkWave Studios LLC, Nashville, TN. Email: team@dwsc.io<br>
+  ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009-0007-5214-649X</a><br>
+  Website: <a href="https://lume-lang.org">lume-lang.org</a> &middot; <a href="https://trustshield.tech">TrustShield.tech</a> &middot; GitHub: <a href="https://github.com/cryptocreeper94-sudo">github.com/cryptocreeper94-sudo</a><br>
+  This preprint has not undergone peer review. It is submitted for early dissemination and to establish priority of invention.</p>
+</div>
+
+</body>
+</html>

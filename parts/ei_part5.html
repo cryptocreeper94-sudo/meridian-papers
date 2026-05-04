@@ -1,0 +1,76 @@
+<h2><span class="section-num">7</span> Security at Scale: Guardian Security as Energy TLS</h2>
+
+<h3>7.1 The Threat Model Expands at Internet Scale</h3>
+<p>Within a single Meridian mesh, the Guardian Security threat model [Meridian Architecture, 2026] covers six primary vectors: localization spoofing, routing table manipulation, beam hijacking, denial&#8209;of&#8209;power attacks, node impersonation, and timing attacks. These threats are addressed by per&#8209;node cryptographic authentication, signed routing updates, delivery confirmation verification, and TDMA timing enforcement.</p>
+<p>At Energy Internet scale, the threat model expands in three dimensions:</p>
+<p><strong>Scale.</strong> An attacker targeting a single mesh node faces local defenses only. An attacker targeting the inter&#8209;mesh routing infrastructure faces the entire Energy Internet. EBGP route manipulation &mdash; analogous to BGP hijacking in the data internet &mdash; can redirect energy traffic across entire EAS networks.</p>
+<p><strong>Sophistication.</strong> Single&#8209;mesh attacks require physical proximity to the target mesh. Internet&#8209;scale attacks can be launched remotely, from anywhere with access to the EBGP peering infrastructure.</p>
+<p><strong>Stakes.</strong> In the data internet, a successful attack degrades data delivery. In the Energy Internet, a successful attack at CRITICAL priority can deny power to life&#8209;safety devices. The stakes of security failure are not measured in data loss but in physical harm.</p>
+
+<h3>7.2 Guardian Security at Three Levels</h3>
+<p>Guardian Security (Guardian&#8209;E in the energy domain, domain: TrustShield.tech) operates at three levels in the Energy Internet:</p>
+<p><strong>Level&nbsp;1 &mdash; Intra&#8209;mesh security.</strong> The Guardian Security implementation defined in [Meridian Architecture, 2026]. Per&#8209;node cryptographic authentication, signed EBF frames, TDMA timing enforcement, delivery confirmation verification. Unchanged from the single&#8209;mesh implementation.</p>
+<p><strong>Level&nbsp;2 &mdash; Inter&#8209;mesh security (Energy TLS).</strong> Guardian Security extended to the inter&#8209;mesh interface. Every EBGP session between gateway nodes is authenticated using EAS&#8209;level public key infrastructure (PKI). EBGP updates are signed by the originating EAS gateway. Receiving gateways verify the signature before accepting and propagating route updates. Route origin validation confirms that an EAS advertising a destination actually controls the EIP address prefix it is advertising. This is Energy TLS &mdash; the analog of Transport Layer Security.</p>
+<p><strong>Level&nbsp;3 &mdash; Registry security.</strong> Guardian Security at the EIRA level. EAS Number assignments, EIP address prefix delegations, and EDNS zone delegations are cryptographically signed by the EIRA and verifiable by any EIP node. A forged EAS Number or a fraudulently delegated address prefix is detectable by any properly configured ENL node.</p>
+
+<h3>7.3 Energy RPKI: Route Origin Validation</h3>
+<p>The data internet&#8217;s Resource Public Key Infrastructure (RPKI) provides cryptographic attestation that an AS is authorized to originate routes for a given IP address prefix. Energy RPKI (ERPKI) provides the same function for EIP address prefixes: the EIRA maintains a signed database of which EAS is authorized to originate routes for which EIP prefix, and ENL routers validate EBGP route origins against this database before accepting them.</p>
+<p>A route origin that does not validate against ERPKI is rejected. This prevents the energy equivalent of BGP hijacking &mdash; an adversary announcing routes for EIP prefixes they do not control in order to intercept or disrupt energy traffic to those addresses.</p>
+
+<h3>7.4 Emergency Authority Credentials</h3>
+<p>The Emergency Priority Override mechanism (Section&nbsp;6.4) requires authentication of emergency authority credentials. Guardian Security manages a separate credential class &mdash; Emergency Authority Credentials (EAC) &mdash; issued to designated emergency management bodies: hospitals, emergency services, military installations, critical infrastructure operators.</p>
+<p>EAC holders can issue signed EPO commands that propagate through the Energy Internet via EBGP. ENL routers that receive a valid EPO command apply the emergency priority scheduling immediately. Invalid or unsigned EPO commands are rejected. The EAC credential system is administered by the EIRA and is audited by Guardian Security&#8217;s certificate chain logging.</p>
+
+<h2><span class="section-num">8</span> The Path from Meridian to Energy Internet</h2>
+
+<h3>8.1 Development Phases</h3>
+<p>The Energy Internet is not built at once. It is built incrementally, each phase validating the assumptions of the next.</p>
+<p><strong>Phase&nbsp;0 &mdash; Current state.</strong> The Meridian architecture is formally specified. Lume&#8209;X is validated at 73&nbsp;Hz. No hardware experiment has been conducted. The Energy Internet Protocol Stack is defined in this paper. The path is clear; the walking has not begun.</p>
+<p><strong>Phase&nbsp;1 &mdash; Single&#8209;mesh validation (Years&nbsp;1&ndash;2).</strong> DWER Phase&nbsp;1&ndash;3 experimental results validate point&#8209;to&#8209;point and mesh energy routing at room scale. A single Meridian EAS operates and is confirmed against the P<sub>min</sub>/r/&sigma;&sup2;/d determinism standard. The EPL, ELL, and intra&#8209;EAS ENL layers are validated in hardware.</p>
+<p><strong>Phase&nbsp;2 &mdash; Multi&#8209;mesh federation (Years&nbsp;2&ndash;4).</strong> Two independently operated Meridian EAS networks establish an EBGP peering session. Energy traffic is successfully routed across the AS boundary. Inter&#8209;mesh Guardian Security authentication is validated. Energy credit settlement between the two operators is demonstrated.</p>
+<p><strong>Phase&nbsp;3 &mdash; Building scale (Years&nbsp;3&ndash;6).</strong> A full building is covered by a Meridian Energy Internet deployment &mdash; multiple EAS zones, an in&#8209;building EXP, CRITICAL priority delivery to life&#8209;safety devices, and EaaS subscriptions for standard devices.</p>
+<p><strong>Phase&nbsp;4 &mdash; Campus scale (Years&nbsp;5&ndash;10).</strong> Multiple buildings interconnect through EXPs. EBGP peering between building&#8209;level EAS networks enables campus&#8209;wide energy routing. Higher&#8209;frequency operation (24&nbsp;GHz, 60&nbsp;GHz) improves beam precision and supports higher node density.</p>
+<p><strong>Phase&nbsp;5 &mdash; Energy Internet (Years&nbsp;10+).</strong> The EIPS is formally standardized. Multiple independent operators deploy compatible Energy Internet infrastructure. EBGP peering between city&#8209;level EAS networks. Energy Internet exchange points in major urban centers.</p>
+
+<h3>8.2 The Efficiency Constraint at Scale</h3>
+<p>The single largest technical obstacle to Energy Internet scaling is efficiency. At room scale, end&#8209;to&#8209;end efficiency of 3&ndash;25% is acceptable. As the network scales and the delivered power requirements grow, efficiency becomes a binding constraint.</p>
+<p>The efficiency improvement path runs through: higher&#8209;frequency operation (shorter wavelength &rarr; smaller antenna aperture &rarr; tighter beams &rarr; less path loss); better rectenna design (current 50&ndash;70% RF&#8209;to&#8209;DC conversion can improve toward 85%+); denser node deployment (shorter hop distances &rarr; less per&#8209;hop path loss); better beam shaping (tighter main lobes &rarr; less power in non&#8209;useful directions); adaptive beam tracking (dynamic nulling of interference directions).</p>
+<p>None of these improvements are speculative &mdash; they are active research areas with documented progress. The Energy Internet does not require a breakthrough; it requires the accumulation of incremental efficiency improvements across all stages of the energy path.</p>
+
+<h3>8.3 The Regulatory Pathway</h3>
+<p>Energy Internet deployment at building and campus scale requires regulatory approval that does not yet exist for this class of system. The regulatory pathway requires: Phase&nbsp;1&ndash;3 experimental safety data demonstrating BSL compliance at room scale; submission of a regulatory framework proposal to the FCC, Ofcom, and ITU; development of a type&#8209;approval process for Energy Internet nodes; development of an operator licensing framework for EAS operators; international harmonization of operating frequency bands and power limits.</p>
+<p>This is not a short process. Regulatory development for new wireless technology frameworks typically takes five to ten years from initial proposal to formal rule. The regulatory pathway must begin concurrently with Phase&nbsp;1 experimental validation &mdash; not after.</p>
+
+<h2><span class="section-num">9</span> Governance and Standardization</h2>
+
+<h3>9.1 Why Governance Matters</h3>
+<p>The data internet&#8217;s most important governance decision was to make IP an open standard &mdash; freely implementable by anyone, with no royalties, governed by the IETF through a consensus&#8209;based process. This decision is what allowed the internet to scale globally across every political and economic boundary.</p>
+<p>I propose that the Energy Internet Protocol Stack be submitted to an open standards process &mdash; the IETF or an equivalent body &mdash; for development and maintenance as an open standard. DarkWave Studios LLC commits to making the foundational EIPS specification royalty&#8209;free. The provisional patent portfolio covering the Meridian architecture will be licensed under FRAND (Fair, Reasonable, and Non&#8209;Discriminatory) terms for implementations that comply with the open standard.</p>
+
+<h3>9.2 The Energy Internet Registry Authority (EIRA)</h3>
+<p>The Energy Internet requires a registry authority analogous to IANA and ICANN:</p>
+<p>EIRA functions:</p>
+<ul>
+  <li>Assign EAS Numbers to qualifying Energy Internet operators</li>
+  <li>Delegate EIP address prefixes to EAS operators</li>
+  <li>Administer the root EDNS zone (<code>.energy</code>)</li>
+  <li>Maintain the ERPKI root certificate for Energy Internet route origin validation</li>
+  <li>Issue Emergency Authority Credentials to qualifying emergency management bodies</li>
+  <li>Publish the authoritative EIPS standard and manage its versioning</li>
+</ul>
+<p><strong>EIRA governance model.</strong> The EIRA should be a multi&#8209;stakeholder body, not a government agency or a single company. Stakeholders include: EAS operators, device manufacturers, regulatory agencies, safety certification bodies, emergency management agencies, and civil society representatives.</p>
+
+<h3>9.3 The RFC Process for Energy Internet Standards</h3>
+<p>I propose an Energy RFC (ERFC) process for Energy Internet standards development:</p>
+<table>
+  <tr><th>ERFC</th><th>Title</th><th>Dependencies</th></tr>
+  <tr><td>ERFC&#8209;0001</td><td>Energy Internet Protocol Stack</td><td>None</td></tr>
+  <tr><td>ERFC&#8209;0002</td><td>Energy Internet Protocol (EIP)</td><td>ERFC&#8209;0001</td></tr>
+  <tr><td>ERFC&#8209;0003</td><td>Energy Transmission Control Protocol (ETCP)</td><td>ERFC&#8209;0001, 0002</td></tr>
+  <tr><td>ERFC&#8209;0004</td><td>Energy Border Gateway Protocol (EBGP)</td><td>ERFC&#8209;0001, 0002</td></tr>
+  <tr><td>ERFC&#8209;0005</td><td>Energy Domain Name System (EDNS)</td><td>ERFC&#8209;0002</td></tr>
+  <tr><td>ERFC&#8209;0006</td><td>Energy Resource PKI (ERPKI)</td><td>ERFC&#8209;0002, 0004</td></tr>
+  <tr><td>ERFC&#8209;0007</td><td>Energy QoS and Priority Classes</td><td>ERFC&#8209;0003</td></tr>
+  <tr><td>ERFC&#8209;0008</td><td>Guardian Security for the Energy Internet</td><td>ERFC&#8209;0001, 0006</td></tr>
+</table>
+<p>These eight documents constitute the minimum viable standards package for an interoperable Energy Internet.</p>

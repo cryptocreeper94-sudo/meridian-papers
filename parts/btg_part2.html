@@ -1,0 +1,98 @@
+<h2><span class="section-num">1</span> Introduction</h2>
+
+<h3>1.1 The Stack Is Not Complete</h3>
+<p>The seven preceding papers define Meridian from the ground up: the four&#8209;layer protocol stack, the organism&#8209;like self&#8209;healing architecture, the Energy Internet protocol extension, the unified energy&#8209;data mesh, the Guardian Security framework, and the physical deployment architecture for complex built environments. They define a complete last&#8209;mile energy routing system &mdash; from the district boundary to the device.</p>
+<p>They do not define what sits above the district boundary.</p>
+<p>In the current energy system, what sits above the district boundary is the electrical grid: high&#8209;voltage alternating current transmitted through overhead or underground cables from remote generation sites, stepped down through a cascade of substations, and delivered to the building&#8217;s electrical panel. The grid is the reason Meridian&#8217;s source nodes have somewhere to plug into.</p>
+<p>This paper argues that the grid is the wrong foundation for a deterministic energy architecture. Not because the physics of AC transmission is wrong &mdash; it has served humanity well for over a century &mdash; but because a physical transmission infrastructure is the antithesis of what a Deterministic Infrastructure system requires. It is centralized, vulnerable, slow to deploy, expensive to maintain, and impossible to reroute in real time. The Meridian architecture can route energy around a failed node in 13.7&nbsp;milliseconds. The electrical grid takes months to build around a failed section.</p>
+
+<h3>1.2 The Fusion Connection</h3>
+<p>The Deterministic Fusion Control framework applies Lume&#8209;style invariant enforcement to plasma control in a magnetic confinement fusion reactor. A fusion reactor governed by deterministic plasma control produces output power that is stable, modulated on demand, and governed by formal invariants &mdash; not stochastic combustion or weather&#8209;dependent generation.</p>
+<p>When a deterministically controlled fusion generator connects to a wireless energy transmission layer, and that layer connects to a Meridian building mesh, the result is the first fully deterministic energy system from generation to device &mdash; every layer governed by the same four Deterministic Infrastructure properties, from plasma to phone.</p>
+
+<h3>1.3 Scope and Honesty</h3>
+<p>This paper is a formal architectural specification and theoretical analysis. It is not a demonstration that such a system currently exists, that the required hardware is commercially available, or that the regulatory pathway is clear. The efficiency analysis is honest about the significant penalty. The safety analysis is honest about the categorically different challenge of securing megawatt&#8209;scale directed beams through uncontrolled airspace.</p>
+
+<h3>1.4 Contributions</h3>
+<ol>
+  <li>The formal definition of the two&#8209;tier wireless energy architecture &mdash; Tier&nbsp;1 (long&#8209;haul microwave beam) and Tier&nbsp;2 (Meridian last&#8209;mile mesh) &mdash; with full interface specification.</li>
+  <li>The Fresnel&#8209;regime propagation analysis establishing theoretical collection efficiency bounds at 2.45&nbsp;GHz and 5.8&nbsp;GHz over 500m&ndash;5km.</li>
+  <li>The Tier&nbsp;1 safety architecture &mdash; retrodirective pilot&#8209;tone locking, exclusion zone design, intruder detection, and hardware&#8209;enforced beam cutoff.</li>
+  <li>The honest system efficiency analysis comparing thermal&#8209;to&#8209;device efficiency for wireless vs. wired grid delivery.</li>
+  <li>The complete Deterministic Infrastructure stack specification &mdash; the first formal description of a system where every layer from plasma to device satisfies all four DI properties.</li>
+</ol>
+
+<h2><span class="section-num">2</span> The Transmission Infrastructure Problem</h2>
+
+<h3>2.1 The Scale of the Physical Plant</h3>
+<p>The global electrical transmission and distribution infrastructure represents approximately $4&nbsp;trillion in capital investment. In the United States alone, approximately 700,000&nbsp;km of high&#8209;voltage transmission lines connect roughly 10,000 generation plants to 145 million customer connections through approximately 55,000 substations.</p>
+<p>This physical plant is:</p>
+<ul>
+  <li><strong>Expensive to build.</strong> High&#8209;voltage overhead lines cost $500K&ndash;$3M per kilometer. Underground HV cables cost $3M&ndash;$15M per kilometer. A new 500&nbsp;km transmission corridor costs $500M&ndash;$1.5B before a single kilowatt&#8209;hour flows.</li>
+  <li><strong>Slow to deploy.</strong> New HV transmission lines require 5&ndash;15 years from planning to energization.</li>
+  <li><strong>Expensive to maintain.</strong> The U.S. electrical industry spends approximately $30&nbsp;billion annually on T&amp;D maintenance.</li>
+  <li><strong>Vulnerable to disruption.</strong> Physical infrastructure fails under severe weather, seismic events, and geomagnetic disturbances. It is also a physical attack surface.</li>
+  <li><strong>Lossy at scale.</strong> Global average T&amp;D losses are approximately 8&ndash;9% &mdash; roughly 2,500&nbsp;TWh of lost energy per year.</li>
+</ul>
+
+<h3>2.2 What Wireless Transmission Eliminates</h3>
+<p>A wireless energy transmission architecture eliminates all five problems simultaneously: no physical plant to build, maintain, or attack; no right&#8209;of&#8209;way to acquire; no fixed path. A phased array transmitter can redirect its beam to a different receiver in milliseconds, not months. Energy routing becomes as dynamic as packet routing.</p>
+
+<h3>2.3 What Wireless Transmission Does Not Eliminate</h3>
+<p><strong>The efficiency penalty.</strong> A wired conductor transmits with 2&ndash;8% losses. A wireless microwave beam at 2.45&nbsp;GHz achieves approximately 75&ndash;80% collection efficiency before additional conversion losses. The full wireless link is less efficient than a wire.</p>
+<p><strong>The regulatory complexity.</strong> High&#8209;power microwave beams through airspace require coordination with aviation, spectrum, and public safety agencies. The regulatory pathway exists but is not straightforward.</p>
+<p>These are acknowledged costs. The architectural argument rests on the proposition that eliminated costs outweigh incurred costs for a sufficiently large class of deployment scenarios.</p>
+
+<h2><span class="section-num">3</span> Physics of Long&#8209;Range Directed Energy Transfer</h2>
+
+<h3>3.1 Beam Propagation Fundamentals</h3>
+<p>The key dimensionless parameter governing collection efficiency is the Fresnel number:</p>
+<pre>N_F = (&pi;&sup2; &times; D_t &times; D_r) / (4 &times; &lambda; &times; d)
+
+  N_F &gt;&gt; 1 : near-field / Fresnel regime &mdash; efficiency approaches 100%
+  N_F &asymp; 1  : Fresnel transition &mdash; efficiency ~85&ndash;92%
+  N_F &lt;&lt; 1 : far-field / Fraunhofer &mdash; efficiency drops proportionally</pre>
+
+<h3>3.2 Frequency Selection for Tier&nbsp;1</h3>
+<table>
+  <tr><th>Band</th><th>Atmospheric Attenuation</th><th>Rain Attenuation</th><th>Hardware</th><th>Role</th></tr>
+  <tr><td>2.45 GHz (&lambda;=0.122m)</td><td>&lt;0.01 dB/km</td><td>&lt;0.05 dB/km (extreme)</td><td>Mature; &gt;80% PA efficiency</td><td>Primary Tier&nbsp;1</td></tr>
+  <tr><td>5.8 GHz (&lambda;=0.052m)</td><td>&lt;0.02 dB/km</td><td>0.1 dB/km (heavy)</td><td>Mature; smaller apertures</td><td>Secondary Tier&nbsp;1</td></tr>
+  <tr><td>24 / 60 GHz</td><td>0.1&ndash;15 dB/km</td><td>High</td><td>Short&#8209;range only</td><td>Tier&nbsp;2 only</td></tr>
+</table>
+
+<h3>3.3 Fresnel Number Analysis for Representative Configurations</h3>
+<table>
+  <tr><th>D<sub>t</sub></th><th>D<sub>r</sub></th><th>Distance</th><th>N<sub>F</sub></th><th>Regime</th><th>&eta;<sub>collect</sub></th></tr>
+  <tr><td>5m</td><td>5m</td><td>500m</td><td>0.82</td><td>Fresnel transition</td><td>~87%</td></tr>
+  <tr><td>10m</td><td>10m</td><td>1 km</td><td>0.82</td><td>Fresnel transition</td><td>~87%</td></tr>
+  <tr><td>10m</td><td>10m</td><td>5 km</td><td>0.164</td><td>Near far&#8209;field</td><td>~65%</td></tr>
+  <tr><td>20m</td><td>20m</td><td>5 km</td><td>0.655</td><td>Fresnel transition</td><td>~83%</td></tr>
+  <tr><td>20m</td><td>20m</td><td>10 km</td><td>0.328</td><td>Near far&#8209;field</td><td>~72%</td></tr>
+  <tr><td>50m</td><td>50m</td><td>20 km</td><td>0.82</td><td>Fresnel transition</td><td>~87%</td></tr>
+</table>
+<p>At 2.45&nbsp;GHz with 10&ndash;20m apertures, collection efficiencies of 80&ndash;87% are achievable at 1&ndash;5&nbsp;km &mdash; covering district&#8209;scale delivery from fusion hubs to building rooftop receivers.</p>
+
+<h3>3.4 Aperture Illumination and Sidelobe Management</h3>
+<p>The fundamental tradeoff is between collection efficiency and sidelobe suppression. Gaussian or Taylor&#8209;tapered aperture illumination is required for safety compliance. For a 10&nbsp;MW beam with 46&nbsp;dB Taylor taper sidelobe suppression, sidelobe power density is below ICNIRP limits (10&nbsp;W/m&sup2; at 2.45&nbsp;GHz) at the beam edge, at the cost of ~3% collection efficiency.</p>
+
+<h2><span class="section-num">4</span> The Two&#8209;Tier Wireless Energy Architecture</h2>
+
+<h3>4.1 Architecture Overview</h3>
+<p><strong>Tier&nbsp;1 &mdash; Long&#8209;Haul Beam Layer:</strong> Generation site to district boundary. Distance: 500m&ndash;5km (primary), up to 20km. Frequency: 2.45&nbsp;GHz. Power scale: 100&nbsp;kW&ndash;100&nbsp;MW per beam link. Safety: retrodirective pilot&#8209;tone, exclusion zone, intruder detection, hardware cutoff.</p>
+<p><strong>Tier&nbsp;2 &mdash; Last&#8209;Mile Mesh Layer:</strong> District receiver to individual devices. Fully specified in Papers&nbsp;1&ndash;7. Frequency: 60&nbsp;GHz. Power scale: milliwatts to hundreds of watts. Full Meridian architecture applies.</p>
+<pre>Fusion Hub
+  &rarr; DC generation (fusion thermal &rarr; turbine &rarr; generator &rarr; DC bus)
+    &rarr; RF transmitter array (DC &rarr; 2.45 GHz phased array, &eta;_rf &asymp; 85%)
+      &rarr; [Tier 1 beam: 2.45 GHz, 500m&ndash;5km]
+        &rarr; District rectenna array (2.45 GHz &rarr; DC, &eta;_rect &asymp; 82%)
+          &rarr; DC bus &rarr; Meridian source nodes &rarr; [Tier 2 mesh]
+            &rarr; Building relay nodes &rarr; device</pre>
+
+<h3>4.2 Tier&nbsp;1 Node Types</h3>
+<p><strong>T1&#8209;TX (Transmitter):</strong> Located at generation facility. Receives DC, converts to 2.45&nbsp;GHz via GaN PA array, feeds a phased array antenna locked to the retrodirective pilot tone. Trust Layer T1&#8209;TX capability profile. Lume&#8209;X governs output modulation.</p>
+<p><strong>T1&#8209;RX (Receiver):</strong> Rectenna array at district boundary. Transmits pilot tone for beam locking. DC output feeds Meridian source nodes. Reports delivery confirmation via separate data channel.</p>
+<p><strong>T1&#8209;REL (Relay, optional):</strong> For non&#8209;line&#8209;of&#8209;sight configurations. Receives beam, reconverts to DC, retransmits. Each hop adds a conversion loss cycle. Avoided by siting selection wherever possible.</p>
+
+<h3>4.3 Multi&#8209;Hub Redundancy</h3>
+<p>A district receiver can accept power from multiple transmitter sites simultaneously, with the mix governed by a routing protocol analogous to EBGP. If the primary fusion hub goes offline, a secondary hub takes over within one T1 control cycle (100ms). The T1 control cycle is specified at 100ms &mdash; fast enough for demand response, but aircraft exclusion is handled by the static exclusion zone and intruder detection, not real&#8209;time beam steering evasion.</p>

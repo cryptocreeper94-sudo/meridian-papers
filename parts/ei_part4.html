@@ -1,0 +1,129 @@
+<h2><span class="section-num">4</span> Energy Addressing and the Energy Domain Name System</h2>
+
+<h3>4.1 The Energy Internet Protocol Address (EIP Address)</h3>
+<p>The MC 64&#8209;bit node identity defined in [Meridian Architecture, 2026] serves as the link&#8209;layer identifier within a single mesh. The Energy Internet requires a hierarchical addressing scheme that spans multiple independently administered meshes &mdash; equivalent to the transition from MAC addresses (link&#8209;layer, locally unique) to IP addresses (network&#8209;layer, globally unique).</p>
+<p>The EIP address is a 128&#8209;bit hierarchical identifier structured as:</p>
+<pre>EIP Address (128 bits):
+  [Global Registry ID : 16 bits]   Assigned by the Energy Internet Registry Authority (EIRA)
+  [EAS Number        : 24 bits]    Energy Autonomous System number &mdash; uniquely identifies mesh operator
+  [Zone ID           : 16 bits]    Logical zone within the EAS
+  [Node Type         : 8 bits]     Functional role (source / relay / destination / harvesting relay / gateway)
+  [Node Serial       : 40 bits]    Unique per-node serial within the EAS
+  [Checksum          : 24 bits]    Address integrity verification</pre>
+<p>This 128&#8209;bit structure provides: 65,536 Global Registry partitions (supporting multiple governance regimes or geographic regions); 16,777,216 unique EAS numbers (each independently administered energy mesh network); 65,536 zones per EAS; 256 node types; 1&nbsp;trillion unique nodes per EAS zone.</p>
+<p>The address space is intentionally large &mdash; designed to accommodate the scale of a global sensor and IoT network without requiring renumbering as the Energy Internet grows. The IPv6 designers learned this lesson painfully from IPv4&#8217;s exhausted 32&#8209;bit space; EIP incorporates it from the beginning.</p>
+<p><strong>Address hierarchy and routing.</strong> The EAS Number in the EIP address is the key to inter&#8209;mesh routing. Within a single EAS, routing uses MMF&#8217;s intra&#8209;mesh routing tables (extended to EIP addressing). Between EAS networks, routing uses EBGP to exchange reachability information: &#8220;EAS&nbsp;42 can reach nodes with EAS Number&nbsp;42 in their address.&#8221; This is structurally identical to BGP routing in the data internet, where Autonomous System Numbers identify networks and BGP routes between them.</p>
+
+<h3>4.2 EIP Subnetting and Zone Aggregation</h3>
+<p>Large EAS deployments &mdash; a campus, a building complex, or an industrial facility &mdash; may contain thousands of nodes organized into zones. Routing announcements for every individual node would overwhelm inter&#8209;mesh routing protocols. EIP uses zone aggregation analogous to IP CIDR (Classless Inter&#8209;Domain Routing): a gateway node announces the entire zone as a single reachable prefix rather than individual node addresses.</p>
+<pre>Zone aggregation example:
+  Full node address: [EIRA:0001][EAS:000042][ZONE:0005][TYPE:02][SERIAL:000000001234][CHK:...]
+  Zone aggregate:    [EIRA:0001][EAS:000042][ZONE:0005][*][*][*]
+  Inter-mesh announcement: "EAS:000042 can deliver energy to all nodes in ZONE:0005"</pre>
+<p>This dramatically reduces the routing table size at inter&#8209;mesh gateway nodes &mdash; exactly as CIDR reduces BGP routing table size in the data internet.</p>
+
+<h3>4.3 Energy Domain Name System (EDNS)</h3>
+<p>EIP addresses are not human&#8209;readable. Just as the Domain Name System translates human&#8209;readable hostnames (google.com) to IP addresses, the Energy Domain Name System translates human&#8209;readable energy endpoint names to EIP addresses.</p>
+<pre>EDNS names follow a hierarchical structure:
+
+[device-name].[zone].[facility].[operator].energy
+Examples:
+  sensor-7.lab-a.building-3.mit.energy
+  cardiac-monitor-icu-4.floor-2.mass-general.energy
+  relay-node-42.zone-5.campus-north.darkwave.energy</pre>
+<p>EDNS resolution works identically to DNS:</p>
+<ol>
+  <li>Consuming device requests EIP address for <code>sensor-7.lab-a.building-3.mit.energy</code></li>
+  <li>Local EDNS resolver checks its cache</li>
+  <li>If not cached: queries the authoritative EDNS server for <code>building-3.mit.energy</code></li>
+  <li>Authoritative server returns the EIP address for <code>sensor-7.lab-a</code></li>
+  <li>Resolver caches the result with a TTL and returns to the requesting device</li>
+</ol>
+<p>EDNS is administered by the facility operator &mdash; in the example above, MIT manages the <code>mit.energy</code> EDNS zone. The root EDNS zone (<code>.energy</code>) is administered by the EIRA (Energy Internet Registry Authority) &mdash; the governance body proposed in Section&nbsp;9.</p>
+<p><strong>EDNS and mobile nodes.</strong> For nodes that move between zones &mdash; a mobile medical device that travels between hospital floors, or a wearable that moves through a building &mdash; EDNS must provide low&#8209;latency address update capability. The TTL on EDNS records for mobile nodes should be short (seconds rather than hours) and the authoritative EDNS server should update records when node position crosses zone boundaries. This is analogous to mobile IP, where a mobile device&#8217;s home agent maintains a current location binding.</p>
+
+<h2><span class="section-num">5</span> Inter&#8209;Mesh Federation and Energy Peering</h2>
+
+<h3>5.1 Energy Autonomous Systems</h3>
+<p>An Energy Autonomous System (EAS) is an independently administered collection of energy routing nodes under common operational control. A university campus, a hospital complex, a smart factory, or a city block could each constitute an EAS. The EAS is the fundamental unit of Energy Internet governance: within an EAS, the operator chooses its own routing protocols and node management practices. Between EAS networks, routing is governed by EBGP.</p>
+<p>Every EAS has:</p>
+<ul>
+  <li>A globally unique EAS Number assigned by the EIRA</li>
+  <li>One or more gateway nodes that peer with adjacent EAS networks</li>
+  <li>An internal routing domain managed by the operator&#8217;s choice of intra&#8209;EAS protocol (Meridian MMF at small scale; more scalable protocols at large scale)</li>
+  <li>A routing policy that defines which destinations the EAS will accept energy traffic for and which EAS peers it will transit traffic between</li>
+</ul>
+<p>This structure is identical to the Autonomous System model of the data internet, and for the same reason: it allows the Energy Internet to scale without requiring any central entity to know the complete topology.</p>
+
+<h3>5.2 Energy Exchange Points (EXPs)</h3>
+<p>In the data internet, major carriers interconnect at Internet Exchange Points (IXPs) &mdash; physical facilities where routers from multiple Autonomous Systems share a common switching fabric and exchange BGP routing information. This eliminates the need for every AS to establish direct connections to every other AS.</p>
+<p>The Energy Internet requires the same infrastructure: Energy Exchange Points (EXPs). An EXP is a physical location &mdash; initially, a wired power connection point &mdash; where multiple EAS gateway nodes are co&#8209;located and can peer directly. At the EXP:</p>
+<ul>
+  <li>Gateway nodes from multiple EAS networks are physically co&#8209;located</li>
+  <li>EAS operators establish EBGP peering sessions with peer operators</li>
+  <li>Energy traffic that crosses AS boundaries is handed off between gateway nodes</li>
+  <li>The EXP maintains a public peering database listing which EAS operators are present and what energy delivery capacity they offer</li>
+</ul>
+<p>As energy routing technology matures and efficiency at longer ranges improves, direct wireless inter&#8209;mesh connections become viable. The EXP model accommodates this evolution: a wired EXP is an ELL implementation, just as a copper IXP and a fiber IXP are both valid data internet IXP implementations. The protocol does not change.</p>
+
+<h3>5.3 Energy Border Gateway Protocol (EBGP)</h3>
+<p>EBGP is the routing protocol that exchanges reachability information between EAS networks. It is a path&#8209;vector protocol &mdash; each EBGP update carries not just the destination and cost, but the complete sequence of EAS numbers that the path traverses. This allows receiving EAS operators to detect and avoid routing loops, apply routing policy based on which operators are in the path, and select paths based on operator relationships as well as technical metrics.</p>
+<pre>EBGP UPDATE message:
+  origin_EAS          : 24 bits   (advertising EAS number)
+  destination_prefix  : 128 bits  (EIP address prefix being announced)
+  AS_path             : variable  (sequence of EAS numbers traversed)
+  P_available_mW      : 16 bits   (available delivery power at destination zone)
+  efficiency_estimate : 8 bits    (estimated end-to-end delivery efficiency %)
+  latency_ms          : 16 bits   (estimated burst delivery latency)
+  safety_certified    : 1 bit     (whether path meets BSL requirements end-to-end)
+  guardian_certified  : 1 bit     (whether path is Guardian Security certified)
+  next_hop_gateway    : 128 bits  (EIP address of next-hop gateway node)</pre>
+<p>The inclusion of <code>safety_certified</code> and <code>guardian_certified</code> flags in EBGP updates is a significant departure from data internet BGP, where security and safety properties are not advertised at the routing layer. In the Energy Internet, safety certification is a routing property &mdash; a consumer device requesting CRITICAL priority delivery (a medical device, for example) should only receive energy over paths that are BSL&#8209;certified end&#8209;to&#8209;end. EBGP carries this information so that ENL routing decisions can enforce it automatically.</p>
+<p><strong>EBGP route selection.</strong> When an ENL router has multiple EBGP routes to the same destination, it selects the preferred route using an ordered set of criteria:</p>
+<ol>
+  <li>Highest local preference (operator&#8209;configured policy)</li>
+  <li>Shortest AS path (fewest inter&#8209;AS hops)</li>
+  <li>Highest P<sub>available</sub> (most delivery capacity)</li>
+  <li>Highest efficiency_estimate (least lossy path)</li>
+  <li>Lowest latency_ms (fastest delivery)</li>
+  <li>Tie&#8209;break: lowest next&#8209;hop gateway EIP address (deterministic)</li>
+</ol>
+<p>Criteria&nbsp;3 and&nbsp;4 are energy&#8209;specific additions. In the data internet, BGP does not consider bandwidth or loss rate at the routing layer. In the Energy Internet, delivery capacity and efficiency are routing&#8209;layer concerns because they directly affect whether ETCP can satisfy the session&#8217;s P<sub>min</sub> requirement.</p>
+
+<h3>5.4 Energy Peering Agreements</h3>
+<p>EAS operators establish peering agreements governing the terms under which they exchange energy traffic. Three peering models exist, directly analogous to data internet peering models:</p>
+<p><strong>Settlement&#8209;free peering.</strong> Two EAS operators of comparable size exchange energy traffic at no charge, agreeing that the traffic flows are roughly balanced over time. Common between adjacent campus meshes or neighboring building systems.</p>
+<p><strong>Transit peering.</strong> A smaller EAS pays a larger EAS to route its traffic to destinations outside their shared zone. The larger EAS provides Energy Internet transit &mdash; access to the wider Energy Internet through its gateway connections.</p>
+<p><strong>Energy credit settlement.</strong> An accounting system for energy traffic that crosses AS boundaries. Energy credits &mdash; denominated in milliwatt&#8209;hours &mdash; are transferred between EAS operators based on measured delivery volumes. The EBF confirmation record provides the audit trail for settlement: every delivered burst is documented with source, destination, power, and timestamp.</p>
+
+<h2><span class="section-num">6</span> Quality of Service for Power Delivery</h2>
+
+<h3>6.1 Why QoS Matters in the Energy Internet</h3>
+<p>In the data internet, QoS differentiates time&#8209;sensitive traffic (voice, video) from best&#8209;effort traffic (file downloads, email). In the Energy Internet, QoS differentiates power&#8209;critical loads from background loads. A cardiac monitor that loses power is a life&#8209;safety event. A background temperature sensor that misses a charging cycle recovers on the next cycle. Power QoS allocates available energy delivery capacity to the highest&#8209;priority loads first, ensuring that critical devices receive P<sub>min</sub> even when the mesh is operating under capacity constraints.</p>
+<p>Energy QoS has an additional dimension absent from data QoS: not just priority, but also delivery guarantee strength. A background sensor can tolerate high &sigma;&sup2; (high variance in received power). A precision actuator cannot. QoS must specify both priority class and the &sigma;&sup2; threshold the session must maintain.</p>
+
+<h3>6.2 QoS Priority Classes</h3>
+<p>The Energy Internet defines four QoS priority classes:</p>
+<p><strong>CRITICAL.</strong> Life&#8209;safety or mission&#8209;critical devices. Examples: implantable medical devices, emergency communications nodes, hospital monitoring equipment, critical infrastructure sensors. CRITICAL sessions receive absolute priority over all other traffic. &sigma;&sup2;<sub>max</sub> is 5% (tightest delivery guarantee).</p>
+<p><strong>HIGH.</strong> Important operational devices. Examples: industrial process monitors, security systems, building management sensors. HIGH sessions receive priority over NORMAL and BACKGROUND but may be preempted by CRITICAL sessions. &sigma;&sup2;<sub>max</sub> is 10%.</p>
+<p><strong>NORMAL.</strong> Standard IoT devices. Examples: occupancy sensors, environmental monitors, asset trackers. NORMAL sessions receive best&#8209;effort service with &sigma;&sup2;<sub>max</sub> of 15%.</p>
+<p><strong>BACKGROUND.</strong> Non&#8209;time&#8209;sensitive devices. Examples: data loggers, passive sensors, occasional&#8209;reporting devices. BACKGROUND sessions use only surplus mesh capacity. &sigma;&sup2;<sub>max</sub> is 20%. No delivery latency guarantee.</p>
+
+<h3>6.3 Energy as a Service (EaaS) Model</h3>
+<p>Energy as a Service extends the QoS framework to a complete managed energy delivery model:</p>
+<pre>EaaS Profile:
+  device_EIP          : device's energy address
+  P_min_mW            : minimum continuous power requirement
+  P_preferred_mW      : preferred operating power
+  duty_cycle          : fraction of time at P_preferred (0.0&ndash;1.0)
+  priority_class      : CRITICAL / HIGH / NORMAL / BACKGROUND
+  sigma_sq_max        : maximum acceptable delivery variance
+  max_burst_latency   : maximum acceptable time between bursts (ms)
+  billing_account     : energy credit account</pre>
+<p><strong>EaaS negotiates delivery.</strong> The EaaS layer establishes ETCP sessions with available source nodes, negotiates EBGP paths that satisfy the profile requirements, and manages routing failover transparently. The device receives power and does not manage its own energy routing.</p>
+<p><strong>EaaS monitors and adapts.</strong> If the enrolled device&#8217;s power consumption pattern changes &mdash; it enters high&#8209;activity mode, requiring more power &mdash; EaaS detects the change through the EBF confirmation records and renegotiates the ETCP session parameters. This is the energy analog of adaptive bitrate streaming in video delivery.</p>
+
+<h3>6.4 Emergency Priority Override</h3>
+<p>The Energy Internet must handle emergency situations in which normal priority scheduling is insufficient. An EMP event, a natural disaster, or a grid outage creates a condition where available energy routing capacity suddenly drops while CRITICAL demand surges.</p>
+<p>The Emergency Priority Override (EPO) mechanism allows designated emergency management authorities to issue a network&#8209;wide priority reset: all BACKGROUND and NORMAL sessions are suspended, all HIGH sessions are rate&#8209;limited, and all available mesh capacity is reserved for CRITICAL sessions. EPO is authenticated by the Guardian Security layer using emergency management authority credentials.</p>
+<p>EPO is not a product feature &mdash; it is a protocol requirement for any Energy Internet deployment that serves life&#8209;safety applications.</p>

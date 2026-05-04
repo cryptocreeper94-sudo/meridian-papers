@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Routed World — Meridian and the Architecture of Deterministic Physical Infrastructure by Jason Andrews, DarkWave Studios LLC">
+<meta name="author" content="Jason Andrews">
+<title>The Routed World &mdash; Meridian and the Architecture of Deterministic Physical Infrastructure</title>
+<style>
+  /* === UNIVERSAL BOOK CSS — Cross-platform: TrustBook, Strata, Zenodo, standalone === */
+  @page { size: letter; margin: 1in; @bottom-center { content: counter(page); font-size: 10pt; color: #555; } }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Times New Roman', 'Georgia', 'Cambria', 'Liberation Serif', serif;
+    font-size: clamp(10pt, 2.5vw, 11.5pt);
+    line-height: 1.6;
+    color: #111;
+    max-width: 48em;
+    margin: 0 auto;
+    padding: 1em;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* --- Dark mode --- */
+  @media (prefers-color-scheme: dark) {
+    body { background: #1a1a1a; color: #ddd; }
+    h1, h2, h3, h4 { color: #eee; }
+    th { background: #2a2a2a; color: #ddd; }
+    td, th { border-color: #444; }
+    code, pre { background: #222; border-color: #444; color: #ccc; }
+    blockquote { border-left-color: #555; color: #bbb; }
+    a { color: #6cb4ee; }
+    .claim-box, .invariant-box { background: #222; border-color: #555; }
+    .footnote { border-top-color: #444; color: #999; }
+    .part-header { background: #222; border-color: #444; }
+  }
+
+  /* --- Print --- */
+  @media print {
+    body { font-size: 11pt; max-width: none; padding: 0; color: #000; background: #fff; }
+    .page-break { display: block; page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    h2, h3 { page-break-after: avoid; }
+    table, pre, .claim-box, .invariant-box { page-break-inside: avoid; }
+    p { orphans: 3; widows: 3; }
+    a { color: #000; text-decoration: none; }
+    .title-page { min-height: auto; padding-top: 2in; page-break-after: always; }
+  }
+
+  /* --- Headings --- */
+  h1 { font-size: 1.6em; font-weight: 700; line-height: 1.3; margin-bottom: 0.3em; }
+  h2 { font-size: 1.3em; font-weight: 700; margin: 1.5em 0 0.4em; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  h3 { font-size: 1.1em; font-weight: 700; margin: 1.2em 0 0.3em; }
+  h4 { font-size: 1em; font-weight: 700; margin: 0.8em 0 0.2em; }
+
+  /* --- Text --- */
+  p { margin-bottom: 0.7em; text-align: justify; hyphens: none; -webkit-hyphens: none; }
+  a { color: #1a5276; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* --- Title page --- */
+  .title-page { text-align: center; padding: 1em 0 2em; }
+  .title-page h1 { font-size: 1.8em; margin-bottom: 0.2em; }
+  .title-page .subtitle { font-size: 1.15em; font-style: italic; color: #444; margin-bottom: 1.5em; }
+  .title-page .authors { font-size: 1.15em; margin-bottom: 0.2em; }
+  .title-page .affiliation { font-size: 0.95em; color: #555; font-style: italic; margin-bottom: 1em; }
+
+  /* --- Part headers --- */
+  .part-header { text-align: center; padding: 2em 1em; margin: 2em 0; background: #f8f8f8; border: 1px solid #ddd; border-radius: 4px; }
+  .part-header h2 { border: none; font-size: 1.4em; margin: 0 0 0.3em; }
+  .part-header .part-subtitle { font-style: italic; color: #555; font-size: 1.05em; }
+
+  /* --- Chapter headings --- */
+  .chapter-title { font-size: 1.5em; text-align: center; margin: 1.5em 0 0.5em; border: none; }
+  .chapter-opening { font-style: italic; margin: 0 1em 1.5em; padding: 0.8em; border-left: 3px solid #bbb; color: #444; font-size: 0.95em; }
+
+  /* --- Tables (responsive) --- */
+  .table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0.5em 0 1em; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9em; min-width: 20em; }
+  th, td { border: 1px solid #aaa; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #f0f0f0; font-weight: 700; }
+
+  /* --- Code --- */
+  code { font-family: 'Courier New', 'Courier', monospace; font-size: 0.88em; background: #f5f5f5; padding: 1px 4px; border-radius: 2px; }
+  pre { font-family: 'Courier New', 'Courier', monospace; font-size: 0.85em; background: #f7f7f7; border: 1px solid #ddd; padding: 10px 14px; margin: 0.5em 0 1em; overflow-x: auto; line-height: 1.4; border-radius: 3px; white-space: pre; }
+
+  /* --- Lists --- */
+  ul, ol { margin: 0.3em 0 0.7em 1.5em; }
+  li { margin-bottom: 3px; }
+
+  /* --- Blockquote --- */
+  blockquote { border-left: 3px solid #bbb; margin: 0.5em 0 0.5em 0.5em; padding: 4px 12px; color: #333; font-style: italic; font-size: 0.95em; }
+
+  /* --- Boxes --- */
+  .claim-box { border: 1px solid #999; background: #fafafa; padding: 10px 14px; margin: 0.5em 0; border-radius: 3px; }
+  .invariant-box { border-left: 3px solid #c00; background: #fef8f8; padding: 8px 14px; margin: 0.5em 0; border-radius: 0 3px 3px 0; }
+
+  /* --- Glossary --- */
+  .glossary-term { font-weight: 700; }
+  .glossary-def { margin-left: 1.5em; margin-bottom: 0.5em; }
+
+  /* --- Footer --- */
+  .footnote { font-size: 0.85em; color: #555; margin-top: 2em; border-top: 1px solid #ccc; padding-top: 8px; }
+
+  /* --- Utility --- */
+  .page-break { display: none; }
+  .section-num { color: #555; margin-right: 6px; }
+  .toc { margin: 1em 0; }
+  .toc ul { list-style: none; margin-left: 0; }
+  .toc li { margin-bottom: 4px; }
+  .toc .toc-part { font-weight: 700; margin-top: 0.8em; }
+  .dedication { text-align: center; font-style: italic; padding: 2em 1em; margin: 1em 0; }
+  .epigraph { text-align: center; font-style: italic; color: #555; padding: 1em; margin: 1em 2em; }
+</style>
+</head>
+<body>
+
+<!-- TITLE PAGE -->
+<div class="title-page">
+  <h1>THE ROUTED WORLD</h1>
+  <div class="subtitle">Meridian and the Architecture of Deterministic Physical Infrastructure</div>
+  <div class="authors">Jason Andrews</div>
+  <div class="affiliation">DarkWave Studios LLC<br>Nashville, Tennessee</div>
+  <p style="font-size:0.9em; margin-top:1em;">First Edition &mdash; 2026</p>
+  <p style="font-size:0.85em; color:#666; margin-top:0.5em;">
+    ORCID: <a href="https://orcid.org/0009-0007-5214-649X">0009&#8209;0007&#8209;5214&#8209;649X</a><br>
+    Contact: team@dwsc.io &middot; <a href="https://lume-lang.org">lume-lang.org</a>
+  </p>
+  <p style="font-size:0.85em; color:#c00; font-weight:bold; margin-top:1em;">Patent Pending &mdash; Systems and Methods for Deterministic Multi&#8209;Layer Wireless Energy Routing<br>Using Ambient Harvesting, Mesh Coordination, and Directional Transmission</p>
+  <p style="font-size:0.8em; color:#666; margin-top:1em; border:1px solid #ccc; display:inline-block; padding:6px 16px; border-radius:3px;">
+    This manuscript incorporates material from eight technical papers authored under the Canon&sup2; series.<br>
+    All technical claims reflect the current state of the Meridian architecture specification.<br>
+    No experimental validation data currently exists. Phase&nbsp;1 experimental work is the immediate next step.
+  </p>
+  <p style="font-size:0.8em; color:#888; margin-top:0.8em;">&copy; 2026 DarkWave Studios LLC. All rights reserved.</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- DEDICATION -->
+<div class="dedication">
+  <p>For everyone who looked at a wall full of charging cables<br>and thought: <em>there has to be a better way.</em></p>
+  <p style="margin-top:1em;">There is.</p>
+</div>
+
+<!-- EPIGRAPH -->
+<div class="epigraph">
+  <p>&ldquo;The internet did not begin as a global network. It began as a protocol.&rdquo;</p>
+  <p style="margin-top:0.5em;">&mdash; from Chapter Three</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- TABLE OF CONTENTS -->
+<nav class="toc">
+  <h2 style="text-align:center; border:none;">Table of Contents</h2>
+  <ul>
+    <li>Preface &mdash; Why This Book Exists</li>
+    <li>Introduction &mdash; The World We Are Building Toward</li>
+    <li class="toc-part">Part One: The Machine &mdash; How Meridian Works</li>
+    <li>&emsp;Chapter One &mdash; The Four&#8209;Layer Architecture</li>
+    <li>&emsp;Chapter Two &mdash; Deploying in the Real World</li>
+    <li class="toc-part">Part Two: The Organism &mdash; What Meridian Is</li>
+    <li>&emsp;Chapter Three &mdash; Meridian as Living System</li>
+    <li class="toc-part">Part Three: The Network &mdash; Where Meridian Leads</li>
+    <li>&emsp;Chapter Four &mdash; The Energy Internet</li>
+    <li>&emsp;Chapter Five &mdash; When Power and Data Share the Same Fabric</li>
+    <li class="toc-part">Part Four: The Defense &mdash; How Meridian Is Protected</li>
+    <li>&emsp;Chapter Six &mdash; Guardian Security</li>
+    <li class="toc-part">Part Five: The Theory &mdash; What Meridian Belongs To</li>
+    <li>&emsp;Chapter Seven &mdash; Deterministic Infrastructure: A General Theory</li>
+    <li class="toc-part">Part Six: The Vision &mdash; Where This All Leads</li>
+    <li>&emsp;Chapter Eight &mdash; Beyond the Grid</li>
+    <li>Epilogue &mdash; What Comes Next</li>
+    <li>Glossary &mdash; Key Terms and Concepts</li>
+    <li>Consolidated References</li>
+    <li>About the Author</li>
+  </ul>
+</nav>
+
+<div class="page-break"></div>
+
+<!-- PREFACE -->
+<h2 style="text-align:center; border:none;">PREFACE</h2>
+<h3 style="text-align:center;">Why This Book Exists</h3>
+
+<p>I did not set out to write a book about wireless energy routing.</p>
+
+<p>I set out to solve a problem I could not stop thinking about. The problem is simple to state and turns out to be extraordinarily hard to solve: why, in 2026, does every device I own still need a cable or a battery?</p>
+
+<p>This is not a technology problem in the sense that we lack the underlying physics. Radio waves carry energy. This has been known since Hertz, demonstrated at scale by Tesla, used by every wireless charging pad on every nightstand in the world. The physics is not the obstacle.</p>
+
+<p>The obstacle is that nobody has thought about wireless energy as a network problem.</p>
+
+<p>When you connect a device to Wi&#8209;Fi, you are not just sending it radio waves. You are routing a specific packet from a specific source to a specific destination along a path that has been computed, validated, and governed. The packet knows where it is going. The network knows where the device is. Identity is verified. Delivery is confirmed. If the packet doesn&rsquo;t arrive, the system notices and retransmits. None of this happens by accident. It happens because someone &mdash; many someones, over many decades &mdash; thought carefully about what a packet routing architecture needs to be correct, and built it.</p>
+
+<p>Nobody has applied that thinking to energy. Until now.</p>
+
+<p>Meridian is a routing architecture for energy. It treats a watt the same way the internet treats a bit: as an addressed payload with a source, a destination, a path, a delivery confirmation, and a quality&#8209;of&#8209;service guarantee. It defines node addresses for power devices, routing tables for energy flows, quality&#8209;of&#8209;service classes for critical versus background delivery, and a self&#8209;healing control runtime that keeps the mesh operating without human supervision.</p>
+
+<p>This book is the complete account of that architecture &mdash; from the hardware specification to the biological theory to the building deployment guide to the formal security proof. It is written for engineers, architects, product designers, and anyone who has thought seriously about what wireless infrastructure should look like in a world with a trillion autonomous devices and no human operator available to replace their batteries.</p>
+
+<p>The eight technical papers that form the chapters of this book were written sequentially over the course of an intense research period at DarkWave Studios LLC. Each paper answered a different question about the same system. The first asked: what is this architecture? The second asked: what kind of thing is this architecture? The third asked: where does this architecture lead? And so on, through security, deployment, a general theory of Deterministic Infrastructure, and finally the question the whole series builds toward: where does the energy come from, and what happens to the physical grid when you can route power through the air all the way from the reactor to the device?</p>
+
+<p>Read together, these eight papers tell a complete story: from the engineering specification of a specific system to the elimination of physical transmission infrastructure entirely. That is what this book is &mdash; the complete story, assembled in the order that makes the most sense to read it, with the connecting tissue that turns eight technical papers into a single coherent argument.</p>
+
+<p>The argument is this: the infrastructure paradigms that govern the physical world &mdash; the electrical grid, the internet, the supply chain, the transportation network &mdash; were designed for a world of human operators, central coordination, and wired physical plants. They are not adequate for the world that is coming: a world of trillions of autonomous devices, distributed physical operation, adversarial environments, and millisecond decision timescales that cannot wait for human intervention.</p>
+
+<p>Deterministic Infrastructure &mdash; the class of autonomous physical systems defined in this book &mdash; is the design paradigm for that world. Meridian is its first fully specified instance. And the Lume ecosystem that underlies it is the first complete framework for building it.</p>
+
+<p>I have tried to be honest throughout. No experimental data exists for the Meridian architecture. Everything in this book is theoretical and architectural. The formal claims &mdash; the safety proof, the coverage proof, the convergence argument &mdash; are architectural arguments, not empirical results. Phase&nbsp;1 experimental work is the immediate next step, and none of the ideas in this book should be considered validated until that work is done and the results are honestly reported.</p>
+
+<p>What I am confident in is the architecture. The design is right. The physics is sound. The protocol stack is coherent. The safety model is defensible. And the general theory &mdash; that the world needs Deterministic Infrastructure and that Meridian is the first instance of it &mdash; is an argument I am prepared to defend.</p>
+
+<p>This book is that argument, made as carefully and honestly as I know how to make it.</p>
+
+<p style="text-align:right; margin-top:1.5em;"><em>Jason Andrews<br>Nashville, Tennessee, 2026</em></p>
+
+<div class="page-break"></div>
+
+<!-- INTRODUCTION -->
+<h2 style="text-align:center; border:none;">INTRODUCTION</h2>
+<h3 style="text-align:center;">The World We Are Building Toward</h3>
+
+<p>Imagine a hospital where no device ever needs its battery replaced.</p>
+
+<p>The infusion pump at the patient&rsquo;s bedside receives its operating power wirelessly, through the same air that carries the nurse call button&rsquo;s signal. The pulse oximeter on the patient&rsquo;s finger &mdash; the one that has to be physically removed and recharged every eight hours &mdash; charges continuously while it is being worn. The environmental sensors that monitor air quality, temperature, and pressure throughout the ward have no batteries at all. They draw power from the wireless infrastructure the same way a lamp draws power from the wiring in the wall &mdash; except there is no wiring.</p>
+
+<p>The devices know where they are. They know who they are. The infrastructure knows what they need and routes it to them precisely, without waste, without interference with each other, and without any human operator managing the delivery. When the infusion pump moves from one room to another, the infrastructure notices, updates its routing table, and continues delivering power to the new location within one control cycle &mdash; 13.7&nbsp;milliseconds.</p>
+
+<p>This is not science fiction. It is the engineering specification described in the chapters that follow.</p>
+
+<p>Now imagine a warehouse where no forklift ever interrupts its work to go to a charging station.</p>
+
+<p>The forklifts draw supplemental power from the wireless mesh as they operate, through receivers embedded in their chassis. The mesh knows the state of each forklift&rsquo;s battery, routes energy to the most depleted units preferentially, and ensures that no forklift drops below its minimum operating charge during a shift. The hundreds of inventory sensors throughout the warehouse &mdash; tracking temperature, humidity, location, and equipment health &mdash; are all self&#8209;sustaining: they power themselves from the same mesh that keeps the forklifts running, reporting their data continuously through the same infrastructure that delivers their power.</p>
+
+<p>Again: not science fiction. Architecture.</p>
+
+<p>Now imagine a building where the same wireless fabric that powers these devices also carries all of their data &mdash; sensor readings, control commands, firmware updates, audit logs &mdash; under the same unified addressing system, the same routing protocol, and the same security framework. One installation provides both the power grid and the communications network for every autonomous device in the building.</p>
+
+<p>This is the Unified Energy&#8209;Data Mesh. It is Chapter Five of this book.</p>
+
+<p>These are not futuristic scenarios. They are the natural consequence of a single architectural decision: to treat energy delivery as a network routing problem instead of a transmission problem.</p>
+
+<h3>What Makes This Different</h3>
+
+<p>There are other approaches to wireless power delivery. Qi charging pads are everywhere. Resonant inductive coupling can charge a phone at distances of a few centimeters to a foot. Several companies are working on room&#8209;scale wireless power using RF beams. This is not new territory.</p>
+
+<p>What is new is the network architecture.</p>
+
+<p>Every existing wireless power system thinks in terms of <em>transmission</em> &mdash; a source sends energy to a receiver. The source does not know who the receiver is in any meaningful sense. It does not route. It does not prioritize. It does not self&#8209;heal. If the receiver moves, the system either tracks it mechanically or loses it. If the source fails, there is no alternative path. If a hostile device positions itself to intercept the beam, the system has no way to detect this and reroute.</p>
+
+<p>Meridian thinks in terms of <em>routing</em> &mdash; a source routes energy to an addressed destination through a path that has been computed from the current network topology, validated against a set of safety invariants, authenticated against the destination&rsquo;s cryptographic identity, and confirmed by a delivery receipt from the destination. If the receiver moves, the routing table updates automatically. If a relay node fails, the self&#8209;healing control runtime finds an alternative path within one control cycle. If a hostile device attempts to intercept, the security framework detects the attempt and quarantines the offending node.</p>
+
+<p>The difference between transmission and routing is the difference between a broadcast tower and the internet. Broadcast towers send the same signal to everyone within range and cannot tell who received it. The internet routes specific packets to specific addresses and confirms delivery. Meridian applies internet&#8209;style routing to energy delivery.</p>
+
+<p><strong>This is the central idea of the book. Everything else follows from it.</strong></p>
+
+<h3>How to Read This Book</h3>
+
+<p><strong>Part One</strong> (Chapters One and Two) covers the engineering: what the four&#8209;layer Meridian architecture is, how it works, and how it gets installed in real buildings.</p>
+
+<p><strong>Part Two</strong> (Chapter Three) covers the theoretical identity of the architecture: the argument that Meridian is not merely an energy routing network but a synthetic organism.</p>
+
+<p><strong>Part Three</strong> (Chapters Four and Five) covers the scaling vision: the Energy Internet and the Unified Energy&#8209;Data Mesh.</p>
+
+<p><strong>Part Four</strong> (Chapter Six) covers security: the first formal threat model and defense framework for wireless energy routing.</p>
+
+<p><strong>Part Five</strong> (Chapter Seven) covers the general theory: the argument that Meridian is one instance of a broader class of systems &mdash; Deterministic Infrastructure.</p>
+
+<p><strong>Part Six</strong> (Chapter Eight) closes the full stack &mdash; from fusion generation to device delivery with no physical transmission infrastructure at any layer.</p>
+
+<h3>A Note on the State of This Work</h3>
+
+<p>Every technical claim in this book rests on architectural analysis. No experimental data currently validates the Meridian architecture. This is stated explicitly in every chapter, and it bears repeating in the introduction.</p>
+
+<p>The architecture is correct in the sense that it is internally coherent, physically grounded, and formally specified. The formal proofs in Chapters Six and Seven are genuine proofs &mdash; not empirical demonstrations, but logical arguments that the specified architecture, correctly implemented, satisfies the claimed properties.</p>
+
+<p>But a proof is not a measurement. A formally correct architecture can encounter unexpected physical phenomena, implementation errors, regulatory constraints, or deployment realities that the formal specification does not capture. The purpose of Phase&nbsp;1 experimental work is precisely to discover these gaps before deployment at scale.</p>
+
+<p>This book should be read as the theoretical foundation and architectural specification for Meridian &mdash; the design before the data. When Phase&nbsp;1 data exists, some claims in this book will be confirmed, some will be refined, and some may need to be reconsidered. That is the appropriate relationship between theory and experiment.</p>
+
+<p><strong>With that caveat clearly stated, let us begin.</strong></p>

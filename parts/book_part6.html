@@ -1,0 +1,151 @@
+<!-- CHAPTER FIVE -->
+<div class="page-break"></div>
+<h2 class="chapter-title">Chapter Five<br>When Power and Data Share the Same Fabric</h2>
+
+<div class="chapter-opening">
+<p>Every autonomous device in the physical world needs two things: power and communication.</p>
+<p>The history of wireless technology treats these as separate problems. The separation is not fundamental. It is historical. The Unified Energy&#8209;Data Mesh is the formal recognition that the Meridian mesh already routes data &mdash; and the extension to carry both resources under one protocol.</p>
+</div>
+
+<h3>Abstract</h3>
+<p>The Meridian mesh already carries two kinds of traffic: RF energy bursts and ~11&nbsp;KB/s of structured, addressed control&#8209;plane data per node. This paper formalizes the co&#8209;routing architecture of the <strong>Unified Energy&#8209;Data Mesh (UEDM)</strong> &mdash; the simultaneous routing of energy and data through the same physical node infrastructure under a shared addressing and governance framework.</p>
+
+<p>I define the co&#8209;routing arbitration rules, the UEDM addressing scheme (unified 128&#8209;bit namespace), and the <strong>self&#8209;sustaining device (SSD)</strong> model &mdash; autonomous sensors requiring no battery and no separate communication radio.</p>
+
+<h3><span class="section-num">3.</span> The Meridian Mesh as Existing Dual&#8209;Traffic Fabric</h3>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Traffic Type</th><th>Rate</th><th>Size</th><th>Bytes/sec</th></tr>
+  <tr><td>LUME_X_TELEMETRY</td><td>73/sec</td><td>128 B</td><td>9,344</td></tr>
+  <tr><td>EBF_HEADER + CONFIRMATION</td><td>~10/sec</td><td>96 B</td><td>960</td></tr>
+  <tr><td>NODE_ANNOUNCE</td><td>0.1/sec</td><td>192 B</td><td>19</td></tr>
+  <tr><td>LINK_STATE_UPDATE</td><td>~1/sec</td><td>96 B</td><td>96</td></tr>
+  <tr><td>GUARDIAN_AUTH</td><td>~1/sec</td><td>512 B</td><td>512</td></tr>
+  <tr><td>Other</td><td>&mdash;</td><td>&mdash;</td><td>~200</td></tr>
+  <tr><td colspan="3"><strong>Total</strong></td><td><strong>~11.1 KB/s</strong></td></tr>
+</table>
+</div>
+<p>This throughput &mdash; approximately equivalent to a 2G cellular connection &mdash; is adequate for sensor telemetry, status reporting, and low&#8209;rate command&#8209;and&#8209;control.</p>
+
+<h3><span class="section-num">4.</span> UEDM Architecture</h3>
+
+<div class="claim-box">
+<p><strong>Architectural Principle:</strong> A joule and a bit are both payloads; the difference is their physical carrier, not their addressing, routing, or governance.</p>
+</div>
+
+<pre>
+UEDM Frame Header (unified for energy and data):
+  src_node_id     : 128 bits (UEDM EIP address)
+  dst_node_id     : 128 bits (UEDM EIP address)
+  resource_type   : 4 bits   (ENERGY=0x1, DATA=0x2, MIXED=0x3, CONTROL=0x4)
+  priority_class  : 4 bits   (CRITICAL / HIGH / NORMAL / BACKGROUND)
+  seq_num         : 32 bits
+  path_id         : 32 bits
+  timing_window   : 128 bits
+  safety_flags    : 16 bits  (BSL status, ENERGY type only)
+  payload_length  : 16 bits
+  checksum        : 32 bits
+  [payload]       : variable
+</pre>
+
+<h4>UEDM Protocol Stack</h4>
+<pre>
+┌──────────────────────────────────────────────────────┐
+│  UAL — Unified Application Layer                      │
+│  (Energy: EaaS profiles; Data: application services)  │
+├──────────────────────────────────────────────────────┤
+│  UTL — Unified Transport Layer                        │
+│  (ETCP for energy; DTCP for data)                     │
+├──────────────────────────────────────────────────────┤
+│  UNL — Unified Network Layer                          │
+│  (EIP/EBGP routing; shared 128-bit address space)     │
+├──────────────────────────────────────────────────────┤
+│  ULL — Unified Link Layer                             │
+│  (UEDM frame; co-routing arbitration; TDMA)           │
+├──────────────────────────────────────────────────────┤
+│  UPL — Unified Physical Layer                         │
+│  (RF: energy beam for ENERGY; OOK/FSK for DATA)       │
+└──────────────────────────────────────────────────────┘
+</pre>
+
+<h3><span class="section-num">5.</span> Co&#8209;Routing Arbitration</h3>
+
+<h4>Three Capacity Pools</h4>
+<ul>
+  <li><strong>Pool A &mdash; Guaranteed Energy Capacity (GEC):</strong> 60&ndash;90% of total frame capacity. Reserved for CRITICAL and HIGH energy sessions.</li>
+  <li><strong>Pool B &mdash; Guaranteed Control Data Capacity (GCDC):</strong> 5&ndash;10%. Reserved for essential control&#8209;plane data.</li>
+  <li><strong>Pool C &mdash; Flexible Shared Capacity (FSC):</strong> Remainder. Shared between NORMAL/BACKGROUND energy and application data.</li>
+</ul>
+
+<h4>Arbitration Rules</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Rule</th><th>Description</th></tr>
+  <tr><td>AR&#8209;01</td><td>GEC reserved exclusively for CRITICAL + HIGH energy</td></tr>
+  <tr><td>AR&#8209;02</td><td>GCDC reserved for essential control&#8209;plane data</td></tr>
+  <tr><td>AR&#8209;03</td><td>NORMAL energy &gt; all data in FSC</td></tr>
+  <tr><td>AR&#8209;04</td><td>BACKGROUND energy yields to NORMAL data in FSC</td></tr>
+  <tr><td>AR&#8209;05</td><td>CRITICAL data served from GCDC, protected</td></tr>
+  <tr><td>AR&#8209;07</td><td>Mode 2 (SWIPT) used when beam/data paths overlap</td></tr>
+  <tr><td>AR&#8209;08</td><td>Large data payloads fragmented across FSC slots</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">6.</span> UEDM Addressing</h3>
+<pre>
+Service Endpoint:
+  [UEDM Address : 128 bits] + [Service Port : 16 bits] = 144 bits
+
+Reserved Ports:
+  0x0001 : Energy delivery (EaaS)
+  0x0002 : Guardian Security authentication
+  0x0003 : Lume-X telemetry
+  0x0004 : SHDCL recovery messaging
+  0x0005 : EDNS query/response
+  0x0006 : EBGP peering session
+  0x0100–0xFFFF : Application-defined services
+</pre>
+
+<h3><span class="section-num">7.</span> The Self&#8209;Sustaining Device Model</h3>
+
+<p>A self&#8209;sustaining device (SSD) receives all operating power and conducts all data communication through the UEDM. No battery. No separate radio. No external infrastructure dependency beyond mesh coverage.</p>
+
+<pre>
+SSD Operating Budget (10 mW received power):
+  Microcontroller (Cortex-M4 at 4 MHz)    : 1.2 mW
+  Sensor (temperature + humidity, 1 Hz)   : 0.8 mW
+  RF transceiver (receive mode)           : 2.0 mW
+  RF transceiver (transmit mode, 1% duty) : 0.5 mW avg
+  Energy management circuit               : 0.3 mW
+  Margin for supercapacitor charging      : 5.2 mW
+  ─────────────────────────────────────────────────
+  Total                                   : 10.0 mW
+</pre>
+
+<h4>SSD Profile</h4>
+<div class="table-wrap">
+<table>
+  <tr><th>Parameter</th><th>Minimum</th><th>Typical</th><th>High&#8209;Perf</th></tr>
+  <tr><td>Received power</td><td>1 mW</td><td>10 mW</td><td>100 mW</td></tr>
+  <tr><td>Computation</td><td>ULP MCU, 1 MHz</td><td>Cortex&#8209;M4</td><td>Cortex&#8209;M33</td></tr>
+  <tr><td>Sensor duty cycle</td><td>0.1 Hz</td><td>1 Hz</td><td>10 Hz</td></tr>
+  <tr><td>Data rate (uplink)</td><td>100 bps</td><td>2.5 kbps</td><td>25 kbps</td></tr>
+  <tr><td>Supercap capacity</td><td>1 mF</td><td>10 mF</td><td>100 mF</td></tr>
+  <tr><td>Recovery time</td><td>60 s</td><td>10 s</td><td>2 s</td></tr>
+  <tr><td>Organism type</td><td>Type 2</td><td>Type 3</td><td>Type 3+</td></tr>
+</table>
+</div>
+
+<h3><span class="section-num">10.</span> Applications</h3>
+<ul>
+  <li><strong>Smart Building:</strong> Every device &mdash; occupancy sensors, HVAC controls, security cameras &mdash; is an SSD. Installation is physical mounting only; no wiring required.</li>
+  <li><strong>Industrial IoT:</strong> Manufacturing facilities with thousands of sensors powered and connected through one mesh. The manufacturing DPI uses UEDM as its resource routing fabric.</li>
+  <li><strong>Emergency Response:</strong> Portable UEDM anchor nodes create instant infrastructure for emergency responders &mdash; power and communication simultaneously.</li>
+  <li><strong>Agricultural Monitoring:</strong> Dense sensor networks across large areas, solar&#8209;powered anchor nodes on poles, relay chains extending coverage.</li>
+</ul>
+
+<!-- Part Three Closing -->
+<h3>Part Three Closing</h3>
+<p>Chapters Four and Five have traced Meridian from a single building mesh to a global energy internet to a unified infrastructure that routes both energy and data. The protocol stack is complete. The addressing is defined. The self&#8209;sustaining device is characterized.</p>
+<p>What is not yet specified is how this infrastructure <em>defends itself</em>. Part Four specifies the security architecture.</p>

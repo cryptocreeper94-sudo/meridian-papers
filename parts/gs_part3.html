@@ -1,0 +1,178 @@
+<h2><span class="section-num">4</span> The Eleven Threat Categories</h2>
+<p>From the attack surface definition in Section&nbsp;3, I derive eleven threat categories by enumerating the distinct attack objectives and the attack interfaces through which each can be pursued. A threat category is a class of attacks sharing the same objective &mdash; the specific attack technique may vary, but the defense must cover the objective class.</p>
+
+<h3>4.1 T1 &mdash; Localization Spoofing</h3>
+<p><strong>Objective:</strong> Cause the routing system to believe a node is at a false position, resulting in beam misdirection.</p>
+<p><strong>Attack interfaces:</strong> PAI&#8209;2 (localization signal medium), NAI&#8209;2 (EBF position fields).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T1a &mdash; UWB signal forgery:</strong> Transmit false UWB ranging signals that cause the localization system to compute a false position for a target node. Requires UWB transmission capability within localization range.</li>
+  <li><strong>T1b &mdash; Position field injection:</strong> Modify the position field in EBF messages (NAI&#8209;2) to report false position data to the routing system.</li>
+  <li><strong>T1c &mdash; Replay attack:</strong> Capture and replay a legitimate node&#8217;s localization signals from a different physical position, causing the system to compute a false location based on authentic signals.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Beam directed at a biological target at the spoofed position. Physical injury.</p>
+
+<h3>4.2 T2 &mdash; Routing Table Manipulation</h3>
+<p><strong>Objective:</strong> Corrupt the mesh routing table to redirect energy flows through attacker&#8209;controlled nodes or to unintended destinations.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;1 (mesh control plane).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T2a &mdash; False LINK_STATE_UPDATE injection:</strong> Transmit false link&#8209;state updates advertising nonexistent links or false link quality metrics, causing routing algorithms to select attacker&#8209;preferred paths.</li>
+  <li><strong>T2b &mdash; Route withdrawal attack:</strong> Transmit false link&#8209;state updates withdrawing legitimate routes, forcing traffic through attacker&#8209;controlled alternatives.</li>
+  <li><strong>T2c &mdash; Metric manipulation:</strong> Modify link quality metrics to make attacker&#8209;controlled paths appear preferred over legitimate paths.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> All energy traffic routed through attacker&#8209;controlled nodes, enabling interception, denial, or misdirection of all delivered energy.</p>
+
+<h3>4.3 T3 &mdash; Beam Hijacking</h3>
+<p><strong>Objective:</strong> Redirect an authorized beam from its intended target to an attacker&#8209;controlled receiver.</p>
+<p><strong>Attack interfaces:</strong> PAI&#8209;1 (RF medium), NAI&#8209;2 (EBF messages), IAI&#8209;1 (credentials).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T3a &mdash; Relay impersonation:</strong> Compromise a relay node position in a multi&#8209;hop path and redirect the beam at that hop rather than forwarding it.</li>
+  <li><strong>T3b &mdash; BeamCommand injection:</strong> Inject false BeamCommand messages that override the legitimate steering parameters before MTL executes them.</li>
+  <li><strong>T3c &mdash; Path substitution:</strong> Using a compromised routing table (T2), route the beam through an attacker&#8209;controlled relay that performs mid&#8209;path redirection.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> High&#8209;priority device (medical monitor, emergency communication) denied energy while attacker device receives it.</p>
+
+<h3>4.4 T4 &mdash; Denial&#8209;of&#8209;Power Attack</h3>
+<p><strong>Objective:</strong> Starve legitimate devices of energy by exhausting routing capacity, depleting source nodes, or blocking delivery paths.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;1, NAI&#8209;2, PAI&#8209;1.</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T4a &mdash; Request flooding:</strong> Generate high volumes of synthetic energy requests that saturate the mesh&#8217;s routing computation capacity.</li>
+  <li><strong>T4b &mdash; Source depletion:</strong> Cause source nodes to repeatedly transmit energy to false destinations (exploiting T3 or T1), depleting their supercapacitors.</li>
+  <li><strong>T4c &mdash; Path blocking:</strong> Physically obstruct beam paths or use RF jamming to degrade link quality until routing fails to find viable paths.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Simultaneous power loss to all devices in the mesh during an emergency condition.</p>
+
+<h3>4.5 T5 &mdash; Node Impersonation</h3>
+<p><strong>Objective:</strong> Deploy a device that successfully claims a legitimate node&#8217;s identity, receiving its energy allocation and potentially serving as a relay the attacker controls.</p>
+<p><strong>Attack interfaces:</strong> IAI&#8209;1 (credentials), NAI&#8209;1 (NODE_ANNOUNCE).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T5a &mdash; Credential cloning:</strong> Extract a legitimate node&#8217;s cryptographic credentials (via PAI&#8209;3 physical access) and deploy a second device using those credentials.</li>
+  <li><strong>T5b &mdash; Credential replay:</strong> Capture credential exchange messages and replay them from a different device.</li>
+  <li><strong>T5c &mdash; Provisioning interception:</strong> Intercept credentials during the provisioning process (IAI&#8209;3) before they are securely stored on the legitimate device.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Legitimate device denied its energy allocation; attacker device serving as a controllable relay inside the trusted mesh.</p>
+
+<h3>4.6 T6 &mdash; Delivery Confirmation Falsification</h3>
+<p><strong>Objective:</strong> Deceive the routing system about whether energy was successfully delivered, enabling false accounting, route selection corruption, and ETCP session manipulation.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;3 (delivery confirmation channel).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T6a &mdash; False positive confirmation:</strong> Transmit a delivery confirmation claiming successful receipt when no energy was received.</li>
+  <li><strong>T6b &mdash; False negative confirmation:</strong> Transmit a delivery failure message when energy was successfully received. Triggers SHDCL recovery and unnecessary retransmission.</li>
+  <li><strong>T6c &mdash; Power level falsification:</strong> Report a false received power level, causing MFE to misadjust burst power levels.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Systematic false accounting across all deliveries, creating a gap between the routing system&#8217;s model and physical reality.</p>
+
+<h3>4.7 T7 &mdash; Timing Attacks</h3>
+<p><strong>Objective:</strong> Disrupt TDMA scheduling to cause simultaneous transmissions (collision), scheduling gaps (denial), or predictable transmission windows (enabling interception).</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;1, NAI&#8209;2.</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T7a &mdash; TDMA schedule manipulation:</strong> Inject false scheduling information that causes two nodes to transmit simultaneously.</li>
+  <li><strong>T7b &mdash; Clock desynchronization:</strong> Introduce timing errors in network time synchronization, causing scheduling drift.</li>
+  <li><strong>T7c &mdash; Transmission window prediction:</strong> Exploit deterministic TDMA scheduling to predict exactly when a given node will transmit.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Systematic collision of all high&#8209;priority transmissions, effectively implementing a denial&#8209;of&#8209;power attack through timing manipulation.</p>
+
+<h3>4.8 T8 &mdash; Physical Node Compromise</h3>
+<p><strong>Objective:</strong> Gain control of a deployed node through physical access, enabling all attacks from a trusted insider position.</p>
+<p><strong>Attack interfaces:</strong> PAI&#8209;3 (physical node access).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T8a &mdash; Credential extraction:</strong> Extract cryptographic keys from secure storage on a captured node and deploy a cloned device.</li>
+  <li><strong>T8b &mdash; Firmware replacement:</strong> Replace legitimate firmware with attacker&#8209;controlled firmware.</li>
+  <li><strong>T8c &mdash; Hardware backdoor installation:</strong> Modify node hardware to include a covert communication channel.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Full insider access to the mesh with trust&#8209;level credentials, enabling all other attacks with legitimate authentication.</p>
+
+<h3>4.9 T9 &mdash; Energy Credit Fraud (Energy Internet Scale)</h3>
+<p><strong>Objective:</strong> Manipulate the energy credit settlement system to receive energy without paying or to receive payment for energy not delivered.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;2 (EBF confirmation records), IAI&#8209;2 (PKI infrastructure).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T9a &mdash; Confirmation record falsification:</strong> Generate false EBF confirmation records that overstate delivered energy.</li>
+  <li><strong>T9b &mdash; Settlement signature forgery:</strong> Forge the signature on energy credit transfer records.</li>
+  <li><strong>T9c &mdash; Replay of settlement records:</strong> Replay legitimate settlement records from prior periods to claim credits multiple times.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Financial fraud at Energy Internet scale; systematic undercharging that discourages legitimate ESP participation.</p>
+
+<h3>4.10 T10 &mdash; EBGP Route Hijacking (Energy Internet Scale)</h3>
+<p><strong>Objective:</strong> Announce false EBGP routes that redirect energy traffic from its intended EAS to an attacker&#8209;controlled EAS.</p>
+<p><strong>Attack interfaces:</strong> NAI&#8209;4 (inter&#8209;mesh routing).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T10a &mdash; Prefix hijacking:</strong> Announce an EBGP route for an EIP address prefix the attacker does not control.</li>
+  <li><strong>T10b &mdash; AS path manipulation:</strong> Manipulate AS path attributes to make attacker&#8209;controlled routes appear preferred.</li>
+  <li><strong>T10c &mdash; Route withdrawal:</strong> Withdraw legitimate EBGP routes to isolate an EAS from the wider Energy Internet.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> All energy traffic destined for a legitimate EAS redirected to an attacker, enabling large&#8209;scale energy theft or denial.</p>
+
+<h3>4.11 T11 &mdash; Safety System Bypass</h3>
+<p><strong>Objective:</strong> Disable or circumvent the Biological Safety Layer, enabling beam transmission where BSL would normally prevent it.</p>
+<p><strong>Attack interfaces:</strong> PAI&#8209;3 (physical access to BSL sensor hardware), NAI&#8209;2 (safety status flags).</p>
+<p><strong>Attack vectors:</strong></p>
+<ul>
+  <li><strong>T11a &mdash; Sensor spoofing:</strong> Feed false data to the biological presence detection sensors.</li>
+  <li><strong>T11b &mdash; Safety flag manipulation:</strong> Modify the safety_flags field in EBF headers to falsely report all safety conditions met.</li>
+  <li><strong>T11c &mdash; Software gate bypass:</strong> Exploit a vulnerability in the software implementation of the five&#8209;condition MTL gate.</li>
+</ul>
+<p><strong>Worst&#8209;case consequence:</strong> Beam transmission directed at a biological target with no safety mitigation. This is the highest severity threat in the taxonomy.</p>
+
+<h2><span class="section-num">5</span> The Guardian Security Framework</h2>
+<p>Guardian Security (energy&#8209;domain designation: Guardian&#8209;E; commercial product domain: TrustShield.tech) is the security enforcement layer of the Meridian architecture. It operates as a two&#8209;tier system: the innate tier provides immediate, non&#8209;specific response to anomalous conditions; the adaptive tier provides learned, specific response to classified threat patterns.</p>
+
+<h3>5.1 Architecture Overview</h3>
+<div class="diagram-box">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;           Guardian Security Framework                &#9474;
+&#9474;                                                      &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;    &#9474;
+&#9474;  &#9474;          Adaptive Tier (Guardian-E)          &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Threat classifier (T1&#8211;T11 mapping)        &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Learned threat patterns (11 categories)   &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Node quarantine and isolation             &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Certificate chain audit                  &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; ERPKI route origin validation (inter-mesh)&#9474;    &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;    &#9474;
+&#9474;                       &#9474;                              &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;    &#9474;
+&#9474;  &#9474;          Innate Tier (SHDCL)                 &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Immediate anomaly detection (13.7ms)      &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Process recovery without classification   &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Beam hold on unresolved anomaly           &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Escalation to adaptive tier               &#9474;    &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;    &#9474;
+&#9474;                       &#9474;                              &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;    &#9474;
+&#9474;  &#9474;       Physical Safety Layer (BSL)            &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Hardware-enforced beam cutoff             &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Independent of software gate status       &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Biological presence detection             &#9474;    &#9474;
+&#9474;  &#9474;  &#8226; Cannot be bypassed by software attack     &#9474;    &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;    &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</div>
+<p>The three&#8209;tier architecture provides defense in depth. No single tier is a single point of failure. If the adaptive tier fails to classify a threat, the innate tier holds the beam. If the innate tier is compromised, the BSL provides hardware&#8209;level enforcement. If the BSL sensor is spoofed (T11a), the adaptive tier&#8217;s sensor integrity monitoring detects the anomaly. Defense in depth means that an attacker must compromise multiple independent tiers simultaneously to achieve physical harm.</p>
+
+<h3>5.2 Pre&#8209;Transmission Authentication Protocol</h3>
+<p>Before any beam authorization is issued, Guardian Security enforces a four&#8209;step pre&#8209;transmission authentication protocol:</p>
+<p><strong>Step&nbsp;1 &mdash; Node identity verification.</strong> The requesting node presents its Trust Layer PKI credential. Guardian&#8209;E verifies the signature chain from the credential to the Trust Layer root CA. If verification fails: request rejected, anomaly logged, node flagged as UNVERIFIED.</p>
+<p><strong>Step&nbsp;2 &mdash; Capability authorization check.</strong> Guardian&#8209;E verifies that the requesting node&#8217;s capability profile includes the requested operation type, power level, and target zone. If unauthorized: request rejected, anomaly logged.</p>
+<p><strong>Step&nbsp;3 &mdash; Route integrity check.</strong> Guardian&#8209;E verifies that the proposed routing path consists entirely of verified, non&#8209;quarantined nodes, and that the path&#8217;s safety envelope is within bounds. If any relay node is UNVERIFIED or QUARANTINED: path rejected, alternate path computation requested.</p>
+<p><strong>Step&nbsp;4 &mdash; Temporal consistency check.</strong> Guardian&#8209;E verifies that the request&#8217;s timestamp is within the acceptable window (&plusmn;2 TDMA slots), that the requesting node&#8217;s last confirmed transaction matches the routing system&#8217;s record, and that no anomalous request rate is detected. If consistency check fails: request held for review.</p>
+<p>Only after all four steps pass does Guardian&#8209;E issue beam authorization to the Lume&#8209;X control loop, which then validates the five MTL gate conditions before issuing the BeamCommand. The security check (Guardian&#8209;E) and the safety check (MTL gate) are independent &mdash; both must pass.</p>
+
+<h3>5.3 Defenses Against Each Threat Category</h3>
+<p><strong>T1 &mdash; Localization Spoofing:</strong> Guardian&#8209;E enforces multi&#8209;source localization consistency: position reported by UWB must be consistent with position inferred from signal strength, TDMA timing, and mesh topology. A position report inconsistent across these sources is flagged as a potential T1 attack. Threshold: if position variance across sources exceeds r<sub>threshold</sub> (50&nbsp;cm) for three consecutive measurements, the node is QUARANTINED. The BSL exclusion zone provides the ultimate backstop.</p>
+<p><strong>T2 &mdash; Routing Table Manipulation:</strong> All LINK_STATE_UPDATE messages are signed by the originating node. Receiving nodes verify the signature before applying the update. Guardian&#8209;E applies consistency checks: a link quality metric that changes by more than &Delta;q<sub>max</sub> in one cycle without a corresponding physical event is flagged. Route selection is rate&#8209;limited: no node&#8217;s routes can be completely replaced within a single control cycle.</p>
+<p><strong>T3 &mdash; Beam Hijacking:</strong> Guardian&#8209;E tracks expected position of the beam target throughout the session. Relay nodes must confirm receipt and forward within their TDMA window &mdash; a relay that receives but does not forward is detected by the downstream node&#8217;s missing receipt confirmation within T<sub>relay_max</sub>.</p>
+<p><strong>T4 &mdash; Denial&#8209;of&#8209;Power:</strong> Guardian&#8209;E applies per&#8209;node and per&#8209;EAS request rate limits. CRITICAL&#8209;priority sessions receive dedicated capacity reservation that cannot be displaced by NORMAL or BACKGROUND traffic &mdash; even under attack.</p>
+<p><strong>T5 &mdash; Node Impersonation:</strong> Guardian&#8209;E enforces one&#8209;credential&#8209;one&#8209;node: a credential reported as active from two different positions is immediately flagged. Credentials are bound to physical hardware characteristics at provisioning.</p>
+<p><strong>T6 &mdash; Delivery Confirmation Falsification:</strong> Guardian&#8209;E cross&#8209;validates confirmations against the mesh&#8217;s physics model. P<sub>received</sub> higher than P<sub>transmitted</sub> &times; maximum_path_efficiency is flagged. All confirmation messages are signed; unsigned confirmations are rejected.</p>
+<p><strong>T7 &mdash; Timing Attacks:</strong> TDMA schedule assignments are cryptographically sealed. Out&#8209;of&#8209;window transmissions are detected by all nodes that receive them. Clock synchronization is protected by signed time&#8209;sync messages with maximum accepted drift of &plusmn;T<sub>drift</sub>.</p>
+<p><strong>T8 &mdash; Physical Node Compromise:</strong> Credentials are stored in secure elements with anti&#8209;tamper protection. Firmware integrity is verified at boot using a signed firmware hash. A node with modified firmware fails the boot integrity check and does not receive credentials.</p>
+<p><strong>T9 &mdash; Energy Credit Fraud:</strong> All settlement records require dual signatures (delivering + receiving node). Settlement records include EBF sequence numbers &mdash; replay of prior records is detected by duplicate checking. ERPKI validates signing authority.</p>
+<p><strong>T10 &mdash; EBGP Route Hijacking:</strong> ERPKI validates all EBGP route origins. Route announcements without valid attestation are rejected. AS path manipulation is detected by cross&#8209;referencing against known topology.</p>
+<p><strong>T11 &mdash; Safety System Bypass:</strong> BSL is hardware&#8209;enforced and cannot be disabled by software attack. Sensor integrity is monitored by cross&#8209;validating across multiple sensor modalities. The five&#8209;condition MTL gate is implemented in firmware with a hardware watchdog.</p>

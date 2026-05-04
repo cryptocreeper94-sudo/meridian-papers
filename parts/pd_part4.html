@@ -1,0 +1,76 @@
+<h2><span class="section-num">9</span> Frequency Selection and Its Architectural Implications</h2>
+
+<h3>9.1 The Frequency&#8209;Architecture Tradeoff</h3>
+<table>
+  <tr><th>Band</th><th>Floor Slab Attenuation</th><th>Beamwidth (10&nbsp;cm aperture)</th><th>Range</th><th>Regulatory</th></tr>
+  <tr><td>2.4 / 5.8 GHz</td><td>10&ndash;20 dB (partial)</td><td>30&deg;+ (wide)</td><td>10&ndash;30m</td><td>ISM, congested</td></tr>
+  <tr><td>24 GHz</td><td>30&ndash;40 dB (effective)</td><td>~15&deg;</td><td>5&ndash;15m</td><td>Generally licensed</td></tr>
+  <tr><td>60 GHz</td><td>&gt;40 dB (total containment)</td><td>~5&deg; (near laser&#8209;like)</td><td>3&ndash;10m</td><td>Unlicensed (FCC Part&nbsp;15)</td></tr>
+  <tr><td>77&ndash;79 GHz</td><td>Similar to 60 GHz</td><td>Even tighter</td><td>3&ndash;8m</td><td>Automotive radar; regulatory clearance needed</td></tr>
+</table>
+
+<h3>9.2 The Ceiling&#8209;Crawl Case for mmWave</h3>
+<p>At 60&nbsp;GHz, a 10&nbsp;cm phased array produces a beam approximately 25&nbsp;cm wide at 3m distance &mdash; fitting entirely within FLOOR_SAFE with substantial margin. The concrete floor slab completely contains upward scatter. The floor below completely contains downward scatter from ceiling relay hops.</p>
+<p><strong>Recommendation:</strong> 60&nbsp;GHz as primary frequency for intra&#8209;floor ceiling&#8209;plane routing and inter&#8209;floor gateway transfer. 5.8&nbsp;GHz secondary channel for high&#8209;ceiling industrial spaces where 60&nbsp;GHz range is insufficient.</p>
+
+<h2><span class="section-num">10</span> Building Type Scenarios</h2>
+
+<h3>10.1 Commercial Office Tower</h3>
+<p>Repeating open&#8209;plan floors with suspended ceilings, central core with enclosed stairwells, 3.5&ndash;4.0m floor heights. Clean AVM profile. Relay nodes in suspended ceiling grid at 3&ndash;5m spacing (~1 relay per 15&ndash;20&nbsp;m&sup2;). GRNs at stairwell landings. SSD devices fully viable throughout entire floor plate. Primary challenge: source node power connection to building electrical.</p>
+
+<h3>10.2 Hospital</h3>
+<p>Mix of private rooms, open wards, corridors, operating theaters. Multiple ceiling heights (2.5&ndash;4.5m). Relay nodes rated for hospital environments (antimicrobial housing, flush&#8209;ceiling mount). CRITICAL priority class for life&#8209;critical devices. Strongest use case: eliminating battery replacement for patient monitors (infection control benefit). Primary challenge: RF compatibility with existing medical telemetry &mdash; 60&nbsp;GHz has minimal interference with 400&nbsp;MHz / 900&nbsp;MHz / 2.4&nbsp;GHz medical bands.</p>
+
+<h3>10.3 Residential Mid&#8209;Rise</h3>
+<p>Stacked residential units with 2.4&ndash;2.7m ceiling heights. Per&#8209;unit mesh with source node plugged into standard outlet. SSD devices (thermostat, sensors, door lock, voice assistant) receive continuous power. Primary challenge: 2.4m ceiling leaves only 0.2m FLOOR_SAFE margin &mdash; requires precise node mounting and beam angle control. Phase&nbsp;2 deployment target pending experimental validation.</p>
+
+<h3>10.4 Industrial Warehouse</h3>
+<p>Single large open volume, 8&ndash;15m ceiling height. Enormous FLOOR_SAFE zone (6&ndash;13m). Fewest relay nodes needed. Source nodes at roof structure. Primary use: powering dense IoT sensor networks without battery management. Secondary: forklift battery supplementation. Primary challenge: fast&#8209;moving mobile equipment requires supplemental short&#8209;range position sensors for sub&#8209;cycle occupancy tracking.</p>
+
+<h2><span class="section-num">11</span> BIM Integration Pathway</h2>
+
+<h3>11.1 BIM as the Design Environment for Meridian</h3>
+<p>Meridian deployment should be designed within BIM for the same reason HVAC and electrical systems are: it is a building system with spatial, clearance, penetration, and coordination requirements. Designing Meridian outside BIM and retrofitting produces coordination conflicts that are far more expensive to resolve in construction than in design.</p>
+
+<h3>11.2 The Meridian BIM Plugin</h3>
+<p>Compatible with Autodesk Revit, Bentley AECOsim, and IFC&#8209;compliant platforms:</p>
+<ul>
+  <li><strong>AVM generation:</strong> Automatic voxel classification from the building model&#8217;s spatial elements.</li>
+  <li><strong>Node placement tool:</strong> Real&#8209;time validation against AVM and MEP clearance requirements. Highlights conflicts and suggests compliant alternatives.</li>
+  <li><strong>Coverage simulation:</strong> Simulates coverage using AVM and 60&nbsp;GHz beam propagation model.</li>
+  <li><strong>Gateway aperture coordination:</strong> Identifies available penetration points and flags structural conflicts.</li>
+  <li><strong>BIM export to AVM format:</strong> Versioned and cryptographically signed export for the commissioning tool.</li>
+  <li><strong>Coordination model:</strong> All Meridian elements exported as IFC entities for standard BIM coordination workflows.</li>
+</ul>
+
+<h3>11.3 The Retrofit Pathway</h3>
+<p>For buildings without BIM: LiDAR scan (&le;2&nbsp;cm accuracy) &rarr; auto&#8209;classification &rarr; technician review &rarr; AVM validation against physical walk&#8209;through &rarr; signed AVM export.</p>
+
+<h2><span class="section-num">12</span> Commissioning Protocol</h2>
+
+<h3>12.1 Pre&#8209;Installation Checklist</h3>
+<ul class="checklist">
+  <li>AVM complete and signed (BIM export or LiDAR survey)</li>
+  <li>All void classifications verified by physical walk&#8209;through</li>
+  <li>Gateway aperture positions cleared with structural engineer</li>
+  <li>Relay node positions validated against AVM and MEP conflict check</li>
+  <li>Source node power connection points coordinated with electrical</li>
+  <li>RF interference pre&#8209;survey completed</li>
+  <li>BSL sensor coverage map generated (no gaps in final&#8209;hop zones)</li>
+  <li>Trust Layer identity credentials ordered for all nodes</li>
+  <li>Guardian Security commissioning authority credential issued</li>
+</ul>
+
+<h3>12.2 Installation Sequence</h3>
+<ol>
+  <li><strong>Gateway relay nodes first.</strong> GRNs at all floor&#8209;transition points before intra&#8209;floor nodes &mdash; they are the architectural anchor points.</li>
+  <li><strong>Source nodes second.</strong> Connect to building electrical. Verify power input, supercapacitor charge, AVM import, Trust Layer registration.</li>
+  <li><strong>Relay nodes third.</strong> Install working outward from source and gateway nodes. Each auto&#8209;announces; routing engine validates position against AVM.</li>
+  <li><strong>Coverage verification.</strong> Verify compliant routing paths to all planned device positions. Flag coverage gaps.</li>
+  <li><strong>BSL calibration.</strong> Calibrate sensor suite for specific installation geometry at each relay node.</li>
+  <li><strong>AVM live import.</strong> Import signed AVM into operational routing engine. Verify VOID path rejection.</li>
+  <li><strong>Safety validation.</strong> Confirm dynamic occupancy marking within one control cycle and BSL hardware cutoff within specification.</li>
+</ol>
+
+<h3>12.3 Change Management</h3>
+<p>Any physical change affecting the AVM requires: AVM update &rarr; re&#8209;validation of all existing beam paths &rarr; re&#8209;commissioning of invalid paths before the building change occurs. The commissioning tool enforces this sequence with commissioning authority signature requirement.</p>
