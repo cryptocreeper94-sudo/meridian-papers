@@ -22,7 +22,7 @@ This repository contains the nine academic papers constituting the Meridian Cano
 
 ## Patent Notice
 
-> **U.S. Provisional Patent Application No. 64/032,339**
+> **U.S. Provisional Patent Application No. 64/056,378**
 > Filed April 7, 2026
 > All rights reserved.
 >
@@ -137,7 +137,7 @@ Features:
   publisher = {DarkWave Studios LLC},
   address   = {Nashville, Tennessee},
   doi       = {10.5281/zenodo.20028362},
-  note      = {U.S. Provisional Patent Application No. 64/032,339. Filed April 7, 2026.}
+  note      = {U.S. Provisional Patent Application No. 64/056,378. Filed April 7, 2026.}
 }
 ```
 
@@ -147,4 +147,4 @@ Features:
 
 © 2026 DarkWave Studios LLC — All rights reserved.
 
-Protected under U.S. Provisional Patent Application No. 64/032,339, Filed April 7, 2026.
+Protected under U.S. Provisional Patent Application No. 64/056,378, Filed April 7, 2026.
