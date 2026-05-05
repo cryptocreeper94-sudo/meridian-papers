@@ -4,7 +4,7 @@
 
 [![Zenodo Community](https://img.shields.io/badge/Zenodo-The%20Meridian%20Canon-blue?logo=zenodo)](https://zenodo.org/communities/meridian-canon)
 [![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red)](LICENSE)
-[![Patent](https://img.shields.io/badge/Patent-U.S.%2064%2F032%2C339-gold)](#patent-notice)
+[![Patent](https://img.shields.io/badge/Patent-U.S.%2064%2F056%2C378-gold)](#patent-notice)
 
 > **Author:** Ronald "Jason" Andrews — [DarkWave Studios LLC](https://dwsc.io)
 > **ORCID:** [0009-0007-5214-649X](https://orcid.org/0009-0007-5214-649X)
